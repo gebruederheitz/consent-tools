@@ -1,6 +1,7 @@
 import { $$ } from '@gebruederheitz/wp-frontend-utils';
+import { Debuggable } from '@gebruederheitz/wp-frontend-utils';
 
-const debug = true;
+const debug = Debuggable.prototype.globalJsDebug;
 
 export class Usercentrics {
     static listen(selector = '') {
