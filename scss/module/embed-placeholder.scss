@@ -1,0 +1,142 @@
+@use 'sass:color';
+
+$button-color: #0056c3 !default;
+$secondary-button-color: #ccc !default;
+$max-width: none !default;
+
+.ghwp-embed-placeholder {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    align-items: center;
+    display: flex;
+    flex-flow: column nowrap;
+    font-size: 0.8rem;
+    justify-content: flex-end;
+    max-height: 200vh;
+    max-width: $max-width;
+    opacity: 1;
+    //text-align: center;
+    transition: all 500ms ease;
+    z-index: 10;
+
+    @media screen and (min-width: 768px) {
+        justify-content: center;
+    }
+
+    &.hidden {
+        max-height: 1px;
+        opacity: 0;
+    }
+
+    &__title {
+        font-family: Bebasneue, sans-serif;
+        font-size: 2rem;
+        font-weight: 400;
+        line-height: 1;
+
+        @media screen and (min-width: 678px) {
+            font-size: 3rem;
+        }
+    }
+
+    &__content {
+        //align-items: center;
+        //background-color: #aaa;
+        color: #333;
+        display: block;
+        flex: 0 0 100%;
+        flex-flow: column nowrap;
+        font-family: Haufemerriweathersans, sans-serif;
+        justify-content: center;
+        //padding: 1rem;
+        overflow-y: auto;
+
+        @media screen and (min-width: 576px) {
+            display: flex;
+            height: unset;
+        }
+
+        p {
+            margin-bottom: 1em;
+        }
+
+        .form-check {
+            margin-top: 1rem;
+
+            label {
+                color: inherit;
+            }
+
+            input {
+                cursor: pointer;
+            }
+        }
+    }
+
+    &__button {
+        /* unstyle button */
+        background: transparent;
+        background-clip: padding-box;
+        line-height: normal;
+        text-align: left;
+        text-decoration: none;
+        text-shadow: none;
+        white-space: nowrap;
+
+        /* actual button styles */
+        background-color: $button-color;
+        border: 1px solid $button-color;
+        border-radius: 6px;
+        color: #fff;
+        cursor: pointer;
+        margin-top: 1rem;
+        padding: 1rem 1.6rem;
+        transition: all 200ms ease;
+
+        &:not(:first-child) {
+            margin-left: .5rem;
+        }
+
+        &:not(:last-child) {
+            margin-right: .5rem;
+        }
+
+        &:hover {
+            background-color: #fff;
+            color: $button-color;
+        }
+
+        &--secondary {
+            background-color: $secondary-button-color;
+            border: 1px solid $secondary-button-color;
+            color: #000;
+
+            &:hover {
+                $secondary-hover-color: darken($secondary-button-color, 10%);
+                background-color: $secondary-hover-color;
+                border-color: $secondary-hover-color;
+                color: #000;
+            }
+        }
+    }
+
+    &--lightbox {
+
+        @media screen and (min-width: 768px) {
+            top: 200%;
+
+            .ghwp-video-link:hover & {
+                top: 0;
+            }
+        }
+    }
+
+    &--lightbox &__content {
+        background-color: rgba(0, 0, 0, 0.9);
+        color: #eee;
+        flex: 0 1 auto;
+    }
+}
