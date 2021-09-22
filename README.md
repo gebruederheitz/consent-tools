@@ -99,6 +99,37 @@ export const embedsConfig = {};
 #### Usercentrics
 
 
+### Debugging
+
+This library uses the `Debuggable` base class from [`@gebruederheitz/wp-frontend-utils`](https://www.npmjs.com/package/@gebruederheitz/wp-frontend-utils)
+to provide debug logging. Output is disabled by default, you can easily switch
+on logging detailed information to the browser console by using the provided
+toggle function:
+
+```js
+import { toggleDebugOutput } from '@gebruederheitz/consent-tools';
+
+// Logging for all modules on:
+toggleDebugOutput(true);
+
+// ...and off again
+toggleDebugOutput(false);
+```
+
+
+Additionally, most modules can be passed a `debug` key with a boolean value in
+their constructor options to toggle logging for just that module:
+
+```js
+new ElementsConsentManager(consentManager, {
+    debug: true,
+    // ...
+    embeds: embedsConfig,
+    reloadOnConsent: false,
+    clickOnConsent: true,
+});
+```
+
 
 ### Styling
 
