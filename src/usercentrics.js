@@ -1,6 +1,6 @@
 import { $$ } from '@gebruederheitz/wp-frontend-utils';
 
-import { debug } from '../config/config';
+const debug = true;
 
 export class Usercentrics {
     static listen(selector = '') {

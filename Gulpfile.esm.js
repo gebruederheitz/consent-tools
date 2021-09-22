@@ -15,7 +15,7 @@ function buildScss(cb) {
     gulp.src('./scss/**/*.scss')
         .pipe(sass().on('error', sass.logError))
         .pipe(postcss(postcssTasks))
-        .pipe(gulp.dest('./dist'));
+        .pipe(gulp.dest('./dist/css'));
 
     cb();
 }

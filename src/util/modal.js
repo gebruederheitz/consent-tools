@@ -1,5 +1,4 @@
-import { createDomElement } from './create-element';
-import { $$ } from './querySelector';
+import { $$, createDomElement } from '@gebruederheitz/wp-frontend-utils';
 
 export class Modal {
     /**

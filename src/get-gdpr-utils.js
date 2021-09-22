@@ -1,7 +1,8 @@
 import { EventEmitter2 } from 'eventemitter2';
 
 import { WrappedGtmFactory } from './util/wrap-gtm';
-import { debug } from '../config/config';
+
+const debug = true;
 
 const gtmFactory = new WrappedGtmFactory(debug);
 const gtm = gtmFactory.getWrappedGtm();

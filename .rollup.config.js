@@ -64,14 +64,6 @@ export default [
             resolve(),
             babel(babelConfig()),
             commonjs(),
-
-            // In dev mode, call `npm run start` once
-            // the bundle has been generated
-            !production && serve(),
-
-            // Watch the `public` directory and refresh the
-            // browser on changes when not in production
-            !production && livereload('./dist/'),
         ],
     },
     {
@@ -107,14 +99,30 @@ export default [
                     },
                 },
             }),
+        ],
+    },
+    !production && {
+        input: 'test/test-implementation.js',
+        output: {
+            file: 'demo/demo-bundle.js',
+            format: 'iife',
+            inlineDynamicImports: true,
+            name: 'ghconsentdemo',
+        },
+        plugins: [
+            resolve({
+                browser: true,
+            }),
+            babel(babelConfig(true)),
+            commonjs(),
 
             // In dev mode, call `npm run start` once
             // the bundle has been generated
             !production && serve(),
 
-            // Watch the `public` directory and refresh the
+            // Watch the `demo` directory and refresh the
             // browser on changes when not in production
-            !production && livereload('./dist/'),
+            !production && livereload(['./demo/', './dist/']),
         ],
         context: 'window',
         watch: {

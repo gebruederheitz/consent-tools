@@ -33,9 +33,10 @@
         "watch": "npm-run-all --parallel watch:rollup watch:styles",
         "watch:rollup": "rollup -c ./.rollup.config.js --watch",
         "watch:styles": "gulp watch",
-        "start": "sirv dist/ --host"
+        "start": "sirv demo/ --host"
     },
     "dependencies": {
+        "@babel/plugin-transform-runtime": "^7.15.0",
         "@gebruederheitz/wp-frontend-utils": "^1.0.0",
         "classnames": "^2.2.6",
         "core-js": "^3.8.3",
@@ -68,6 +69,7 @@
         "stylelint": "^13.13.1",
         "stylelint-config-prettier": "^8.0.2",
         "stylelint-config-recommended-scss": "^4.3.0",
-        "stylelint-config-standard": "^22.0.0"
+        "stylelint-config-standard": "^22.0.0",
+        "when-dom-ready": "^1.2.12"
     }
 }

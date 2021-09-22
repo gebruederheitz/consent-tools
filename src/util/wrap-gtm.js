@@ -1,5 +1,5 @@
 import { EventEmitter2 } from 'eventemitter2';
-import { Debuggable } from './Debuggable';
+import { Debuggable } from '@gebruederheitz/wp-frontend-utils';
 
 export class WrappedGtmFactory extends Debuggable {
     constructor(debug = false) {

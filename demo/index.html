@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <title>Test page</title>
+
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="stylesheet" href="/build/css/index.css" />
+    <script src="/build/bundle.js"></script>
+
+    <style>
+        body {
+            padding: 5vh 10vw;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .button-container {
+            display: flex;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        .iframe-container {
+            position: relative;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 class="demo">Consent Tools Test Page</h1>
+
+    <div class="button-container">
+        <button type="button" data-ghwp-uc-service="Test Service" data-ghwp-uc-modal="true">Trigger Test Service</button>
+    </div>
+
+    <div class="iframe-container">
+        <iframe data-ghwp-src="/iframe" data-ghwp-uc-service="Test Service" height="500" frameborder="0"></iframe>
+    </div>
+
+    <script src="/demo-bundle.js"></script>
+</body>
+</html>

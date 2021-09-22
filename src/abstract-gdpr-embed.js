@@ -46,7 +46,10 @@ export class AbstractGdprEmbed extends Debuggable {
         this.onEmbedPlaceholderButtonClicked =
             this.onEmbedPlaceholderButtonClicked.bind(this);
         this.onConsentChanged = this.onConsentChanged.bind(this);
-        this.onModalOpenerClicked = this.onModalOpenerClicked.bind(this);
+
+        if (this.onModalOpenerClicked) {
+            this.onModalOpenerClicked = this.onModalOpenerClicked.bind(this);
+        }
 
         this.parseOptions(userOptions);
         this.debug.log('Type', this.type);
