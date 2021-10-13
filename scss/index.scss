@@ -5,11 +5,17 @@
 |    Embed Placeholder
 ----------------------------------------------------------------------------- */
 $button-color: defaults.$button-color !default;
+$button-text-color: defaults.$button-text-color !default;
+$button-hover-color: defaults.$button-hover-color !default;
+$button-hover-text-color: defaults.$button-hover-text-color !default;
 $secondary-button-color: defaults.$secondary-button-color !default;
 $max-width: defaults.$max-width !default;
 
 @use "module/embed-placeholder" with (
     $button-color: $button-color,
+    $button-text-color: $button-text-color,
+    $button-hover-color: $button-hover-color,
+    $button-hover-text-color: $button-hover-text-color,
     $secondary-button-color: $secondary-button-color,
     $max-width: $max-width,
 );

@@ -1,3 +1,5 @@
+@use "../lib/variable-defaults" as defaults;
+
 $modal-close-button-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23b8b8b8' viewBox='0 0 16 16'%3E%3Cpath d='M2.697.657l12.728 12.728-2.122 2.121L.575 2.778z'/%3E%3Cpath d='M15.425 2.778L2.697 15.506.575 13.385 13.303.657z'/%3E%3C/svg%3E");
 
 @mixin close-button-background() {
@@ -9,13 +11,13 @@ $modal-close-button-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='h
 
 // BLOCK: MODAL
 // --------------------------------------------------------------------
-$modal-bg: #fff !default;
-$modal-fg: #000 !default;
-$modal-content-padding: 0 !default;
-$modal-small-height: 100vh !default;
-$modal-small-width: 95vh !default;
-$modal-height: 90vh !default;
-$modal-width: 75vw !default;
+$modal-bg: defaults.$modal-bg !default;
+$modal-fg: defaults.$modal-fg !default;
+$modal-content-padding: defaults.$modal-content-padding !default;
+$modal-small-height: defaults.$modal-small-height !default;
+$modal-small-width: defaults.$modal-small-width !default;
+$modal-height: defaults.$modal-height !default;
+$modal-width: defaults.$modal-width !default;
 
 .ghwp-modal {
     background-color: $modal-bg;
