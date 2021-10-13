@@ -70,9 +70,8 @@ export class GdprConsentPlaceholder extends Debuggable {
 
         const placeholderContent = createDomElement({
             classNames: [
-                /* @TODO: change classnames prefix */
-                'ghwp-embed-placeholder__content',
-                'ghwp-busy-button-wrap',
+                'ghct-embed-placeholder__content',
+                'ghct-busy-button-wrap',
             ],
             parent: this.placeholder,
         });
@@ -81,8 +80,7 @@ export class GdprConsentPlaceholder extends Debuggable {
         if (titleText) {
             createDomElement({
                 type: 'H2',
-                /* @TODO: change classnames prefix */
-                classNames: ['ghwp-embed-placeholder__title'],
+                classNames: ['ghct-embed-placeholder__title'],
                 innerText: titleText,
                 parent: placeholderContent,
             });
@@ -105,8 +103,7 @@ export class GdprConsentPlaceholder extends Debuggable {
         }
 
         const buttonContainer = createDomElement({
-            /* @TODO: change classnames prefix */
-            classNames: ['ghwp-embed-placeholder__buttons'],
+            classNames: ['ghct-embed-placeholder__buttons'],
             parent: placeholderContent,
         });
 
@@ -114,9 +111,8 @@ export class GdprConsentPlaceholder extends Debuggable {
             this.modalOpenerButton = createDomElement({
                 type: 'BUTTON',
                 classNames: [
-                    /* @TODO: change classnames prefix */
-                    'ghwp-embed-placeholder__button',
-                    'ghwp-embed-placeholder__button--secondary',
+                    'ghct-embed-placeholder__button',
+                    'ghct-embed-placeholder__button--secondary',
                     'button',
                     'is-style-secondary',
                 ],
@@ -137,8 +133,7 @@ export class GdprConsentPlaceholder extends Debuggable {
         this.button = createDomElement({
             type: 'BUTTON',
             classNames: [
-                /* @TODO: change classnames prefix */
-                'ghwp-embed-placeholder__button',
+                'ghct-embed-placeholder__button',
                 'button',
                 'is-style-primary',
             ],

@@ -28,8 +28,7 @@ export class IframeEmbed extends AbstractEmbed {
 
         return createDomElement({
             type: 'IFRAME',
-            /* @TODO: change classnames prefix */
-            classNames: ['ghwp-embed-frame'],
+            classNames: ['ghct-embed-frame'],
             parent: this.container,
             attributes: {
                 width: containerWidth,

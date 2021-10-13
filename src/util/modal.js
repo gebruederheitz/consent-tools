@@ -18,21 +18,21 @@ export class Modal {
     _createElements(content) {
         this.root = createDomElement({
             classNames: [
-                'ghwp-modal',
-                'ghwp-modal--with-backdrop',
-                'ghwp-hide',
+                'ghct-modal',
+                'ghct-modal--with-backdrop',
+                'ghct-hide',
             ],
         });
         this.closeButton = createDomElement({
             type: 'BUTTON',
-            classNames: ['ghwp-modal__close'],
+            classNames: ['ghct-modal__close'],
             parent: this.root,
             attributes: {
                 type: 'button',
             },
         });
         this.container = createDomElement({
-            classNames: ['ghwp-modal__inner'],
+            classNames: ['ghct-modal__inner'],
             parent: this.root,
             innerHtml: typeof content === 'string' ? content : '',
         });
@@ -80,14 +80,14 @@ export class Modal {
     }
 
     show() {
-        this.root.classList.remove('ghwp-hide');
+        this.root.classList.remove('ghct-hide');
         document.body.classList.add('modal-active');
 
         window.addEventListener('keydown', this._onKeyDown);
     }
 
     hide() {
-        this.root.classList.add('ghwp-hide');
+        this.root.classList.add('ghct-hide');
         document.body.classList.remove('modal-active');
 
         window.removeEventListener('keydown', this._onKeyDown);

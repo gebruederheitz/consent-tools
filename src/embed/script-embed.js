@@ -19,13 +19,13 @@ export class ScriptEmbed extends AbstractEmbed {
 
         this.script = this.container;
 
+        /* @TODO: use global prefix */
         const containerSelect = this.script.dataset.ghwpPlaceholder;
         this.container = $()(containerSelect);
 
         if (!this.container) {
             this.container = createDomElement({
-                // @TODO: replace classnames
-                classNames: ['ghwp-placeholder-container'],
+                classNames: ['ghct-placeholder-container'],
             });
             this.script.parentElement.insertBefore(this.container, this.script);
         }
@@ -47,7 +47,6 @@ export class ScriptEmbed extends AbstractEmbed {
     loadRaceResult() {
         this.debug.log('Loading inline scripts...');
 
-        /* @TODO: change data attribute prefixes */
         const inlineScripts = $$()('[data-ghwp-type="raceresult"]:not([src])');
         inlineScripts.forEach((scriptElement) => {
             createDomElement({

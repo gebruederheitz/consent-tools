@@ -19,7 +19,7 @@ $modal-small-width: defaults.$modal-small-width !default;
 $modal-height: defaults.$modal-height !default;
 $modal-width: defaults.$modal-width !default;
 
-.ghwp-modal {
+.ghct-modal {
     background-color: $modal-bg;
     color: $modal-fg;
 
@@ -37,14 +37,14 @@ $modal-width: defaults.$modal-width !default;
         align-items: center;
         z-index: 999999;
 
-        .ghwp-modal__inner {
+        .ghct-modal__inner {
             padding: 2rem;
             background: $modal-bg;
             max-width: 100%;
             max-height: calc(100% - 10vh);
             overflow-x: auto;
 
-            .ghwp-embed-placeholder {
+            .ghct-embed-placeholder {
                 position: static;
             }
         }
@@ -52,12 +52,12 @@ $modal-width: defaults.$modal-width !default;
         @media screen and (min-width: 786px) {
             padding: 10vh 20vw;
 
-            .ghwp-modal__inner {
+            .ghct-modal__inner {
                 max-height: calc(100% - 20vh);
             }
         }
 
-        .ghwp-modal__close {
+        .ghct-modal__close {
             /* unstyle button */
             background: transparent;
             background-clip: padding-box;
@@ -94,6 +94,6 @@ body.modal-active {
     overflow: hidden;
 }
 
-.ghwp-hide {
+.ghct-hide {
     display: none;
 }

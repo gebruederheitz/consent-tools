@@ -7,8 +7,9 @@ $button-hover-color: defaults.$button-hover-color !default;
 $button-hover-text-color: defaults.$button-hover-text-color !default;
 $secondary-button-color: defaults.$secondary-button-color !default;
 $max-width: defaults.$max-width !default;
+$font-size: defaults.$font-size !default;
 
-.ghwp-embed-placeholder {
+.ghct-embed-placeholder {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -131,7 +132,8 @@ $max-width: defaults.$max-width !default;
         @media screen and (min-width: 768px) {
             top: 200%;
 
-            .ghwp-video-link:hover & {
+            .ghwp-video-link:hover &,
+            .ghct-video-link:hover & {
                 top: 0;
             }
         }

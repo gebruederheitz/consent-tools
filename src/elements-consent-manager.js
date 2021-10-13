@@ -5,8 +5,7 @@ import { ModalConsentManager } from './modal-consent-manager.js';
 
 const DEFAULT_OPTIONS = {
     debug: false,
-    // @TODO: rename data attribute
-    selector: '[data-ghwp-uc-service]',
+    selector: '[data-ghct-service]',
     hasConsentClassName: 'has-consent',
 };
 
@@ -41,8 +40,7 @@ export class ElementsConsentManager extends Debuggable {
         if (!(this.elements && this.elements.length)) return;
 
         this.elements.forEach((element) => {
-            // @TODO: rename data attribute
-            const serviceName = element.dataset?.ghwpUcService || null;
+            const serviceName = this._getServiceNameFromElementDataset(element);
             this.debug.log('Initializing element with service', {
                 element,
                 serviceName,
@@ -54,8 +52,7 @@ export class ElementsConsentManager extends Debuggable {
                 .withConsent(serviceName, this.showElement, element)
                 .then();
 
-            // @TODO: rename data attribute
-            if (element.dataset?.ghwpUcModal) {
+            if (this._elementWantsModal(element)) {
                 this.consentManager
                     .getServiceConsentStatus(serviceName)
                     .then((hasConsent) => {
@@ -83,9 +80,41 @@ export class ElementsConsentManager extends Debuggable {
 
     parseOptions(userOptions) {
         this.options = _merge(DEFAULT_OPTIONS, userOptions);
+
+        if (this.options.selector === '[data-ghct-service]') {
+            const prefix = this.settings.getAttributesPrefix();
+            if (prefix !== 'ghct') {
+                this.options.selector = `[data-${prefix}-service]`;
+            }
+        }
     }
 
     showElement(element) {
         element.classList.add(this.options.hasConsentClassName);
+    }
+
+    /**
+     * @param {Element} element
+     * @return {?string}
+     * @private
+     */
+    _getServiceNameFromElementDataset(element) {
+        const prefix = this.settings.getAttributesPrefix();
+        const attributeName = prefix + 'Service';
+        return (element.dataset && element.dataset[attributeName]) || null;
+    }
+
+    /**
+     * @param {Element} element
+     * @return {boolean}
+     * @private
+     */
+    _elementWantsModal(element) {
+        const prefix = this.settings.getAttributesPrefix();
+        const attributeName = prefix + 'Modal';
+        return (
+            (element.dataset && element.dataset[attributeName] === 'true') ||
+            false
+        );
     }
 }

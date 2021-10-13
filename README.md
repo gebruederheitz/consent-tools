@@ -83,8 +83,8 @@ when consent is given, or show a modal asking for consent otherwise:
 ```html
 <button
     type="button"
-    data-ghwp-uc-service="Name/ID of the Service"
-    data-ghwp-uc-modal="true"
+    data-ghct-service="Name/ID of the Service"
+    data-ghct-modal="true"
 >
     Use service
 </button>

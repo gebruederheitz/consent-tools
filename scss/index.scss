@@ -10,6 +10,7 @@ $button-hover-color: defaults.$button-hover-color !default;
 $button-hover-text-color: defaults.$button-hover-text-color !default;
 $secondary-button-color: defaults.$secondary-button-color !default;
 $max-width: defaults.$max-width !default;
+$font-size: defaults.$font-size !default;
 
 @use "module/embed-placeholder" with (
     $button-color: $button-color,
@@ -18,6 +19,7 @@ $max-width: defaults.$max-width !default;
     $button-hover-text-color: $button-hover-text-color,
     $secondary-button-color: $secondary-button-color,
     $max-width: $max-width,
+    $font-size: $font-size,
 );
 
 /* -----------------------------------------------------------------------------

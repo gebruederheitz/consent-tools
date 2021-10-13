@@ -24,8 +24,7 @@ export class AbstractEmbed extends Debuggable {
         this.consentManager = consentManager;
         this.settings = settings;
 
-        // @TODO: replace attribute names
-        this.url = this.container.dataset.ghwpSrc;
+        this.url = this._getUrl();
         this.type = this.getType() || 'generic';
 
         /** @type GdprConsentPlaceholder | null */
@@ -108,13 +107,13 @@ export class AbstractEmbed extends Debuggable {
     }
 
     getPlaceholderClassNames() {
-        // @TODO: replace classnames
-        return ['ghwp-embed-placeholder'];
+        return ['ghct-embed-placeholder'];
     }
 
     getType() {
-        // @TODO: replace data attribute names
-        return this.container.dataset.ghwpType;
+        const prefix = this.settings.getAttributesPrefix();
+        const attributeName = prefix + 'Type';
+        return this.container.dataset[attributeName];
     }
 
     hideAndRemovePlaceholder() {
@@ -156,6 +155,12 @@ export class AbstractEmbed extends Debuggable {
         } else {
             this.loadEmbed(true);
         }
+    }
+
+    _getUrl() {
+        const prefix = this.settings.getAttributesPrefix();
+        const attributeName = prefix + 'Src';
+        return this.container.dataset[attributeName];
     }
 
     _shouldLoadAll() {

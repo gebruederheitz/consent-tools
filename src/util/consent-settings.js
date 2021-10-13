@@ -9,6 +9,11 @@ export class ConsentSettings {
     debug = false;
 
     /**
+     * @type {string};
+     */
+    attributesPrefix = 'ghct';
+
+    /**
      * @type {LightboxFactory|function|null}
      */
     lightboxFactory = null;
@@ -135,6 +140,10 @@ export class ConsentSettings {
      */
     getAdditionalServices(serviceId = 'default') {
         return this._get('additionalServices', serviceId);
+    }
+
+    getAttributesPrefix() {
+        return this.attributesPrefix;
     }
 
     /**
@@ -291,6 +300,7 @@ export class ConsentSettings {
             'lightboxFactory',
             'debug',
             'privacyPolicyUrl',
+            'attributesPrefix',
         ]);
     }
 
@@ -318,22 +328,22 @@ export class ConsentSettings {
     _parseDefaultOptions(options) {
         const cleanDefaults = this._getCleanOptions(options);
         _toPairs(cleanDefaults).forEach(([property, value]) => {
-            if (property === 'debug') {
-                this.debug = value;
-                return;
+            switch (property) {
+                case 'debug':
+                    this.debug = value;
+                    return;
+                case 'privacyPolicyUrl':
+                    this.privacyPolicyUrl = value;
+                    return;
+                case 'lightboxFactory':
+                    this.lightboxFactory = value;
+                    return;
+                case 'attributesPrefix':
+                    this.attributesPrefix = value;
+                    return;
+                default:
+                    this[property].default = value;
             }
-
-            if (property === 'privacyPolicyUrl') {
-                this.privacyPolicyUrl = value;
-                return;
-            }
-
-            if (property === 'lightboxFactory') {
-                this.lightboxFactory = value;
-                return;
-            }
-
-            this[property].default = value;
         });
     }
 

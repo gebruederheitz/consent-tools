@@ -6,8 +6,7 @@ import { LightboxEmbed } from './lightbox-embed.js';
 import { ScriptEmbed } from './script-embed.js';
 
 const DEFAULT_OPTIONS = {
-    // @TODO: replace data attribute names
-    selector: '[data-ghwp-src]',
+    selector: '[data-ghct-src]',
 };
 
 /**
@@ -24,7 +23,7 @@ export class EmbedFactory extends Debuggable {
      * @param {boolean}         useroptions.debug      Toggle debug logging output on or off (default: false).
      * @param {string}          useroptions.selector   This selector will be used to find any elements that should have
      *                                                 one of the embed handlers attached to them (default
-     *                                                 '[data-ghwp-src]').
+     *                                                 '[data-ghct-src]').
      */
     constructor(consentManager, settings, useroptions = {}) {
         super('gdprEmbedFactory');
@@ -101,6 +100,14 @@ export class EmbedFactory extends Debuggable {
 
     parseOptions(useroptions) {
         this.options = _merge(DEFAULT_OPTIONS, useroptions);
+
         this.options.debug = this.settings.isDebug();
+
+        if (this.options.selector === '[data-ghct-src]') {
+            const prefix = this.settings.getAttributesPrefix();
+            if (prefix !== 'ghct') {
+                this.options.selector = `[data-${prefix}-src]`;
+            }
+        }
     }
 }

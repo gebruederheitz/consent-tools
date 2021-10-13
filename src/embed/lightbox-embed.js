@@ -18,7 +18,7 @@ export class LightboxEmbed extends AbstractEmbed {
 
     getPlaceholderClassNames() {
         const defaultClassNames = super.getPlaceholderClassNames();
-        return ['ghwp-embed-placeholder--lightbox', ...defaultClassNames];
+        return ['ghct-embed-placeholder--lightbox', ...defaultClassNames];
     }
 
     initLightbox() {
