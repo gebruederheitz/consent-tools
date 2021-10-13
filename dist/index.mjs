@@ -4431,6 +4431,7 @@ var GdprConsentPlaceholder = /*#__PURE__*/function (_Debuggable) {
   /**
    * @param {string}          type
    * @param {string[]}        classnames
+   * @param {ConsentManager}  consentManager
    * @param {ConsentSettings} settings
    */
   function GdprConsentPlaceholder() {
@@ -4438,7 +4439,8 @@ var GdprConsentPlaceholder = /*#__PURE__*/function (_Debuggable) {
 
     var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'generic';
     var classnames = arguments.length > 1 ? arguments[1] : undefined;
-    var settings = arguments.length > 2 ? arguments[2] : undefined;
+    var consentManager = arguments.length > 2 ? arguments[2] : undefined;
+    var settings = arguments.length > 3 ? arguments[3] : undefined;
 
     _classCallCheck(this, GdprConsentPlaceholder);
 
@@ -4448,6 +4450,7 @@ var GdprConsentPlaceholder = /*#__PURE__*/function (_Debuggable) {
     _this.modalOpenerButton = null;
     _this.type = type;
     _this.classnames = classnames;
+    _this.consentManager = consentManager;
     _this.settings = settings;
     _this.options = {
       debug: settings.isDebug()
@@ -4498,9 +4501,7 @@ var GdprConsentPlaceholder = /*#__PURE__*/function (_Debuggable) {
         classNames: this.classnames
       });
       var placeholderContent = createDomElement({
-        classNames: [
-        /* @TODO: change classnames prefix */
-        'ghwp-embed-placeholder__content', 'ghwp-busy-button-wrap'],
+        classNames: ['ghct-embed-placeholder__content', 'ghct-busy-button-wrap'],
         parent: this.placeholder
       });
       var titleText = this.settings.getTitleText(this.type);
@@ -4508,9 +4509,7 @@ var GdprConsentPlaceholder = /*#__PURE__*/function (_Debuggable) {
       if (titleText) {
         createDomElement({
           type: 'H2',
-
-          /* @TODO: change classnames prefix */
-          classNames: ['ghwp-embed-placeholder__title'],
+          classNames: ['ghct-embed-placeholder__title'],
           innerText: titleText,
           parent: placeholderContent
         });
@@ -4526,17 +4525,14 @@ var GdprConsentPlaceholder = /*#__PURE__*/function (_Debuggable) {
       }
 
       var buttonContainer = createDomElement({
-        /* @TODO: change classnames prefix */
-        classNames: ['ghwp-embed-placeholder__buttons'],
+        classNames: ['ghct-embed-placeholder__buttons'],
         parent: placeholderContent
       });
 
       if (this.settings.hasModalOpenerButton(this.type)) {
         this.modalOpenerButton = createDomElement({
           type: 'BUTTON',
-          classNames: [
-          /* @TODO: change classnames prefix */
-          'ghwp-embed-placeholder__button', 'ghwp-embed-placeholder__button--secondary', 'button', 'is-style-secondary'],
+          classNames: ['ghct-embed-placeholder__button', 'ghct-embed-placeholder__button--secondary', 'button', 'is-style-secondary'],
           attributes: {
             type: 'button'
           },
@@ -4550,9 +4546,7 @@ var GdprConsentPlaceholder = /*#__PURE__*/function (_Debuggable) {
 
       this.button = createDomElement({
         type: 'BUTTON',
-        classNames: [
-        /* @TODO: change classnames prefix */
-        'ghwp-embed-placeholder__button', 'button', 'is-style-primary'],
+        classNames: ['ghct-embed-placeholder__button', 'button', 'is-style-primary'],
         innerText: this.settings.getButtonText(this.type),
         parent: buttonContainer,
         attributes: {
@@ -4608,9 +4602,8 @@ var AbstractEmbed = /*#__PURE__*/function (_Debuggable) {
     _this = _super.call(this, namespace);
     _this.container = _this.getContainer(container);
     _this.consentManager = consentManager;
-    _this.settings = settings; // @TODO: replace attribute names
-
-    _this.url = _this.container.dataset.ghwpSrc;
+    _this.settings = settings;
+    _this.url = _this._getUrl();
     _this.type = _this.getType() || 'generic';
     /** @type GdprConsentPlaceholder | null */
 
@@ -4652,6 +4645,13 @@ var AbstractEmbed = /*#__PURE__*/function (_Debuggable) {
     key: "onInit",
     value: function onInit() {}
     /**
+     * @protected
+     */
+
+  }, {
+    key: "onBeforeInit",
+    value: function onBeforeInit() {}
+    /**
      * @abstract
      * @public
      */
@@ -4669,6 +4669,7 @@ var AbstractEmbed = /*#__PURE__*/function (_Debuggable) {
   }, {
     key: "init",
     value: function init() {
+      this.onBeforeInit();
       if (!this.container || !this.url) return null;
       this.placeholder = this.createPlaceholder();
       this.attachPlaceholder();
@@ -4684,7 +4685,7 @@ var AbstractEmbed = /*#__PURE__*/function (_Debuggable) {
   }, {
     key: "createPlaceholder",
     value: function createPlaceholder() {
-      return new GdprConsentPlaceholder(this.type, this.getPlaceholderClassNames(), this.settings);
+      return new GdprConsentPlaceholder(this.type, this.getPlaceholderClassNames(), this.consentManager, this.settings);
     }
   }, {
     key: "getContainer",
@@ -4694,14 +4695,14 @@ var AbstractEmbed = /*#__PURE__*/function (_Debuggable) {
   }, {
     key: "getPlaceholderClassNames",
     value: function getPlaceholderClassNames() {
-      // @TODO: replace classnames
-      return ['ghwp-embed-placeholder'];
+      return ['ghct-embed-placeholder'];
     }
   }, {
     key: "getType",
     value: function getType() {
-      // @TODO: replace data attribute names
-      return this.container.dataset.ghwpType;
+      var prefix = this.settings.getAttributesPrefix();
+      var attributeName = prefix + 'Type';
+      return this.container.dataset[attributeName];
     }
   }, {
     key: "hideAndRemovePlaceholder",
@@ -4762,11 +4763,24 @@ var AbstractEmbed = /*#__PURE__*/function (_Debuggable) {
       e.stopImmediatePropagation();
       this.placeholder.setBusy();
 
-      if (this.settings.isSkipCheckbox(this.type) || this.placeholder.isCheckboxChecked()) {
+      if (this._shouldLoadAll()) {
         this.loadAll();
       } else {
         this.loadEmbed(true);
       }
+    }
+  }, {
+    key: "_getUrl",
+    value: function _getUrl() {
+      var prefix = this.settings.getAttributesPrefix();
+      var attributeName = prefix + 'Src';
+      return this.container.dataset[attributeName];
+    }
+  }, {
+    key: "_shouldLoadAll",
+    value: function _shouldLoadAll() {
+      var skipWithLoadAll = this.settings.isSkipCheckbox(this.type) && this.settings.isDefaultLoadAll(this.type);
+      return skipWithLoadAll || this.placeholder.isCheckboxChecked();
     }
   }]);
 
@@ -4816,9 +4830,7 @@ var IframeEmbed = /*#__PURE__*/function (_AbstractEmbed) {
       var containerWidth = this.container.getBoundingClientRect().width;
       return createDomElement({
         type: 'IFRAME',
-
-        /* @TODO: change classnames prefix */
-        classNames: ['ghwp-embed-frame'],
+        classNames: ['ghct-embed-frame'],
         parent: this.container,
         attributes: {
           width: containerWidth,
@@ -4898,7 +4910,7 @@ var LightboxEmbed = /*#__PURE__*/function (_AbstractEmbed) {
     value: function getPlaceholderClassNames() {
       var defaultClassNames = _get(_getPrototypeOf(LightboxEmbed.prototype), "getPlaceholderClassNames", this).call(this);
 
-      return ['ghwp-embed-placeholder--lightbox'].concat(_toConsumableArray(defaultClassNames));
+      return ['ghct-embed-placeholder--lightbox'].concat(_toConsumableArray(defaultClassNames));
     }
   }, {
     key: "initLightbox",
@@ -5042,13 +5054,14 @@ var ScriptEmbed = /*#__PURE__*/function (_AbstractEmbed) {
 
     _this = _super.call.apply(_super, [this, 'ScriptEmbed'].concat(args));
     _this.script = _this.container;
+    /* @TODO: use global prefix */
+
     var containerSelect = _this.script.dataset.ghwpPlaceholder;
     _this.container = $()(containerSelect);
 
     if (!_this.container) {
       _this.container = createDomElement({
-        // @TODO: replace classnames
-        classNames: ['ghwp-placeholder-container']
+        classNames: ['ghct-placeholder-container']
       });
 
       _this.script.parentElement.insertBefore(_this.container, _this.script);
@@ -5074,8 +5087,6 @@ var ScriptEmbed = /*#__PURE__*/function (_AbstractEmbed) {
     key: "loadRaceResult",
     value: function loadRaceResult() {
       this.debug.log('Loading inline scripts...');
-      /* @TODO: change data attribute prefixes */
-
       var inlineScripts = $$()('[data-ghwp-type="raceresult"]:not([src])');
       inlineScripts.forEach(function (scriptElement) {
         createDomElement({
@@ -5119,8 +5130,7 @@ function _createSuper$8(Derived) { var hasNativeReflectConstruct = _isNativeRefl
 
 function _isNativeReflectConstruct$8() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 var DEFAULT_OPTIONS$3 = {
-  // @TODO: replace data attribute names
-  selector: '[data-ghwp-src]'
+  selector: '[data-ghct-src]'
 };
 /**
  * @TODO: document intention and usage:
@@ -5141,7 +5151,7 @@ var EmbedFactory = /*#__PURE__*/function (_Debuggable) {
    * @param {boolean}         useroptions.debug      Toggle debug logging output on or off (default: false).
    * @param {string}          useroptions.selector   This selector will be used to find any elements that should have
    *                                                 one of the embed handlers attached to them (default
-   *                                                 '[data-ghwp-src]').
+   *                                                 '[data-ghct-src]').
    */
   function EmbedFactory(consentManager, settings) {
     var _this;
@@ -5222,6 +5232,14 @@ var EmbedFactory = /*#__PURE__*/function (_Debuggable) {
     value: function parseOptions(useroptions) {
       this.options = _merge(DEFAULT_OPTIONS$3, useroptions);
       this.options.debug = this.settings.isDebug();
+
+      if (this.options.selector === '[data-ghct-src]') {
+        var prefix = this.settings.getAttributesPrefix();
+
+        if (prefix !== 'ghct') {
+          this.options.selector = "[data-".concat(prefix, "-src]");
+        }
+      }
     }
   }], [{
     key: "initEmbedBlockContainer",
@@ -5319,6 +5337,7 @@ var ConsentManager = /*#__PURE__*/function (_Debuggable) {
   _createClass(ConsentManager, [{
     key: "acceptService",
     value: function acceptService(serviceId) {
+      this.debug.log('Accept service', serviceId);
       this.cmpService.acceptService(serviceId);
     }
     /**
@@ -5598,18 +5617,18 @@ var Modal = /*#__PURE__*/function () {
     key: "_createElements",
     value: function _createElements(content) {
       this.root = createDomElement({
-        classNames: ['ghwp-modal', 'ghwp-modal--with-backdrop', 'ghwp-hide']
+        classNames: ['ghct-modal', 'ghct-modal--with-backdrop', 'ghct-hide']
       });
       this.closeButton = createDomElement({
         type: 'BUTTON',
-        classNames: ['ghwp-modal__close'],
+        classNames: ['ghct-modal__close'],
         parent: this.root,
         attributes: {
           type: 'button'
         }
       });
       this.container = createDomElement({
-        classNames: ['ghwp-modal__inner'],
+        classNames: ['ghct-modal__inner'],
         parent: this.root,
         innerHtml: typeof content === 'string' ? content : ''
       });
@@ -5668,14 +5687,14 @@ var Modal = /*#__PURE__*/function () {
   }, {
     key: "show",
     value: function show() {
-      this.root.classList.remove('ghwp-hide');
+      this.root.classList.remove('ghct-hide');
       document.body.classList.add('modal-active');
       window.addEventListener('keydown', this._onKeyDown);
     }
   }, {
     key: "hide",
     value: function hide() {
-      this.root.classList.add('ghwp-hide');
+      this.root.classList.add('ghct-hide');
       document.body.classList.remove('modal-active');
       window.removeEventListener('keydown', this._onKeyDown);
     }
@@ -5716,6 +5735,11 @@ var ModalConsentManager = /*#__PURE__*/function (_AbstractEmbed) {
   }
 
   _createClass(ModalConsentManager, [{
+    key: "onBeforeInit",
+    value: function onBeforeInit() {
+      this.type = this.serviceId;
+    }
+  }, {
     key: "getContainer",
     value: function getContainer(container) {
       this.trigger = container;
@@ -5725,7 +5749,7 @@ var ModalConsentManager = /*#__PURE__*/function (_AbstractEmbed) {
   }, {
     key: "getType",
     value: function getType() {
-      return this.serviceId || 'generic';
+      return this.serviceId || 'modal';
     }
   }, {
     key: "listen",
@@ -5804,8 +5828,7 @@ function _createSuper$5(Derived) { var hasNativeReflectConstruct = _isNativeRefl
 function _isNativeReflectConstruct$5() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 var DEFAULT_OPTIONS$1 = {
   debug: false,
-  // @TODO: rename data attribute
-  selector: '[data-ghwp-uc-service]',
+  selector: '[data-ghct-service]',
   hasConsentClassName: 'has-consent'
 };
 /**
@@ -5855,10 +5878,7 @@ var ElementsConsentManager = /*#__PURE__*/function (_Debuggable) {
 
       if (!(this.elements && this.elements.length)) return;
       this.elements.forEach(function (element) {
-        var _element$dataset, _element$dataset2;
-
-        // @TODO: rename data attribute
-        var serviceName = ((_element$dataset = element.dataset) === null || _element$dataset === void 0 ? void 0 : _element$dataset.ghwpUcService) || null;
+        var serviceName = _this2._getServiceNameFromElementDataset(element);
 
         _this2.debug.log('Initializing element with service', {
           element: element,
@@ -5867,10 +5887,9 @@ var ElementsConsentManager = /*#__PURE__*/function (_Debuggable) {
 
         if (serviceName === null) return;
 
-        _this2.consentManager.withConsent(serviceName, _this2.showElement, element).then(); // @TODO: rename data attribute
+        _this2.consentManager.withConsent(serviceName, _this2.showElement, element).then();
 
-
-        if ((_element$dataset2 = element.dataset) !== null && _element$dataset2 !== void 0 && _element$dataset2.ghwpUcModal) {
+        if (_this2._elementWantsModal(element)) {
           _this2.consentManager.getServiceConsentStatus(serviceName).then(function (hasConsent) {
             _this2.debug.log("Maybe init modal, service ".concat(serviceName, " has ").concat(hasConsent ? '' : 'no', " consent."));
 
@@ -5889,11 +5908,45 @@ var ElementsConsentManager = /*#__PURE__*/function (_Debuggable) {
     key: "parseOptions",
     value: function parseOptions(userOptions) {
       this.options = _merge(DEFAULT_OPTIONS$1, userOptions);
+
+      if (this.options.selector === '[data-ghct-service]') {
+        var prefix = this.settings.getAttributesPrefix();
+
+        if (prefix !== 'ghct') {
+          this.options.selector = "[data-".concat(prefix, "-service]");
+        }
+      }
     }
   }, {
     key: "showElement",
     value: function showElement(element) {
       element.classList.add(this.options.hasConsentClassName);
+    }
+    /**
+     * @param {Element} element
+     * @return {?string}
+     * @private
+     */
+
+  }, {
+    key: "_getServiceNameFromElementDataset",
+    value: function _getServiceNameFromElementDataset(element) {
+      var prefix = this.settings.getAttributesPrefix();
+      var attributeName = prefix + 'Service';
+      return element.dataset && element.dataset[attributeName] || null;
+    }
+    /**
+     * @param {Element} element
+     * @return {boolean}
+     * @private
+     */
+
+  }, {
+    key: "_elementWantsModal",
+    value: function _elementWantsModal(element) {
+      var prefix = this.settings.getAttributesPrefix();
+      var attributeName = prefix + 'Modal';
+      return element.dataset && element.dataset[attributeName] === 'true' || false;
     }
   }]);
 
@@ -8964,7 +9017,7 @@ var GenericLocalStorageProvider = /*#__PURE__*/function (_AbstractCmpServicePr) 
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                return _context.abrupt("return", this.localStorage.get('consents', _defineProperty({}, serviceId, false))[serviceId]);
+                return _context.abrupt("return", this.localStorage.get('consents', _defineProperty({}, serviceId, false))[serviceId] || false);
 
               case 1:
               case "end":
@@ -9047,7 +9100,7 @@ var GenericLocalStorageProvider = /*#__PURE__*/function (_AbstractCmpServicePr) 
         });
         createDomElement({
           type: 'P',
-          innerText: 'You can find more information about these services, why they are being used and how they process your data on the privacy policy page.',
+          innerText: 'You can find more information about these services, why they are being used and how they process your data on the privacy policy page. To revoke your consent, please restart your browser.',
           parent: wrapper
         });
       } else {
@@ -11569,6 +11622,10 @@ var ConsentSettings = /*#__PURE__*/function () {
    */
 
   /**
+   * @type {string};
+   */
+
+  /**
    * @type {LightboxFactory|function|null}
    */
 
@@ -11643,6 +11700,8 @@ var ConsentSettings = /*#__PURE__*/function () {
     _classCallCheck(this, ConsentSettings);
 
     _defineProperty(this, "debug", false);
+
+    _defineProperty(this, "attributesPrefix", 'ghct');
 
     _defineProperty(this, "lightboxFactory", null);
 
@@ -11735,6 +11794,11 @@ var ConsentSettings = /*#__PURE__*/function () {
       var serviceId = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'default';
       return this._get('additionalServices', serviceId);
     }
+  }, {
+    key: "getAttributesPrefix",
+    value: function getAttributesPrefix() {
+      return this.attributesPrefix;
+    }
     /**
      * @param serviceId
      * @return {string}
@@ -11784,14 +11848,26 @@ var ConsentSettings = /*#__PURE__*/function () {
 
       var template = this._get('description', serviceId);
 
-      var servicePrettyName = this._get('servicePrettyName', serviceId);
-
+      var servicePrettyName = this.getPrettyName(serviceId);
       return this._parsePlaceholdersIntoTemplateString(template, '%servicePrettyName%', servicePrettyName);
     }
   }, {
     key: "getLightboxFactory",
     value: function getLightboxFactory() {
       return this.lightboxFactory;
+    }
+  }, {
+    key: "getPrettyName",
+    value: function getPrettyName() {
+      var serviceId = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'default';
+
+      var servicePrettyName = this._get('servicePrettyName', serviceId);
+
+      if (!servicePrettyName && serviceId !== 'default' && serviceId !== 'generic') {
+        servicePrettyName = serviceId;
+      }
+
+      return servicePrettyName;
     }
     /**
      * @return {string}
@@ -11914,7 +11990,7 @@ var ConsentSettings = /*#__PURE__*/function () {
         );
       });
 
-      return _omit(cleanOptions, ['lightboxFactory', 'debug', 'privacyPolicyUrl']);
+      return _omit(cleanOptions, ['lightboxFactory', 'debug', 'privacyPolicyUrl', 'attributesPrefix']);
     }
     /**
      * @param {string} property
@@ -11953,22 +12029,26 @@ var ConsentSettings = /*#__PURE__*/function () {
             property = _ref4[0],
             value = _ref4[1];
 
-        if (property === 'debug') {
-          _this4.debug = value;
-          return;
-        }
+        switch (property) {
+          case 'debug':
+            _this4.debug = value;
+            return;
 
-        if (property === 'privacyPolicyUrl') {
-          _this4.privacyPolicyUrl = value;
-          return;
-        }
+          case 'privacyPolicyUrl':
+            _this4.privacyPolicyUrl = value;
+            return;
 
-        if (property === 'lightboxFactory') {
-          _this4.lightboxFactory = value;
-          return;
-        }
+          case 'lightboxFactory':
+            _this4.lightboxFactory = value;
+            return;
 
-        _this4[property]["default"] = value;
+          case 'attributesPrefix':
+            _this4.attributesPrefix = value;
+            return;
+
+          default:
+            _this4[property]["default"] = value;
+        }
       });
     }
     /**
