@@ -1,26 +1,17 @@
-import { createDomElement, Debuggable } from '@gebruederheitz/wp-frontend-utils';
-import _merge from 'lodash-es/merge';
+import {
+    createDomElement,
+    Debuggable,
+} from '@gebruederheitz/wp-frontend-utils';
 
 import { GdprEmbedCheckbox } from './gdpr-embed-checkbox';
-import {Usercentrics} from '../usercentrics';
-
-const DEFAULT_OPTIONS = {
-    skipCheckbox: false,
-    text: {
-        button: '',
-        description: '',
-        checkbox: '',
-        title: '',
-    },
-    providerDisplayName: '',
-    checkboxProviderName: '',
-    providerPrivacyPolicySection: '',
-    privacyPolicyUrl: '',
-    modalOpenerButton: false,
-};
 
 export class GdprConsentPlaceholder extends Debuggable {
-    constructor(type = 'generic', classnames, options) {
+    /**
+     * @param {string}          type
+     * @param {string[]}        classnames
+     * @param {ConsentSettings} settings
+     */
+    constructor(type = 'generic', classnames, settings) {
         super('GdprConsentPlaceholder');
 
         this.placeholder = null;
@@ -28,7 +19,10 @@ export class GdprConsentPlaceholder extends Debuggable {
         this.modalOpenerButton = null;
         this.type = type;
         this.classnames = classnames;
-        this.options = _merge(DEFAULT_OPTIONS, options);
+        this.settings = settings;
+        this.options = {
+            debug: settings.isDebug(),
+        };
 
         this.debug.log('Init with options', this.options);
 
@@ -64,7 +58,9 @@ export class GdprConsentPlaceholder extends Debuggable {
     }
 
     _createElements() {
-        const placeHolderContentInnerHtml = this._getPlaceholderTextContent();
+        const placeHolderContentInnerHtml = this.settings.getDescription(
+            this.type
+        );
 
         this.placeholder = createDomElement({
             classNames: this.classnames,
@@ -72,17 +68,20 @@ export class GdprConsentPlaceholder extends Debuggable {
 
         const placeholderContent = createDomElement({
             classNames: [
+                /* @TODO: change classnames prefix */
                 'ghwp-embed-placeholder__content',
                 'ghwp-busy-button-wrap',
             ],
             parent: this.placeholder,
         });
 
-        if (this.options.text.title) {
+        const titleText = this.settings.getTitleText(this.type);
+        if (titleText) {
             createDomElement({
                 type: 'H2',
+                /* @TODO: change classnames prefix */
                 classNames: ['ghwp-embed-placeholder__title'],
-                innerText: this.options.text.title,
+                innerText: titleText,
                 parent: placeholderContent,
             });
         }
@@ -92,25 +91,28 @@ export class GdprConsentPlaceholder extends Debuggable {
             parent: placeholderContent,
         });
 
-        if (this.type !== 'generic' && this.options.skipCheckbox !== true) {
+        if (
+            this.type !== 'generic' &&
+            !this.settings.isSkipCheckbox(this.type)
+        ) {
             this.checkbox = new GdprEmbedCheckbox(
                 placeholderContent,
-                this._getCheckboxLabel(),
-                this.options
+                this.type,
+                this.settings
             );
         }
 
         const buttonContainer = createDomElement({
-            classNames: [
-                'ghwp-embed-placeholder__buttons',
-            ],
+            /* @TODO: change classnames prefix */
+            classNames: ['ghwp-embed-placeholder__buttons'],
             parent: placeholderContent,
         });
 
-        if (this.options.modalOpenerButton) {
+        if (this.settings.hasModalOpenerButton(this.type)) {
             this.modalOpenerButton = createDomElement({
                 type: 'BUTTON',
                 classNames: [
+                    /* @TODO: change classnames prefix */
                     'ghwp-embed-placeholder__button',
                     'ghwp-embed-placeholder__button--secondary',
                     'button',
@@ -119,44 +121,31 @@ export class GdprConsentPlaceholder extends Debuggable {
                 attributes: {
                     type: 'button',
                 },
+                /* @TODO customization / i18n */
                 innerText: 'Mehr Informationen',
                 parent: buttonContainer,
             });
 
-            this.modalOpenerButton.addEventListener('click', this._showModalForService);
+            this.modalOpenerButton.addEventListener(
+                'click',
+                this._showModalForService
+            );
         }
 
         this.button = createDomElement({
             type: 'BUTTON',
             classNames: [
+                /* @TODO: change classnames prefix */
                 'ghwp-embed-placeholder__button',
                 'button',
                 'is-style-primary',
             ],
-            innerText: this._getButtonTextContent(),
+            innerText: this.settings.getButtonText(this.type),
             parent: buttonContainer,
             attributes: {
                 type: 'button',
             },
         });
-    }
-
-    _getButtonTextContent() {
-        return this._parsePlaceholdersIntoTemplateString(
-            this.options.text.button
-        );
-    }
-
-    _getCheckboxLabel() {
-        return this._parsePlaceholdersIntoTemplateString(
-            this.options.text.checkbox
-        );
-    }
-
-    _getPlaceholderTextContent() {
-        return this._parsePlaceholdersIntoTemplateString(
-            this.options.text.description
-        );
     }
 
     _onPlaceholderHidden() {
@@ -167,39 +156,8 @@ export class GdprConsentPlaceholder extends Debuggable {
         this.placeholder.remove();
     }
 
-    /**
-     * @param {string} template
-     */
-    _parsePlaceholdersIntoTemplateString(template) {
-        let parsed = '';
-
-        parsed = template.replace(
-            '%privacyPolicyUrl%',
-            this.options.privacyPolicyUrl
-        );
-
-        let privacyPolicySection = '';
-        if (this.options.providerPrivacyPolicySection !== '') {
-            privacyPolicySection = `#${this.options.providerPrivacyPolicySection}`;
-        }
-        parsed = parsed.replace('%privacyPolicySection%', privacyPolicySection);
-
-        parsed = parsed.replace(
-            '%checkboxContentProvider%',
-            this.options.checkboxProviderName
-        );
-
-        let customProviderName = '';
-        if (this.options.providerDisplayName !== '') {
-            customProviderName += ` ${this.options.providerDisplayName}`;
-        }
-        parsed = parsed.replace('%contentProvider%', customProviderName);
-
-        return parsed;
-    }
-
     _showModalForService(e) {
         e.preventDefault();
-        Usercentrics.showModalAtService(this.type, this.options.embeds);
+        this.consentManager.showSettingsAtService(this.type);
     }
 }

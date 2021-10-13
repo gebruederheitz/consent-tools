@@ -1,15 +1,17 @@
-import { AbstractGdprEmbed } from './abstract-gdpr-embed';
+import { AbstractEmbed } from './embed/abstract-embed.js';
 import { Modal } from './util/modal';
 
-export class ModalGdprManager extends AbstractGdprEmbed {
+export class ModalConsentManager extends AbstractEmbed {
     /**
      * @param {Element} container
-     * @param {object} userOptions
      * @param {ConsentManager} consentManager
+     * @param {string} serviceId
+     * @param {ConsentSettings} settings
      */
-    constructor(container, userOptions = {}, consentManager) {
-        super(container, userOptions, consentManager);
+    constructor(container, consentManager, serviceId, settings) {
+        super('ModalConsentManager', container, consentManager, settings);
 
+        this.serviceId = serviceId;
         this.onModalOpenerClicked = this.onModalOpenerClicked.bind(this);
         this.url = 'none';
     }
@@ -20,8 +22,8 @@ export class ModalGdprManager extends AbstractGdprEmbed {
         return this.modal.getContainer();
     }
 
-    getType(userOptions) {
-        return userOptions.consentType || 'generic';
+    getType() {
+        return this.serviceId || 'generic';
     }
 
     async listen() {
@@ -31,21 +33,23 @@ export class ModalGdprManager extends AbstractGdprEmbed {
     }
 
     loadEmbed(direct = false) {
-        this.debug.log('Modal: load embed', this.options);
+        this.debug.log('Modal: load embed', this.settings);
         super.loadEmbed(direct);
         this.modal.hide();
         if (direct) {
             this.debug.log(
-                'Direct load: checking whether to reload page or simulate a click event on the trigger',
-                this.options
+                'Direct load: checking whether to reload page or simulate a click event on the trigger'
             );
-            if (this.options.reloadOnConsent) {
+            if (this.settings.isReloadOnConsent(this.type)) {
                 window.history.go();
             }
-            if (this.options.clickOnConsent) {
+            if (this.settings.isClickOnConsent(this.type)) {
                 this.trigger.click();
             }
         }
+
+        this.modal.destroy();
+        this.trigger.removeEventListener('click', this.onModalOpenerClicked);
     }
 
     onModalOpenerClicked(e) {
@@ -54,5 +58,9 @@ export class ModalGdprManager extends AbstractGdprEmbed {
             e.stopImmediatePropagation();
             this.modal.show();
         }
+    }
+
+    unloadEmbed() {
+        super.unloadEmbed();
     }
 }

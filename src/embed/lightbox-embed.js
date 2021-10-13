@@ -1,11 +1,16 @@
-import { AbstractGdprEmbed } from './abstract-gdpr-embed';
+import { AbstractEmbed } from './abstract-embed.js';
 
-export class GdprLightboxEmbed extends AbstractGdprEmbed {
+export class LightboxEmbed extends AbstractEmbed {
     constructor(...args) {
-        super(...args);
+        super('LightboxEmbed', ...args);
 
-        /** @type {LightboxFactory} */
-        this.lightboxFactory = this.options.lightboxFactory;
+        /** @type {LightboxFactory|function|null} */
+        this.lightboxFactory = this.settings.getLightboxFactory();
+
+        if (!this.lightboxFactory) {
+            throw 'No lightbox factory supplied, can not create GDPR-compliant lightboxes.';
+        }
+
         this.lightbox = null;
 
         this.onPlaceholderClick = this.onPlaceholderClick.bind(this);
@@ -39,11 +44,9 @@ export class GdprLightboxEmbed extends AbstractGdprEmbed {
         if (
             direct &&
             !(this.checkbox && this.checkbox.isChecked()) &&
-            !this.options.skipCheckbox &&
-            this.options.ucTemplateId
+            !this.settings.isSkipCheckbox()
         ) {
-            window.uc?.deactivateBlocking &&
-                window.uc.deactivateBlocking([this.options.ucTemplateId]);
+            this.consentManager.usercentricsUnblock(this.type);
         }
 
         this.container.href = this.url;

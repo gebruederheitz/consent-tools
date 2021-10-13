@@ -1,4 +1,4 @@
-import { $$, createDomElement } from '@gebruederheitz/wp-frontend-utils';
+import { createDomElement } from '@gebruederheitz/wp-frontend-utils';
 
 export class Modal {
     /**
@@ -34,17 +34,20 @@ export class Modal {
         this.container = createDomElement({
             classNames: ['ghwp-modal__inner'],
             parent: this.root,
-            innerHtml: (content && content.outerHTML) || '',
+            innerHtml: typeof content === 'string' ? content : '',
         });
+
+        if (content && content.outerHTML) {
+            this.container.appendChild(content);
+        }
 
         document.body.appendChild(this.root);
         this._listen();
     }
 
     _clearContent() {
-        const children = $$(this.container)('*');
-        children &&
-            children.forEach((child) => {
+        this.container.children.length &&
+            this.container.children.forEach((child) => {
                 this.container.removeChild(child);
             });
     }
@@ -88,5 +91,9 @@ export class Modal {
         document.body.classList.remove('modal-active');
 
         window.removeEventListener('keydown', this._onKeyDown);
+    }
+
+    destroy() {
+        this.root.remove();
     }
 }

@@ -1,27 +1,30 @@
 import _merge from 'lodash-es/merge';
 import { $$, Debuggable } from '@gebruederheitz/wp-frontend-utils';
 
-import { ModalGdprManager } from './modal-gdpr-manager';
-import { DEFAULT_EMBED_OPTIONS } from './abstract-gdpr-embed';
+import { ModalConsentManager } from './modal-consent-manager.js';
 
 const DEFAULT_OPTIONS = {
     debug: false,
+    // @TODO: rename data attribute
     selector: '[data-ghwp-uc-service]',
     hasConsentClassName: 'has-consent',
-    embeds: DEFAULT_EMBED_OPTIONS.embeds,
-    reloadOnConsent: false,
-    clickOnConsent: false,
 };
 
+/**
+ * Show / hide elements based on user consent to a service
+ *   and/or trigger certain actions only with user consent.
+ */
 export class ElementsConsentManager extends Debuggable {
     /**
-     * @param {ConsentManager} consentManager
-     * @param {object}         userOptions
+     * @param {ConsentManager}  consentManager
+     * @param {ConsentSettings} settings
+     * @param {object}          userOptions
      */
-    constructor(consentManager, userOptions = {}) {
+    constructor(consentManager, settings, userOptions = {}) {
         super('ElementsConsentManager');
 
         this.consentManager = consentManager;
+        this.settings = settings;
         this.options = {};
         this.elements = [];
 
@@ -38,6 +41,7 @@ export class ElementsConsentManager extends Debuggable {
         if (!(this.elements && this.elements.length)) return;
 
         this.elements.forEach((element) => {
+            // @TODO: rename data attribute
             const serviceName = element.dataset?.ghwpUcService || null;
             this.debug.log('Initializing element with service', {
                 element,
@@ -50,21 +54,31 @@ export class ElementsConsentManager extends Debuggable {
                 .withConsent(serviceName, this.showElement, element)
                 .then();
 
+            // @TODO: rename data attribute
             if (element.dataset?.ghwpUcModal) {
-                const modalManager = new ModalGdprManager(
-                    element,
-                    {
-                        embeds: this.options.embeds,
-                        debug: this.options.debug,
-                        reloadOnConsent: this.options.reloadOnConsent,
-                        clickOnConsent: this.options.clickOnConsent,
-                        consentType: serviceName,
-                    },
-                    this.consentManager
-                );
-                modalManager.init();
+                this.consentManager
+                    .getServiceConsentStatus(serviceName)
+                    .then((hasConsent) => {
+                        this.debug.log(
+                            `Maybe init modal, service ${serviceName} has ${
+                                hasConsent ? '' : 'no'
+                            } consent.`
+                        );
+                        if (!hasConsent)
+                            this.initModalManager(element, serviceName);
+                    });
             }
         });
+    }
+
+    initModalManager(element, serviceName) {
+        const modalManager = new ModalConsentManager(
+            element,
+            this.consentManager,
+            serviceName,
+            this.settings
+        );
+        modalManager.init();
     }
 
     parseOptions(userOptions) {

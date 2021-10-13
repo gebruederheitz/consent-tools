@@ -1,14 +1,20 @@
 import { createDomElement } from '@gebruederheitz/wp-frontend-utils';
 
 export class GdprEmbedCheckbox {
-    constructor(parentElement, labelText, options) {
+    /**
+     * @param {Element}         parentElement   The element this checkbox will be attached to
+     * @param {string}          type            Analogous to serviceId
+     * @param {ConsentSettings} settings        A settings object.
+     */
+    constructor(parentElement, type, settings) {
         this.checkboxElement = null;
-        this.options = options;
+        this.settings = settings;
+        this.type = type;
 
-        this.createElements(parentElement, labelText);
+        this.createElements(parentElement);
     }
 
-    createElements(parentElement, labelText) {
+    createElements(parentElement) {
         const checkboxWrapper = createDomElement({
             classNames: ['form-check', 'form-check--small'],
             parent: parentElement,
@@ -23,13 +29,13 @@ export class GdprEmbedCheckbox {
             parent: checkboxWrapper,
         });
 
-        if (this.options.defaultLoadAll) {
+        if (this.settings.isDefaultLoadAll(this.type)) {
             this.checkboxElement.checked = true;
         }
 
         createDomElement({
             type: 'LABEL',
-            innerText: labelText,
+            innerText: this.settings.getCheckboxLabel(this.type),
             parent: checkboxWrapper,
         });
     }

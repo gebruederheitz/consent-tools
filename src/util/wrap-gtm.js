@@ -1,4 +1,4 @@
-import { EventEmitter2 } from 'eventemitter2';
+import EventEmitter from 'mitt';
 import { Debuggable } from '@gebruederheitz/wp-frontend-utils';
 
 export class WrappedGtmFactory extends Debuggable {
@@ -48,7 +48,7 @@ export class WrappedGtm extends Debuggable {
 
         this.onPush = this.onPush.bind(this);
 
-        this.eventProxy = new EventEmitter2();
+        this.eventProxy = EventEmitter();
         this.dataLayerClone = [];
         this.wrapDataLayer();
     }
@@ -93,3 +93,7 @@ export class WrappedGtm extends Debuggable {
         this.dataLayerClone = [...window.dataLayer];
     }
 }
+
+const debug = Debuggable.prototype.globalJsDebug;
+const gtmFactory = new WrappedGtmFactory(debug);
+export const gtm = gtmFactory.getWrappedGtm();

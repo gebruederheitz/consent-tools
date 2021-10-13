@@ -116,6 +116,7 @@ $max-width: none !default;
 
             &:hover {
                 $secondary-hover-color: darken($secondary-button-color, 10%);
+
                 background-color: $secondary-hover-color;
                 border-color: $secondary-hover-color;
                 color: #000;

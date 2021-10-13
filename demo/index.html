@@ -13,6 +13,7 @@
     <style>
         body {
             padding: 5vh 10vw;
+            background-color: rgba(0, 0, 0, 0.1);
         }
 
         h1 {
@@ -27,8 +28,26 @@
 
         .iframe-container {
             position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .element-consent-container {
+            margin-bottom: 2rem;
+            min-height: 5rem;
+            width: 100%;
+            background-color: hotpink;
+            display: none;
+        }
+
+        .element-consent-container.has-consent {
+            display: block;
+        }
+
+        .ghwp-embed-placeholder {
+            background-color: rgba(0, 0, 0, 0.1);
         }
     </style>
+
 </head>
 
 <body>
@@ -38,8 +57,14 @@
         <button type="button" data-ghwp-uc-service="Test Service" data-ghwp-uc-modal="true">Trigger Test Service</button>
     </div>
 
+    <div class="element-consent-container" data-ghwp-uc-service="Test Service"></div>
+
     <div class="iframe-container">
-        <iframe data-ghwp-src="/iframe" data-ghwp-uc-service="Test Service" height="500" frameborder="0"></iframe>
+        <iframe data-ghwp-src="/iframe" data-ghwp-type="Foobar" height="500" frameborder="0"></iframe>
+    </div>
+
+    <div class="button-container">
+        <a class="button" href="#modal-opener">Modal-Opener</a>
     </div>
 
     <script src="/demo-bundle.js"></script>

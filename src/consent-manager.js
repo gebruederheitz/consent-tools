@@ -1,189 +1,172 @@
 import _merge from 'lodash-es/merge';
 import { Debuggable } from '@gebruederheitz/wp-frontend-utils';
 
-import { WrappedGtm } from './util/wrap-gtm';
-
 const DEFAULT_OPTIONS = {
-    embeds: {
-        useUC: false,
-    },
     debug: false,
 };
 
+/**
+ * @class ConsentManager
+ *
+ * Acts as a thin layer around implementations of CmpServiceProvider and exposes
+ * a public API for consumers.
+ *
+ */
 export class ConsentManager extends Debuggable {
     /**
+     * @param {CmpServiceProvider} cmpService
      * @param {object} userOptions
-     * @param {WrappedGtm} gtm
-     * @param {EventEmitter2} eventProxy
      */
-    constructor(userOptions, gtm, eventProxy) {
+    constructor(cmpService, userOptions) {
         super('ConsentManager');
 
-        this.gtm = gtm;
-        this.eventProxy = eventProxy;
-        this.options = {};
-
-        this._parseOptions(userOptions);
+        this.cmpService = cmpService;
+        this.options = _merge(DEFAULT_OPTIONS, userOptions);
 
         this.withConsent = this.withConsent.bind(this);
     }
 
     /**
-     * @param {WrappedGtm} gtm
-     * @param {string} serviceName
+     * Signal to the CMP that the given service now has user consent.
      *
-     * @todo: move to uc class in new cmp interface along with the GTM instance
-     *        and the service- / cmp- specific parts of withConsent()
+     * @param {string} serviceId
      */
-    async getExistingUcConsentStatus(serviceName, gtm = null) {
-        if (!gtm) {
-            gtm = await this.gtm;
-        }
-
-        let relevantEvent = null;
-        let hasConsent = false;
-
-        const genericEvents = gtm.getEventData('consent_status');
-        const specificEvents = gtm.getEventData(
-            new RegExp(`${serviceName} .*`)
-        );
-
-        this.debug.log(`checking events for ${serviceName}`, {
-            genericEvents,
-            specificEvents,
-        });
-
-        if (specificEvents.length) {
-            relevantEvent = specificEvents.pop();
-        } else if (genericEvents.length) {
-            relevantEvent = genericEvents.pop();
-        }
-
-        if (relevantEvent) {
-            hasConsent = relevantEvent[serviceName] || false;
-        }
-
-        return hasConsent;
+    acceptService(serviceId) {
+        this.cmpService.acceptService(serviceId);
     }
 
     /**
-     * @return {EventEmitter2}
+     * Get the current status of the specified status. Returns `true` if the user
+     * has given their consent, `false` otherwise.
+     *
+     * @param {string} serviceName
+     * @return {Promise<boolean>}
      */
-    getEventProxy() {
-        return this.eventProxy;
+    async getServiceConsentStatus(serviceName) {
+        return await this.cmpService.getConsentStatusForService(serviceName);
     }
 
     /**
-     * @return {WrappedGtm}
+     * Open the CMP's settings menu / modal.
      */
-    getGtm() {
-        return this.gtm;
+    showSettings() {
+        this.cmpService.showSettingsMenu();
+    }
+
+    /**
+     * Open the CMP's settings menu (modal) at a specific service's description.
+     *
+     * @param {string} serviceId
+     */
+    showSettingsAtService(serviceId) {
+        this.cmpService.showSettingsMenuAtService(serviceId);
+    }
+
+    /**
+     * @deprecated
+     *
+     * @param {string} serviceId
+     */
+    usercentricsUnblock(serviceId) {
+        if (window.uc) {
+            const templateId =
+                window.uc?.localProviders?.find((e) => e.title === serviceId)[
+                    'pid'
+                ] || null;
+
+            if (templateId) {
+                window.uc.deactivateBlocking &&
+                    window.uc.deactivateBlocking([templateId]);
+            }
+        }
     }
 
     /**
      * Executes the given {callback} with {args} if and when there is user consent
-     * for service {serviceName}.
+     * for service {serviceId}.
      *
-     * @param {string} serviceName
-     * @param {function} callback
-     * @param args
+     * @param {string}   serviceId   Name of the service that requires consent
+     * @param {function} callback    A function to execute once consent is given
+     * @param {*}        args        Arguments to the callback
      *
      * @return {Promise<void>}
      */
-    async withConsent(serviceName, callback, ...args) {
+    async withConsent(serviceId, callback, ...args) {
         this.debug.log('Init with consent', {
             options: this.options,
-            serviceName,
+            serviceName: serviceId,
         });
-        if (this.options.embeds.useUC && serviceName) {
-            const gtm = await this.gtm;
-            if (gtm && gtm instanceof WrappedGtm) {
-                const hasConsent = await this.getExistingUcConsentStatus(
-                    serviceName,
-                    gtm
-                );
+        const hasConsent = await this.getServiceConsentStatus(serviceId);
 
-                this.debug.log(
-                    `UC mode: service ${serviceName} has consent:`,
-                    hasConsent
-                );
+        this.debug.log(`Service ${serviceId} has consent:`, hasConsent);
 
-                if (hasConsent) {
-                    return callback(...args);
-                } else {
-                    const onConsentUpdate = this._getOnConsentUpdate(
-                        serviceName,
-                        callback,
-                        ...args
-                    );
-                    gtm.subscribe('consent_status', onConsentUpdate);
-                    gtm.subscribe(`${serviceName}`, onConsentUpdate);
-                }
-            } else {
-                this.debug.error(
-                    'No GTM data layer found for consent management!'
-                );
-            }
+        if (hasConsent) {
+            return callback(...args);
         } else {
-            this.eventProxy.on(serviceName, () => {
-                callback(...args);
-            });
+            const onConsentUpdate = this._getOnConsentUpdate(
+                serviceId,
+                callback,
+                ...args
+            );
+
+            this.cmpService.onConsent(serviceId, onConsentUpdate);
         }
     }
 
-    async withConsentOrDenial(serviceName, callback, ...args) {
+    /**
+     * Executes the given {callback} with {args} if and when the user consent
+     * for service {serviceId} changes. The callback will receive the updated
+     * consent status as a boolean as its first argument.
+     *
+     * @param {string}   serviceId   Name of the service that requires consent
+     * @param {function} callback    A function to execute once consent is given
+     * @param {*}        args        Arguments to the callback
+     *
+     * @return {Promise<void>}
+     */
+    async withConsentOrDenial(serviceId, callback, ...args) {
         this.debug.log('Init with consent or denial', {
             options: this.options,
-            serviceName,
+            serviceId,
         });
 
-        if (this.options.embeds.useUC && serviceName) {
-            const gtm = await this.gtm;
-            if (gtm && gtm instanceof WrappedGtm) {
-                const hasConsent = await this.getExistingUcConsentStatus(
-                    serviceName,
-                    gtm
-                );
+        const hasConsent = await this.getServiceConsentStatus(serviceId);
 
-                this.debug.log(
-                    `UC mode: service ${serviceName} has consent:`,
-                    hasConsent
-                );
+        this.debug.log(`Service ${serviceId} has consent:`, hasConsent);
 
-                callback(hasConsent, ...args);
+        callback(hasConsent, ...args);
 
-                const onUpdate = this._getOnUpdate(serviceName, callback);
-                gtm.subscribe('consent_status', onUpdate);
-                gtm.subscribe(`${serviceName}`, onUpdate);
-            } else {
-                this.debug.error(
-                    'No GTM data layer found for consent management!'
-                );
-            }
-        } else {
-            this.eventProxy.on(serviceName, () => {
-                callback(true, ...args);
-            });
-        }
+        const onUpdate = this._getOnUpdate(serviceId, callback);
+        this.cmpService.onConsent(serviceId, onUpdate);
     }
 
+    /**
+     * @param {string}   serviceName
+     * @param {function} callback
+     * @param {*}        args
+     * @return {(function(boolean): void)|*}
+     * @private
+     */
     _getOnConsentUpdate(serviceName, callback, ...args) {
-        return (event) => {
-            if (event[serviceName]) {
+        return (hasConsent) => {
+            if (hasConsent) {
                 callback(...args);
             }
         };
     }
 
+    /**
+     * @param {string}   serviceName
+     * @param {function} callback
+     * @param {*}        args
+     * @return {(function(*): void)|*}
+     * @private
+     */
     _getOnUpdate(serviceName, callback, ...args) {
-        return (event) => {
-            this.debug.log('consent update!', { event, serviceName });
-            const hasConsent = !!event[serviceName];
+        return (hasConsent) => {
+            this.debug.log('consent update!', { hasConsent, serviceName });
+
             callback(hasConsent, ...args);
         };
-    }
-
-    _parseOptions(userOptions) {
-        this.options = _merge(DEFAULT_OPTIONS, userOptions);
     }
 }

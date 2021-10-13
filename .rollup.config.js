@@ -50,15 +50,17 @@ const babelConfig = (bundledHelpers = false) => ({
 });
 
 
-export default [
+const builds = [
     {
         external: [
             /@babel\/runtime/,
         ],
-        input: './src/index.js',
+        input: './src/index.mjs',
         output: {
             file: './dist/index.mjs',
             format: 'esm',
+            sourcemap: true,
+            inlineDynamicImports: true,
         },
         plugins: [
             resolve(),
@@ -67,12 +69,13 @@ export default [
         ],
     },
     {
-        input: 'src/index.js',
+        input: 'src/index.mjs',
         output: {
             file: 'dist/bundle.js',
-            format: 'iife',
+            format: 'umd',
             inlineDynamicImports: true,
             name: 'ghconsent',
+            sourcemap: true,
         },
         plugins: [
             resolve({
@@ -101,13 +104,17 @@ export default [
             }),
         ],
     },
-    !production && {
+];
+
+if (!production) {
+    builds.push({
         input: 'test/test-implementation.js',
         output: {
             file: 'demo/demo-bundle.js',
             format: 'iife',
             inlineDynamicImports: true,
             name: 'ghconsentdemo',
+            sourcemap: true,
         },
         plugins: [
             resolve({
@@ -118,15 +125,21 @@ export default [
 
             // In dev mode, call `npm run start` once
             // the bundle has been generated
-            !production && serve(),
+            serve(),
 
             // Watch the `demo` directory and refresh the
             // browser on changes when not in production
-            !production && livereload(['./demo/', './dist/']),
+            // !production && livereload(['./demo/', './dist/']),
+            livereload({
+                watch: './demo/',
+                exclusions: ['build/']
+            }),
         ],
         context: 'window',
         watch: {
             clearScreen: false,
         },
-    },
-];
+    });
+}
+
+export default builds;

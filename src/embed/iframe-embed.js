@@ -1,10 +1,10 @@
 import { createDomElement } from '@gebruederheitz/wp-frontend-utils';
 
-import { AbstractGdprEmbed } from './abstract-gdpr-embed';
+import { AbstractEmbed } from './abstract-embed.js';
 
-export class GdprIframeEmbed extends AbstractGdprEmbed {
+export class IframeEmbed extends AbstractEmbed {
     constructor(...args) {
-        super(...args);
+        super('IframeEmbed', ...args);
 
         this.iframe = null;
 
@@ -28,6 +28,7 @@ export class GdprIframeEmbed extends AbstractGdprEmbed {
 
         return createDomElement({
             type: 'IFRAME',
+            /* @TODO: change classnames prefix */
             classNames: ['ghwp-embed-frame'],
             parent: this.container,
             attributes: {
@@ -37,8 +38,8 @@ export class GdprIframeEmbed extends AbstractGdprEmbed {
         });
     }
 
-    loadEmbed() {
-        super.loadEmbed();
+    loadEmbed(direct = false) {
+        super.loadEmbed(direct);
         this.debug.log('load embed for iframe', {
             container: this.container,
             match: this.container.matches('iframe'),

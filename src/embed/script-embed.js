@@ -1,13 +1,21 @@
 import { createDomElement, $, $$ } from '@gebruederheitz/wp-frontend-utils';
 
-import { AbstractGdprEmbed } from './abstract-gdpr-embed';
+import { AbstractEmbed } from './abstract-embed.js';
 
 // 1s should be enough to allow the race result base script to init
 const POST_LOAD_TIMEOUT = 2000;
 
-export class GdprScriptEmbed extends AbstractGdprEmbed {
+/**
+ * @deprecated: This was written specifically for one single service and requires
+ * a major overhaul to be of any use whatsoever.
+ */
+export class ScriptEmbed extends AbstractEmbed {
+    /**
+     * @deprecated: might change without warning. do not use.
+     * @param args
+     */
     constructor(...args) {
-        super(...args);
+        super('ScriptEmbed', ...args);
 
         this.script = this.container;
 
@@ -16,6 +24,7 @@ export class GdprScriptEmbed extends AbstractGdprEmbed {
 
         if (!this.container) {
             this.container = createDomElement({
+                // @TODO: replace classnames
                 classNames: ['ghwp-placeholder-container'],
             });
             this.script.parentElement.insertBefore(this.container, this.script);
@@ -38,6 +47,7 @@ export class GdprScriptEmbed extends AbstractGdprEmbed {
     loadRaceResult() {
         this.debug.log('Loading inline scripts...');
 
+        /* @TODO: change data attribute prefixes */
         const inlineScripts = $$()('[data-ghwp-type="raceresult"]:not([src])');
         inlineScripts.forEach((scriptElement) => {
             createDomElement({

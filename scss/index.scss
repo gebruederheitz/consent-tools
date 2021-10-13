@@ -1,9 +1,9 @@
 // A "default theme" stylesheet with all the modules in default styling.
 @use "lib/variable-defaults" as defaults;
 
-/*------------------------------------------------------------------------------
+/* -----------------------------------------------------------------------------
 |    Embed Placeholder
-------------------------------------------------------------------------------*/
+----------------------------------------------------------------------------- */
 $button-color: defaults.$button-color !default;
 $secondary-button-color: defaults.$secondary-button-color !default;
 $max-width: defaults.$max-width !default;
@@ -14,9 +14,9 @@ $max-width: defaults.$max-width !default;
     $max-width: $max-width,
 );
 
-/*------------------------------------------------------------------------------
+/* -----------------------------------------------------------------------------
 |    Modal
-------------------------------------------------------------------------------*/
+----------------------------------------------------------------------------- */
 $modal-bg: defaults.$modal-bg !default;
 $modal-fg: defaults.$modal-fg !default;
 $modal-content-padding: defaults.$modal-content-padding !default;
