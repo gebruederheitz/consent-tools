@@ -1,5 +1,5 @@
 {
-    "name": "gdpr-embeds-haufe-de",
+    "name": "@gebruederheitz/consent-tools",
     "version": "1.0.0",
     "description": "Extended pluggable tooling for consent management services.",
     "main": "dist/index.mjs",
