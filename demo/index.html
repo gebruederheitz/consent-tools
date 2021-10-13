@@ -54,13 +54,14 @@
     <h1 class="demo">Consent Tools Test Page</h1>
 
     <div class="button-container">
+        <button type="button" data-ghwp-uc-service="Foobar" data-ghwp-uc-modal="true">Trigger Foobar Service</button>
         <button type="button" data-ghwp-uc-service="Test Service" data-ghwp-uc-modal="true">Trigger Test Service</button>
     </div>
 
-    <div class="element-consent-container" data-ghwp-uc-service="Test Service"></div>
+    <div class="element-consent-container" data-ghwp-uc-service="Foobar"></div>
 
     <div class="iframe-container">
-        <iframe data-ghwp-src="/iframe" data-ghwp-type="Foobar" height="500" frameborder="0"></iframe>
+        <iframe data-ghwp-src="/iframe" data-ghwp-type="Test Service" height="500" frameborder="0"></iframe>
     </div>
 
     <div class="button-container">

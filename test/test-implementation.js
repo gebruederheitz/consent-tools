@@ -16,25 +16,22 @@ import {
 toggleDebugOutput(true);
 
 whenDomReady().then(async () => {
-    document.querySelector('#eloqua-button').addEventListener('click', () => {
-        console.log('blargo eloqua!');
-    });
-
     const types = {
-        Econda: {
-            prettyName: 'Test Service',
-            checkboxProviderName: 'Salesforce Live Agent',
-            // skipCheckbox: true,
-            // modalOpenerButton: true,
-            titleText: 'Bitte stimmen sie der Nutzung des Test Service zu!',
+        Foobar: {
+            servicePrettyName: 'Foobar Analytics Ltd.',
+            titleText: 'Bitte stimmen sie der Nutzung des Service Foobar zu!',
+            modalOpenerButton: true,
+            skipCheckbox: true,
+            // defaultLoadAll: false,
         },
     };
 
     const settings = new ConsentSettings(
         {
             description:
-                'Um diesen Inhalt anzuzeigen, müssen Sie ihn durch Klick auf den Button aktivieren. Dadurch werden Informationen an den Diensteanbieter übermittelt und dort gespeichert. Mehr Informationen finden in der <a href="%privacyPolicyUrl%%privacyPolicySection%">Datenschutzerklärung</a>',
+                'Um diesen Inhalt anzuzeigen, müssen Sie ihn durch Klick auf den Button aktivieren. Dadurch werden Informationen an den Diensteanbieter %servicePrettyName% übermittelt und dort gespeichert. Mehr Informationen finden in der <a href="%privacyPolicyUrl%%privacyPolicySection%">Datenschutzerklärung</a>.',
             privacyPolicyUrl: '/privacy',
+            titleText: 'Wir brauchen ihre Zustimmung!',
         },
         types
     );
@@ -54,11 +51,13 @@ whenDomReady().then(async () => {
         console.log('User has given their consent for this service!');
     }
 
-    consentManager.withConsent('Econda', onConsentForService).then();
+    consentManager.withConsent('Foobar', onConsentForService).then();
 
+    window.__debug = window.__debug || {};
     window.__debug = {
+        ...window.__debug,
         cmpService,
         consentManager,
-        settings: new ConsentSettings({ debug: true, nonsense: 'haxxorz' }),
+        settings,
     };
 });
