@@ -63,6 +63,11 @@ export class AbstractEmbed extends Debuggable {
     onInit() {}
 
     /**
+     * @protected
+     */
+    onBeforeInit() {}
+
+    /**
      * @abstract
      * @public
      */
@@ -75,6 +80,7 @@ export class AbstractEmbed extends Debuggable {
      * @return {?AbstractEmbed}
      */
     init() {
+        this.onBeforeInit();
         if (!this.container || !this.url) return null;
         this.placeholder = this.createPlaceholder();
         this.attachPlaceholder();
@@ -92,6 +98,7 @@ export class AbstractEmbed extends Debuggable {
         return new GdprConsentPlaceholder(
             this.type,
             this.getPlaceholderClassNames(),
+            this.consentManager,
             this.settings
         );
     }
@@ -143,13 +150,19 @@ export class AbstractEmbed extends Debuggable {
         e.preventDefault();
         e.stopImmediatePropagation();
         this.placeholder.setBusy();
-        if (
-            this.settings.isSkipCheckbox(this.type) ||
-            this.placeholder.isCheckboxChecked()
-        ) {
+
+        if (this._shouldLoadAll()) {
             this.loadAll();
         } else {
             this.loadEmbed(true);
         }
+    }
+
+    _shouldLoadAll() {
+        const skipWithLoadAll =
+            this.settings.isSkipCheckbox(this.type) &&
+            this.settings.isDefaultLoadAll(this.type);
+
+        return skipWithLoadAll || this.placeholder.isCheckboxChecked();
     }
 }

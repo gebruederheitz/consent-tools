@@ -32,6 +32,7 @@ export class ConsentManager extends Debuggable {
      * @param {string} serviceId
      */
     acceptService(serviceId) {
+        this.debug.log('Accept service', serviceId);
         this.cmpService.acceptService(serviceId);
     }
 

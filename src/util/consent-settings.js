@@ -174,7 +174,7 @@ export class ConsentSettings {
      */
     getDescription(serviceId = 'default') {
         const template = this._get('description', serviceId);
-        const servicePrettyName = this._get('servicePrettyName', serviceId);
+        const servicePrettyName = this.getPrettyName(serviceId);
 
         return this._parsePlaceholdersIntoTemplateString(
             template,
@@ -185,6 +185,19 @@ export class ConsentSettings {
 
     getLightboxFactory() {
         return this.lightboxFactory;
+    }
+
+    getPrettyName(serviceId = 'default') {
+        let servicePrettyName = this._get('servicePrettyName', serviceId);
+        if (
+            !servicePrettyName &&
+            serviceId !== 'default' &&
+            serviceId !== 'generic'
+        ) {
+            servicePrettyName = serviceId;
+        }
+
+        return servicePrettyName;
     }
 
     /**

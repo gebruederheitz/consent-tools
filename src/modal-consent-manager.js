@@ -16,6 +16,10 @@ export class ModalConsentManager extends AbstractEmbed {
         this.url = 'none';
     }
 
+    onBeforeInit() {
+        this.type = this.serviceId;
+    }
+
     getContainer(container) {
         this.trigger = container;
         this.modal = new Modal();
@@ -23,7 +27,7 @@ export class ModalConsentManager extends AbstractEmbed {
     }
 
     getType() {
-        return this.serviceId || 'generic';
+        return this.serviceId || 'modal';
     }
 
     async listen() {

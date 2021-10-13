@@ -9,9 +9,10 @@ export class GdprConsentPlaceholder extends Debuggable {
     /**
      * @param {string}          type
      * @param {string[]}        classnames
+     * @param {ConsentManager}  consentManager
      * @param {ConsentSettings} settings
      */
-    constructor(type = 'generic', classnames, settings) {
+    constructor(type = 'generic', classnames, consentManager, settings) {
         super('GdprConsentPlaceholder');
 
         this.placeholder = null;
@@ -19,6 +20,7 @@ export class GdprConsentPlaceholder extends Debuggable {
         this.modalOpenerButton = null;
         this.type = type;
         this.classnames = classnames;
+        this.consentManager = consentManager;
         this.settings = settings;
         this.options = {
             debug: settings.isDebug(),

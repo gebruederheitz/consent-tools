@@ -36,9 +36,11 @@ export class GenericLocalStorageProvider extends AbstractCmpServiceProvider {
     }
 
     async getConsentStatusForService(serviceId) {
-        return this.localStorage.get('consents', { [serviceId]: false })[
-            serviceId
-        ];
+        return (
+            this.localStorage.get('consents', { [serviceId]: false })[
+                serviceId
+            ] || false
+        );
     }
 
     isPresent() {
@@ -102,7 +104,7 @@ export class GenericLocalStorageProvider extends AbstractCmpServiceProvider {
             createDomElement({
                 type: 'P',
                 innerText:
-                    'You can find more information about these services, why they are being used and how they process your data on the privacy policy page.',
+                    'You can find more information about these services, why they are being used and how they process your data on the privacy policy page. To revoke your consent, please restart your browser.',
                 parent: wrapper,
             });
         } else {
