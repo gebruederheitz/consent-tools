@@ -168,7 +168,7 @@ implementation.
 
 ### To do
 
- - [ ] Extend documentation
+ - [ ] Extend documentation (usage, development)
  - [ ] Migrate default styles for all modules
  - [x] Make all modules use ConsentManager consistently
  - [x] Create interface for CMP services

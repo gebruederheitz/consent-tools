@@ -1,6 +1,6 @@
 {
     "name": "gdpr-embeds-haufe-de",
-    "version": "0.0.3",
+    "version": "1.0.0",
     "description": "Extended pluggable tooling for consent management services.",
     "main": "dist/index.mjs",
     "module": "dist/index.mjs",
