@@ -1,0 +1,16 @@
+demo/
+.github/
+test/
+
+.babelrc
+.editorconfig
+.eslintignore
+.eslintrc
+.gitignore
+.postcssrc
+.prettierrc
+.rollup.config.js
+.stylelintrc
+.yarnrc.yml
+Gulpfile*
+yarn-error.log
