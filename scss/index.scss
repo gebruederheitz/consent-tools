@@ -42,3 +42,5 @@ $modal-width: defaults.$modal-width !default;
     $modal-height: $modal-height,
     $modal-width: $modal-width,
 );
+
+@use "module/generic-localstorage-settings";

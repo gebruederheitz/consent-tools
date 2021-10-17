@@ -3,6 +3,7 @@ import EventEmitter from 'mitt';
 import { createDomElement } from '@gebruederheitz/wp-frontend-utils';
 import { Modal } from '../../util/modal.js';
 import { AbstractCmpServiceProvider } from '../abstract-provider.js';
+import _merge from 'lodash-es/merge';
 
 /**
  * A generic provider that stores consent information in session storage, so
@@ -14,11 +15,12 @@ import { AbstractCmpServiceProvider } from '../abstract-provider.js';
  * @implements CmpServiceProvider
  */
 export class GenericLocalStorageProvider extends AbstractCmpServiceProvider {
-    constructor({ isFallbackProvider = false } = {}) {
+    constructor({ isFallbackProvider = false, types = {} } = {}) {
         super('GenericLocalStorageProvider CmpService');
         this.localStorage = storage.namespace('gh-consent-tools').session;
         this.eventProxy = EventEmitter();
         this.isFallbackProvider = isFallbackProvider;
+        this.types = types;
         this.modal = null;
 
         this._onHideModal = this._onHideModal.bind(this);
@@ -73,7 +75,10 @@ export class GenericLocalStorageProvider extends AbstractCmpServiceProvider {
      * @private
      */
     _getModalContent() {
-        const wrapper = createDomElement({});
+        const wrapper = createDomElement({
+            classNames: ['ghct-ls-provider-modal'],
+        });
+
         createDomElement({
             type: 'P',
             innerText: this.isFallbackProvider
@@ -82,9 +87,9 @@ export class GenericLocalStorageProvider extends AbstractCmpServiceProvider {
             parent: wrapper,
         });
 
-        const servicesConsented = this.localStorage.get('consents', {});
-        const serviceList = Object.keys(servicesConsented);
-        if (serviceList.length) {
+        const services = this._getServices();
+
+        if (services.length) {
             createDomElement({
                 type: 'P',
                 innerText:
@@ -92,13 +97,59 @@ export class GenericLocalStorageProvider extends AbstractCmpServiceProvider {
                 parent: wrapper,
             });
 
-            const ul = createDomElement({ type: 'UL', parent: wrapper });
-            serviceList.forEach((serviceName) => {
-                createDomElement({
+            const ul = createDomElement({
+                type: 'UL',
+                parent: wrapper,
+                classNames: ['ghct-services'],
+            });
+
+            services.forEach((serviceDefinition) => {
+                const li = createDomElement({
                     type: 'LI',
+                    classNames: ['ghct-service'],
                     parent: ul,
-                    innerText: serviceName,
                 });
+
+                const textWrap = createDomElement({
+                    classNames: ['ghct-service__text'],
+                    parent: li,
+                });
+
+                createDomElement({
+                    classNames: ['ghct-service__name'],
+                    parent: textWrap,
+                    innerText: serviceDefinition.name,
+                });
+
+                const inputWrap = createDomElement({
+                    classNames: ['ghct-service__switch'],
+                    parent: li,
+                });
+
+                const inputAttributes = {
+                    type: 'checkbox',
+                    name: serviceDefinition.name,
+                };
+                if (serviceDefinition.hasConsent) {
+                    inputAttributes.checked = true;
+                }
+                if (serviceDefinition.isEssential) {
+                    inputAttributes.disabled = true;
+                }
+
+                createDomElement({
+                    type: 'INPUT',
+                    attributes: inputAttributes,
+                    parent: inputWrap,
+                });
+
+                if (serviceDefinition.description) {
+                    createDomElement({
+                        classNames: ['ghct-service__description'],
+                        innerText: serviceDefinition.description,
+                        parent: textWrap,
+                    });
+                }
             });
 
             createDomElement({
@@ -120,13 +171,40 @@ export class GenericLocalStorageProvider extends AbstractCmpServiceProvider {
             parent: wrapper,
             type: 'BUTTON',
             attributes: { type: 'button' },
-            classNames: ['btn', 'button'],
+            classNames: ['btn', 'button', 'ghwp-embed-placeholder__button'],
             innerText: 'Got it.',
         });
 
         button.addEventListener('click', this._onHideModal);
 
         return wrapper;
+    }
+
+    /**
+     *
+     * @return {{}[]}
+     * @private
+     */
+    _getServices() {
+        let output = [];
+        let types = _merge({}, this.types);
+
+        const servicesConsented = this.localStorage.get('consents', {});
+
+        Object.keys(types).forEach((serviceName) => {
+            output.push({
+                ...types[serviceName],
+                name:
+                    (types[serviceName] &&
+                        types[serviceName].servicePrettyName) ||
+                    serviceName,
+                hasConsent: servicesConsented[serviceName] === true,
+            });
+        });
+
+        this.debug.log(output);
+
+        return output;
     }
 
     _onHideModal() {

@@ -1,5 +1,6 @@
 @use 'sass:color';
-@use "../lib/variable-defaults" as defaults;
+@use '../lib/button';
+@use '../lib/variable-defaults' as defaults;
 
 $button-color: defaults.$button-color !default;
 $button-text-color: defaults.$button-text-color !default;
@@ -80,51 +81,7 @@ $font-size: defaults.$font-size !default;
     }
 
     &__button {
-        /* unstyle button */
-        background: transparent;
-        background-clip: padding-box;
-        line-height: normal;
-        text-align: left;
-        text-decoration: none;
-        text-shadow: none;
-        white-space: nowrap;
-
-        /* actual button styles */
-        background-color: $button-color;
-        border: 1px solid $button-color;
-        border-radius: 6px;
-        color: $button-text-color;
-        cursor: pointer;
-        margin-top: 1rem;
-        padding: 1rem 1.6rem;
-        transition: all 200ms ease;
-
-        &:not(:first-child) {
-            margin-left: .5rem;
-        }
-
-        &:not(:last-child) {
-            margin-right: .5rem;
-        }
-
-        &:hover {
-            background-color: $button-hover-color;
-            color: $button-hover-text-color;
-        }
-
-        &--secondary {
-            background-color: $secondary-button-color;
-            border: 1px solid $secondary-button-color;
-            color: #000;
-
-            &:hover {
-                $secondary-hover-color: darken($secondary-button-color, 10%);
-
-                background-color: $secondary-hover-color;
-                border-color: $secondary-hover-color;
-                color: #000;
-            }
-        }
+        @include button.button;
     }
 
     &--lightbox {
