@@ -9,6 +9,7 @@ export { ModalConsentManager } from './modal-consent-manager.js';
 export { UsercentricsProvider } from './cmp/provider/usercentrics-provider.js';
 export { GenericLocalStorageProvider } from './cmp/provider/generic-localstorage-provider.js';
 export { GenericEventProvider } from './cmp/provider/generic-event-provider.js';
+export { AbstractCmpServiceProvider } from './cmp/abstract-provider.js';
 export { CmpServiceProvider as CmpServiceProviderInterface } from './cmp/interface.js';
 
 export { ConsentSettings } from './util/consent-settings.js';

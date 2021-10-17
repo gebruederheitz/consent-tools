@@ -17,7 +17,7 @@ export class ConsentManager extends Debuggable {
      * @param {CmpServiceProvider} cmpService
      * @param {object} userOptions
      */
-    constructor(cmpService, userOptions) {
+    constructor(cmpService, userOptions = {}) {
         super('ConsentManager');
 
         this.cmpService = cmpService;

@@ -23,6 +23,7 @@ export class UsercentricsProvider extends AbstractCmpServiceProvider {
      * @param {number}             options.loadDelayLimit            Time in ms to wait for the service (Usercentrics)
      *                                                               before falling back to the fallbackServiceProvider
      *                                                               (default 2000).
+     * @return {Promise<CmpServiceProvider>}
      */
     constructor(options = {}) {
         super('Usercentrics CmpService');
@@ -32,8 +33,13 @@ export class UsercentricsProvider extends AbstractCmpServiceProvider {
 
         window.dataLayer = window.dataLayer || [];
         this.gtm = gtm;
+
+        return this.init();
     }
 
+    /**
+     * @return {Promise<CmpServiceProvider>}
+     */
     async init() {
         let cmpServiceProvider = this;
 
