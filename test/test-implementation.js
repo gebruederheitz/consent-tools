@@ -38,7 +38,7 @@ whenDomReady().then(async () => {
 
     const cmpService = await new UsercentricsProvider({
         fallbackServiceProvider: GenericLocalStorageProvider,
-    }).init();
+    });
     cmpService.attachSettingsOpener('[href="#modal-opener"]');
 
     const consentManager = new ConsentManager(cmpService);

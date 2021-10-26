@@ -8,7 +8,11 @@
 
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="stylesheet" href="/build/css/index.css" />
-    <script src="/build/bundle.js"></script>
+
+    <script>
+        // switch to skip the consent manager
+        // window.ghctEmbedsAllowed = true;
+    </script>
 
     <style>
         body {
@@ -51,23 +55,47 @@
 </head>
 
 <body>
+    <div class="ghct-placeholder-container"></div>
     <h1 class="demo">Consent Tools Test Page</h1>
 
+    <!-- Buttons that will trigger Modals or services, depending on consent status -->
     <div class="button-container">
         <button type="button" data-ghct-service="Foobar" data-ghct-modal="true">Trigger Foobar Service</button>
         <button type="button" data-ghct-service="Test Service" data-ghct-modal="true">Trigger Test Service</button>
     </div>
 
+    <!-- An element that's only shown with consent a specific service -->
     <div class="element-consent-container" data-ghct-service="Foobar"></div>
 
+    <!-- An iframe embedded depending on user consent -->
     <div class="iframe-container">
         <iframe data-ghct-src="/iframe" data-ghct-type="Test Service" height="500" frameborder="0"></iframe>
     </div>
 
+    <!-- The settings opener to administer the CMP -->
     <div class="button-container">
         <a class="button" href="#modal-opener">Modal-Opener</a>
     </div>
 
+    <!-- The actual consent-tools bundle -->
     <script src="/demo-bundle.js"></script>
+
+    <!-- Inline script with consent management -->
+    <script type="text/plain" data-ghct-type="Foobar">
+        window.alert('Foobar!');
+    </script>
+
+    <!-- Remote script -->
+    <script
+        data-ghct-src="https://elq-forms.ghdev.de/eloqua-common.js"
+        data-ghct-type="Eloqua"
+    ></script>
+
+    <!-- Remote script with placeholder -->
+    <script
+        data-ghct-src="https://elq-forms.ghdev.de/eloqua-video.js"
+        data-ghct-type="Eloqua"
+        data-ghct-placeholder="true"
+    ></script>
 </body>
 </html>

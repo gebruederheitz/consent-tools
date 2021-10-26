@@ -21,6 +21,8 @@ import {
     EmbedFactory,
     LightboxEmbed,
     IframeEmbed,
+    ScriptEmbed,
+    InlineScriptEmbed,
 
     ConsentManager,
     ElementsConsentManager,
@@ -99,11 +101,155 @@ when consent is given, or show a modal asking for consent otherwise:
 
 #### Embed Factory
 
+The EmbedFactory will parse the DOM looking for elements that qualify for one
+of the embed types (below) and initialize each accordingly.
+
+The instantiated embed objects will hook onto the ConsentManager and
+automatically load their content once user consent is given through the
+CMPServiceProvider used.
+
+Vice versa the embed objects will show a placeholder element instead of their
+content while no consent is given. This placeholder gives the user feedback
+about why content is not being displayed and a chance to directly give their
+consent to the affected service.
+
+The factory must be passed an instance of `ConsentManager` and an instance of
+`ConsentSettings` in its constructor.
+
+Through the third constructor parameter you can pass a custom selector used
+to find qualifying DOM elements:
+
+```js
+new EmbedFactory(
+    consentManager,
+    settings,
+    {
+        selector: '[data-ghct-src], [data-ghct-type]',
+    }
+)
+```
+
+This will only change which elements will enter the factory's type triage in the
+first place, not how the appropriate embed class is selected. For information
+on which elements will be assigned which class, see the descriptions of the
+individual classes below.
+
+As a fallback and for development & testing purposes, the factory has a way to
+skip the consent manager and load all embeds on page:
+
+```js
+if (window.ghctEmbedsAllowed) {
+    window.ghctEmbedsAllowed();
+} else {
+    window.ghctEmbedsAllowed = true;
+}
+```
+
+```html
+<script>
+    window.ghctEmbedsAllowed = true;
+</script>
+<script src="/consent-tools-bundle.js"></script>
+```
+
+
+##### Usage without the factory
+
+You don't have to use the factory; you can also take care of the instantiation
+of the embed objects yourself.
+Each of the embed classes expects the following constructor arguments:
+ - container: A DOM element, usually decorated with certain data-attributes
+ - consentManager: An instance of ConsentManager
+ - settings: An instance of ConsentSettings, containing information about
+   services, placeholder content etc.
+
+After creating your instance, you will have to call the `init()` method.
+
+```js
+// Example
+import {
+    ConsentManager,
+    ConsentSettings,
+    IframeEmbed,
+    GenericLocalStorageProvider,
+
+} from '@gebruederheitz/consent-tools';
+
+// Basic setup
+const settings = new ConsentSettings();
+const cmpService = new GenericLocalStorageProvider();
+const cm = new ConsentManager(cmpService);
+
+const container = document.querySelector('#my-iframe');
+const embed = new IframeEmbed(container, cm, settings);
+```
+
+
 ##### Iframe Embed
 
 ##### Lightbox Embed
 
-##### ~~Script Embed~~
+##### Remote Script Embed
+
+Manages execution of remote script elements based on user consent.
+
+```html
+<!-- BEFORE -->
+<script src="https://example.com/script.js"></script>
+
+<!-- AFTER -->
+<script
+    data-ghct-src="https://example.com/script.js"
+    data-ghct-type="Foobar Analytics"
+></script>
+```
+
+The factory will initialize any `<script>` element with a `data-ghct-src`
+attribute as a consent-driven remote embed.
+You can optionally have a placeholder element rendered somewhere, that will
+allow your users to consent to the given service:
+
+```html
+<!-- With a custom container element for the placeholder -->
+<div class="ghct-placeholder-container"></div>
+
+<!-- ... -->
+
+<script
+    data-ghct-src="https://example.com/script.js"
+    data-ghct-type="Foobar Analytics"
+    data-ghct-placeholder=".ghct-placeholder-container"
+></script>
+```
+```html
+<!-- With an auto-generated container element for the placeholder right above the script element -->
+<script
+    data-ghct-src="https://example.com/script.js"
+    data-ghct-type="Foobar Analytics"
+    data-ghct-placeholder="true"
+></script>
+```
+
+##### Inline Script Embed
+
+Manages execution of inline script elements based on user consent.
+
+```html
+<!-- BEFORE -->
+<script type="application/javascript">
+    window.alert('Surprise!');
+</script>
+
+<!-- AFTER -->
+<script type="text/plain" data-ghct-type="Foobar Analytics">
+    window.alert('Only with Consent!');
+</script>
+```
+
+The factory will initialize any `<script>` element with a `data-ghct-type`
+attribute and without a `src` as a consent-driven inline script element. By
+specifying the type as `text/plain` you make sure the browser won't automatically
+execute the script.
 
 #### Elements Consent Manager
 

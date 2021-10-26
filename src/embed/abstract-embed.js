@@ -90,7 +90,7 @@ export class AbstractEmbed extends Debuggable {
     }
 
     attachPlaceholder() {
-        this.placeholder.attach(this.container);
+        this.placeholder && this.placeholder.attach(this.container);
     }
 
     createPlaceholder() {
@@ -117,12 +117,15 @@ export class AbstractEmbed extends Debuggable {
     }
 
     hideAndRemovePlaceholder() {
-        this.placeholder.hideAndRemove();
+        this.placeholder && this.placeholder.hideAndRemove();
     }
 
     async listen() {
         /* Listen for the integrated button in the placeholder */
-        this.placeholder.onButtonClick(this.onEmbedPlaceholderButtonClicked);
+        this.placeholder &&
+            this.placeholder.onButtonClick(
+                this.onEmbedPlaceholderButtonClicked
+            );
         await this.consentManager.withConsentOrDenial(
             this.type,
             this.onConsentChanged

@@ -1,6 +1,8 @@
 export { EmbedFactory } from './embed/factory.js';
 export { LightboxEmbed } from './embed/lightbox-embed.js';
 export { IframeEmbed } from './embed/iframe-embed.js';
+export { ScriptEmbed } from './embed/script-embed.js';
+export { InlineScriptEmbed } from './embed/inline-script-embed.js';
 
 export { ConsentManager } from './consent-manager';
 export { ElementsConsentManager } from './elements-consent-manager';
