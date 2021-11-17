@@ -40,7 +40,7 @@ whenDomReady().then(async () => {
     });
     cmpService.attachSettingsOpener('[href="#modal-opener"]');
 
-    const consentManager = new ConsentManager(cmpService);
+    const consentManager = new ConsentManager(cmpService, settings);
 
     new ElementsConsentManager(consentManager, settings);
 

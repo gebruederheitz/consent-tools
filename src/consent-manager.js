@@ -15,12 +15,14 @@ const DEFAULT_OPTIONS = {
 export class ConsentManager extends Debuggable {
     /**
      * @param {CmpServiceProvider} cmpService
+     * @param {ConsentSettings} consentSettings
      * @param {object} userOptions
      */
-    constructor(cmpService, userOptions = {}) {
+    constructor(cmpService, consentSettings, userOptions = {}) {
         super('ConsentManager');
 
         this.cmpService = cmpService;
+        this.settings = consentSettings;
         this.options = _merge(DEFAULT_OPTIONS, userOptions);
 
         this.withConsent = this.withConsent.bind(this);
@@ -33,7 +35,9 @@ export class ConsentManager extends Debuggable {
      */
     acceptService(serviceId) {
         this.debug.log('Accept service', serviceId);
-        this.cmpService.acceptService(serviceId);
+        const cmpServiceId = this.settings.getCmpServiceId(serviceId);
+        this.debug.log('Accepting service with CMP service Id', cmpServiceId);
+        this.cmpService.acceptService(cmpServiceId);
     }
 
     /**
@@ -44,7 +48,8 @@ export class ConsentManager extends Debuggable {
      * @return {Promise<boolean>}
      */
     async getServiceConsentStatus(serviceId) {
-        return await this.cmpService.getConsentStatusForService(serviceId);
+        const cmpServiceId = this.settings.getCmpServiceId(serviceId);
+        return await this.cmpService.getConsentStatusForService(cmpServiceId);
     }
 
     /**
@@ -60,7 +65,8 @@ export class ConsentManager extends Debuggable {
      * @param {string} serviceId
      */
     showSettingsAtService(serviceId) {
-        this.cmpService.showSettingsMenuAtService(serviceId);
+        const cmpServiceId = this.settings.getCmpServiceId(serviceId);
+        this.cmpService.showSettingsMenuAtService(cmpServiceId);
     }
 
     /**
@@ -110,7 +116,8 @@ export class ConsentManager extends Debuggable {
                 ...args
             );
 
-            this.cmpService.onConsent(serviceId, onConsentUpdate);
+            const cmpServiceId = this.settings.getCmpServiceId(serviceId);
+            this.cmpService.onConsent(cmpServiceId, onConsentUpdate);
         }
     }
 
@@ -138,17 +145,18 @@ export class ConsentManager extends Debuggable {
         callback(hasConsent, ...args);
 
         const onUpdate = this._getOnUpdate(serviceId, callback);
-        this.cmpService.onConsent(serviceId, onUpdate);
+        const cmpServiceId = this.settings.getCmpServiceId(serviceId);
+        this.cmpService.onConsent(cmpServiceId, onUpdate);
     }
 
     /**
-     * @param {string}   serviceName
+     * @param {string}   serviceId
      * @param {function} callback
      * @param {*}        args
      * @return {(function(boolean): void)|*}
      * @private
      */
-    _getOnConsentUpdate(serviceName, callback, ...args) {
+    _getOnConsentUpdate(serviceId, callback, ...args) {
         return (hasConsent) => {
             if (hasConsent) {
                 callback(...args);
@@ -157,15 +165,15 @@ export class ConsentManager extends Debuggable {
     }
 
     /**
-     * @param {string}   serviceName
+     * @param {string}   serviceId
      * @param {function} callback
      * @param {*}        args
      * @return {(function(*): void)|*}
      * @private
      */
-    _getOnUpdate(serviceName, callback, ...args) {
+    _getOnUpdate(serviceId, callback, ...args) {
         return (hasConsent) => {
-            this.debug.log('consent update!', { hasConsent, serviceName });
+            this.debug.log('consent update!', { hasConsent, serviceName: serviceId });
 
             callback(hasConsent, ...args);
         };

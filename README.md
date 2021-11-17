@@ -50,7 +50,7 @@ cmpService.attachSettingsOpener('[href="#modal-opener"]');
 
 // Instantiate a ConsentManager which acts as a bridge between your embeds and
 // the CMP service provider
-const consentManager = new ConsentManager(cmpService);
+const consentManager = new ConsentManager(cmpService, settings);
 
 // That is the basic setup done. cmpService will now track changes to user
 // consent, consentManager will expose these changes in a simple interface.
@@ -121,26 +121,27 @@ new ConsentSettings(defaults, services);
 | key | type | default | used by | description |
 | --- | ---  | ---     | ---     | ---         |
 | **Globals**
-| debug | boolean | false | * | Enable debug output to the console. |
-| attributesPrefix | string | * | 'ghct' | DOM-Attributes are read with this prefix (e.g. `data-ghct-src`). |
-| lightboxFactory | LightboxFactory\|function | null | LightboxEmbed | A function that will create (video) lightboxes when the relevant service has consent. Recommendation: [wp-block-video-overlay](https://www.npmjs.com/package/@gebruederheitz/wp-block-video-overlay). |
-| autoloadOnButtonClick | boolean | true | *Embed | Whether to start loading an embed element as soon as the button was clicked. Will need to be disables for certain CMP service providers (like OneTrust) where consent for a single service can not be granted programmatically. |
-| privacyPolicyUrl | string | '/legal/datenschutzerklaerung' | URL to the site's privacy policy page. Can be used in template strings as `%privacyPolicyUrl%`. |
+| debug                 | boolean                   | false                          | *             | Enable debug output to the console. |
+| attributesPrefix      | string                    | 'ghct'                         | *             | DOM-Attributes are read with this prefix (e.g. `data-ghct-src`). |
+| lightboxFactory       | LightboxFactory function  | null                           | LightboxEmbed | A function that will create (video) lightboxes when the relevant service has consent. Recommendation: [wp-block-video-overlay](https://www.npmjs.com/package/@gebruederheitz/wp-block-video-overlay). |
+| autoloadOnButtonClick | boolean                   | true                           | *Embed        | Whether to start loading an embed element as soon as the button was clicked. Will need to be disables for certain CMP service providers (like OneTrust) where consent for a single service can not be granted programmatically. |
+| privacyPolicyUrl      | string                    | '/legal/datenschutzerklaerung' | *Embed        | URL to the site's privacy policy page. Can be used in template strings as `%privacyPolicyUrl%`. |
 | **Defaults And Service-Specific Settings**
-| reloadOnConsent | boolean | false | *Embed | Whether to force a page reload when the associated consent is granted. Some services may require a full page reload to initialize properly. |
-| clickOnConsent | boolean | false | ModalConsentManager | If true, a click event on the trigger element will be simulated once consent to the service is granted. |
-| servicePrettyName | string | '' | *Embed | This string will be used in template strings instead of the service's ID as `%servicePrettyName%`. |
-| defaultLoadAll | boolean | true | *Embed | Whether all embeds of the given service should be loaded on consent by default, as opposed to only the specific embed whose button was clicked. If `skipCheckbox` is set to `false`, this will mean that the checkbox is pre-checked. |
-| additionalServices | string[] | [] | *Embed | An array of IDs of services that need to be consented and loaded in addition to the specified one. Useful when you need to handle interdependencies or multi-service triggers. |
-| titleText | string | '' | *Embed | Text content of the `<h2>` element inside the embed placeholder..
-| modalOpenerButton | boolean | false | *Embed | If set to true, an additional button will be rendered in the placeholder next to the "accept" button that will trigger the CMP service's administration interface to show. |
-| modalOpenerButtonText | string | 'Mehr Informationen' | *Embed | The text content of the additional button to open the CMP service's administration interface. |
-| privacyPolicySection | string | '' | An optional setting you can use to extend the `%privacyPolicyUrl%` template placeholder's value in text fragments (see examples below). |
-| skipCheckbox | boolean | false | *Embed | When set to `true` the checkbox allowing the user to select whether to load just a single embed or save consent and load all embeds from that provider will not be rendered. In that case, `defaultLoadAll` decides on which of the two options will be applied. |
-| checkboxProviderName | string | 'dieses Anbieters' | *Embed | An optional template placeholder you can use as `%checkboxProviderName%** in the text fragments (see examples below). |
-| checkboxLabel | string | 'Für alle Inhalte dieser Art übernehmen' | The label to the "load all"/"load single" checkbox shown when `skipCheckbox` is false. You can use the template placeholder string `%checkboxProviderName%`. |
-| description | string | 'Um diesen Inhalt anzuzeigen, müssen Sie ihn durch Klick auf den Button aktivieren. Dadurch werden Informationen an den Diensteanbieter übermittelt und dort gespeichert.' | *Embed | The main text content of the placeholder element. May contain basic HTML markup and the template placeholders `%servicePrettyName%` and `%privacyPolicyUrl%`. |
-| buttonText | string | 'Inhalt laden' | *Embed | The main (accept action) button's text content. |
+| cmpServiceId          | string         | null                 | *                   | You can override the serviceId used when calling the CmpServiceProdiver by setting a custom ID here. Example: If your embeds use `data-ghct-type="youtube"`, but your CMP expects the ID `'YouTube Video'`, you can set the cmpServiceId `'YouTube Video'`. |
+| reloadOnConsent       | boolean        | false                | *Embed              | Whether to force a page reload when the associated consent is granted. Some services may require a full page reload to initialize properly. |
+| clickOnConsent        | boolean        | false                | ModalConsentManager | If true, a click event on the trigger element will be simulated once consent to the service is granted. |
+| servicePrettyName     | string         | ''                   | *Embed              | This string will be used in template strings instead of the service's ID as `%servicePrettyName%`. |
+| defaultLoadAll        | boolean        | true                 | *Embed              | Whether all embeds of the given service should be loaded on consent by default, as opposed to only the specific embed whose button was clicked. If `skipCheckbox` is set to `false`, this will mean that the checkbox is pre-checked. |
+| additionalServices    | string[]       | []                   | *Embed              | An array of IDs of services that need to be consented and loaded in addition to the specified one. Useful when you need to handle interdependencies or multi-service triggers. |
+| titleText             | string         | ''                   | *Embed              | Text content of the `<h2>` element inside the embed placeholder..
+| modalOpenerButton     | boolean        | false                | *Embed              | If set to true, an additional button will be rendered in the placeholder next to the "accept" button that will trigger the CMP service's administration interface to show. |
+| modalOpenerButtonText | string         | 'Mehr Informationen' | *Embed              | The text content of the additional button to open the CMP service's administration interface. |
+| privacyPolicySection  | string         | ''                   | *Embed              | An optional setting you can use to extend the `%privacyPolicyUrl%` template placeholder's value in text fragments (see examples below). |
+| skipCheckbox          | boolean        | false                | *Embed              | When set to `true` the checkbox allowing the user to select whether to load just a single embed or save consent and load all embeds from that provider will not be rendered. In that case, `defaultLoadAll` decides on which of the two options will be applied. |
+| checkboxProviderName  | string         | 'dieses Anbieters'   | *Embed              | An optional template placeholder you can use as `%checkboxProviderName%** in the text fragments (see examples below). |
+| checkboxLabel         | string         | 'Für alle Inhalte dieser Art übernehmen' | *Embed | The label to the "load all"/"load single" checkbox shown when `skipCheckbox` is false. You can use the template placeholder string `%checkboxProviderName%`. |
+| description           | string         | 'Um diesen Inhalt anzuzeigen, müssen Sie ihn durch Klick auf den Button aktivieren. Dadurch werden Informationen an den Diensteanbieter übermittelt und dort gespeichert.' | *Embed | The main text content of the placeholder element. May contain basic HTML markup and the template placeholders `%servicePrettyName%` and `%privacyPolicyUrl%`. |
+| buttonText            | string         | 'Inhalt laden'       | *Embed              | The main (accept action) button's text content. |
 
 
 You can use this setup to provide generic text fragments that can be used with
@@ -159,7 +160,7 @@ specific use cases.
 
 | method | description |
 | ---  | --- |
-| `new ConsentManager(cmpService: CmpServiceProviderInterface, userOptions: object) |
+| `new ConsentManager(cmpService: CmpServiceProviderInterface, consentSettings: ConsentSettings, userOptions: object) |
 | `acceptService(serviceId: string)` | Signal to the provider, that the user has given their consent to the service with the given `serviceId`. |
 | `async getServiceConsentStatus(serviceId)` | Get the current consent status for the given service from the provider. |
 | `showSettings()` | Trigger the provider to show the administration interface (usually a modal). |
@@ -172,7 +173,7 @@ specific use cases.
 
 ```js
 const cmpService = new UsercentricsProvider();
-const cm = new ConsentManager(cmpService);
+const cm = new ConsentManager(cmpService, new ConsentSettings());
 
 function onConsent(serviceId, prettyName) {
     console.log(`User has given their consent to loading "${serviceId}"!`);
@@ -269,7 +270,7 @@ import {
 // Basic setup
 const settings = new ConsentSettings();
 const cmpService = new GenericLocalStorageProvider();
-const cm = new ConsentManager(cmpService);
+const cm = new ConsentManager(cmpService, settings);
 
 const container = document.querySelector('#my-iframe');
 const embed = new IframeEmbed(container, cm, settings);
@@ -561,7 +562,7 @@ Additionally, some modules can be passed a `debug` key with a boolean value in
 their constructor options to toggle logging for just that module:
 
 ```js
-new ConsentManager(cmpService, { debug: true });
+new ConsentManager(cmpService, settings, { debug: true });
 ```
 
 Most modules will use the setting defined in the ConsentSettings instance

@@ -128,6 +128,13 @@ export class ConsentSettings {
     };
 
     /**
+     * @type {{[{string}]: string|null}}
+     */
+    cmpServiceId = {
+        default: null,
+    };
+
+    /**
      * @param {{[{string}]: any}} defaults
      * @param {{[services]: any}} services
      */
@@ -188,6 +195,17 @@ export class ConsentSettings {
      */
     getCheckboxProviderName(serviceId = 'default') {
         return this._get('checkboxProviderName', serviceId);
+    }
+
+    /**
+     * If a custom provider service ID is configured it will return that,
+     * returns the serviceId that was passed otherwise.
+     *
+     * @param {string} serviceId
+     * @return {string}
+     */
+    getCmpServiceId(serviceId) {
+        return this._get('cmpServiceId', serviceId, serviceId);
     }
 
     /**
@@ -345,10 +363,14 @@ export class ConsentSettings {
      * @return {*}
      * @private
      */
-    _get(property, key) {
+    _get(property, key, defaultVal) {
         let value = this[property][key];
         if (typeof value === 'undefined') {
-            value = this[property].default;
+            if (typeof defaultVal !== 'undefined') {
+                value = defaultVal;
+            } else {
+                value = this[property].default;
+            }
         }
 
         return value;

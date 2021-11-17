@@ -24,12 +24,16 @@ whenDomReady().then(async () => {
             skipCheckbox: true,
             // defaultLoadAll: false,
         },
+        test: {
+            servicePrettyName: 'Test Service Tracking',
+            cmpServiceId: 'Test Service',
+        },
     };
 
     const settings = new ConsentSettings(
         {
             description:
-                'In oder to view this content, you will need to activate it by clicking the button below. This may cause data to be transmitted to the service provider %servicePrettyName%. You can find more information in our <a href="%privacyPolicyUrl%%privacyPolicySection%">privacy policy declaration</a>.',
+                'In oder to view this content from, you will need to activate it by clicking the button below. This may cause data to be transmitted to the service provider %servicePrettyName%. You can find more information in our <a href="%privacyPolicyUrl%%privacyPolicySection%">privacy policy declaration</a>.',
             privacyPolicyUrl: '/privacy',
             titleText: 'We need your consent!',
             modalOpenerButton: true,
@@ -42,7 +46,7 @@ whenDomReady().then(async () => {
     });
     cmpService.attachSettingsOpener('[href="#modal-opener"]');
 
-    const consentManager = new ConsentManager(cmpService);
+    const consentManager = new ConsentManager(cmpService, settings);
 
     new ElementsConsentManager(consentManager, settings);
 
@@ -53,6 +57,11 @@ whenDomReady().then(async () => {
     }
 
     consentManager.withConsent('Foobar', onConsentForService).then();
+    consentManager
+        .withConsent('test', () => {
+            console.log('Test Service accepted!');
+        })
+        .then();
 
     window.__debug = window.__debug || {};
     window.__debug = {
