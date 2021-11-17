@@ -198,10 +198,16 @@ export class ConsentSettings {
         const template = this._get('description', serviceId);
         const servicePrettyName = this.getPrettyName(serviceId);
 
-        return this._parsePlaceholdersIntoTemplateString(
+        let withServicePrettyName = this._parsePlaceholdersIntoTemplateString(
             template,
             '%servicePrettyName%',
             servicePrettyName
+        );
+
+        return this._parsePlaceholdersIntoTemplateString(
+            withServicePrettyName,
+            '%privacyPolicyUrl%',
+            this.getPrivacyPolicyUrlWithSection()
         );
     }
 
