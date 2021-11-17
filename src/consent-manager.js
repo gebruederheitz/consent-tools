@@ -40,11 +40,11 @@ export class ConsentManager extends Debuggable {
      * Get the current status of the specified status. Returns `true` if the user
      * has given their consent, `false` otherwise.
      *
-     * @param {string} serviceName
+     * @param {string} serviceId
      * @return {Promise<boolean>}
      */
-    async getServiceConsentStatus(serviceName) {
-        return await this.cmpService.getConsentStatusForService(serviceName);
+    async getServiceConsentStatus(serviceId) {
+        return await this.cmpService.getConsentStatusForService(serviceId);
     }
 
     /**
