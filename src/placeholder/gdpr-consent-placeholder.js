@@ -43,6 +43,10 @@ export class GdprConsentPlaceholder extends Debuggable {
         this.button.addEventListener('click', callback);
     }
 
+    onPlaceholderClick(callback) {
+        this.placeholder.addEventListener('click', callback);
+    }
+
     hideAndRemove() {
         this.placeholder.addEventListener(
             'transitionend',

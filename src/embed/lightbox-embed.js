@@ -31,23 +31,11 @@ export class LightboxEmbed extends AbstractEmbed {
 
     async listen() {
         await super.listen();
-        this.placeholder.addEventListener('click', this.onPlaceholderClick);
-    }
-
-    loadAll() {
-        super.loadAll();
+        this.placeholder?.onPlaceholderClick(this.onPlaceholderClick);
     }
 
     loadEmbed(direct = false) {
         super.loadEmbed();
-
-        if (
-            direct &&
-            !(this.checkbox && this.checkbox.isChecked()) &&
-            !this.settings.isSkipCheckbox()
-        ) {
-            this.consentManager.usercentricsUnblock(this.type);
-        }
 
         this.container.href = this.url;
         this.initLightbox();
