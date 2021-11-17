@@ -81,6 +81,14 @@ export class ConsentSettings {
     };
 
     /**
+     * The text content of the additional modal opener button.
+     * @type {{[{string}]: string}}
+     */
+    modalOpenerButtonText = {
+        default: 'Mehr Informationen',
+    };
+
+    /**
      * @type {{[{string}]: string}}
      */
     privacyPolicySection = {
@@ -199,6 +207,10 @@ export class ConsentSettings {
 
     getLightboxFactory() {
         return this.lightboxFactory;
+    }
+
+    getModalOpenerButtonText(serviceId) {
+        return this._get('modalOpenerButtonText', serviceId);
     }
 
     getPrettyName(serviceId = 'default') {

@@ -119,8 +119,7 @@ export class GdprConsentPlaceholder extends Debuggable {
                 attributes: {
                     type: 'button',
                 },
-                /* @TODO customization / i18n */
-                innerText: 'Mehr Informationen',
+                innerText: this.settings.getModalOpenerButtonText(this.type),
                 parent: buttonContainer,
             });
 
