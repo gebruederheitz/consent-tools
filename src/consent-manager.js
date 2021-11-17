@@ -173,7 +173,10 @@ export class ConsentManager extends Debuggable {
      */
     _getOnUpdate(serviceId, callback, ...args) {
         return (hasConsent) => {
-            this.debug.log('consent update!', { hasConsent, serviceName: serviceId });
+            this.debug.log('consent update!', {
+                hasConsent,
+                serviceName: serviceId,
+            });
 
             callback(hasConsent, ...args);
         };
