@@ -19,6 +19,11 @@ export class ConsentSettings {
     lightboxFactory = null;
 
     /**
+     * @type {boolean}
+     */
+    autoloadOnButtonClick = true;
+
+    /**
      * @type {{[{string}]: boolean}}
      */
     reloadOnConsent = {
@@ -252,6 +257,13 @@ export class ConsentSettings {
     }
 
     /**
+     * @return {boolean}
+     */
+    isAutoloadOnButtonClick() {
+        return this.autoloadOnButtonClick;
+    }
+
+    /**
      * @param serviceId
      * @return {boolean}
      */
@@ -296,12 +308,17 @@ export class ConsentSettings {
             this.hasOwnProperty(key)
         );
 
-        return _omit(cleanOptions, [
-            'lightboxFactory',
-            'debug',
-            'privacyPolicyUrl',
-            'attributesPrefix',
-        ]);
+        if (omitDefaults) {
+            cleanOptions = _omit(cleanOptions, [
+                'lightboxFactory',
+                'debug',
+                'privacyPolicyUrl',
+                'attributesPrefix',
+                'autoloadOnButtonClick',
+            ]);
+        }
+
+        return cleanOptions;
     }
 
     /**
@@ -340,6 +357,9 @@ export class ConsentSettings {
                     return;
                 case 'attributesPrefix':
                     this.attributesPrefix = value;
+                    return;
+                case 'autoloadOnButtonClick':
+                    this.autoloadOnButtonClick = value;
                     return;
                 default:
                     this[property].default = value;

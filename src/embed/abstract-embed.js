@@ -136,7 +136,9 @@ export class AbstractEmbed extends Debuggable {
         this.debug.log('Load all');
 
         this.consentManager.acceptService(this.type);
-        this.loadEmbed(true);
+        if (this.settings.isAutoloadOnButtonClick()) {
+            this.loadEmbed(true);
+        }
     }
 
     onConsentChanged(hasConsent) {
