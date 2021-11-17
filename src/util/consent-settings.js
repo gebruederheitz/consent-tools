@@ -9,7 +9,7 @@ export class ConsentSettings {
     debug = false;
 
     /**
-     * @type {string};
+     * @type {string}
      */
     attributesPrefix = 'ghct';
 
@@ -320,7 +320,7 @@ export class ConsentSettings {
         return this._get('skipCheckbox', serviceId);
     }
 
-    _getCleanOptions(userOptions = {}) {
+    _getCleanOptions(userOptions = {}, omitDefaults = true) {
         let cleanOptions = _pickBy(userOptions, (value, key) =>
             // eslint-disable-next-line no-prototype-builtins
             this.hasOwnProperty(key)
@@ -361,7 +361,7 @@ export class ConsentSettings {
      * @private
      */
     _parseDefaultOptions(options) {
-        const cleanDefaults = this._getCleanOptions(options);
+        const cleanDefaults = this._getCleanOptions(options, false);
         _toPairs(cleanDefaults).forEach(([property, value]) => {
             switch (property) {
                 case 'debug':
