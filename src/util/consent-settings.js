@@ -225,7 +225,7 @@ export class ConsentSettings {
         return this._parsePlaceholdersIntoTemplateString(
             withServicePrettyName,
             '%privacyPolicyUrl%',
-            this.getPrivacyPolicyUrlWithSection()
+            this.getPrivacyPolicyUrlWithSection(serviceId)
         );
     }
 
