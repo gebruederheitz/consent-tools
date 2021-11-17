@@ -173,8 +173,8 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
     _dirtyObserveOptanonObject(onChanged) {
         let t = 0;
         let done = false;
-        const maxTries = 10;
         const timeout = 200;
+        const maxTries = this.options.loadDelayLimit / timeout;
 
         const timer = () => {
             setTimeout(() => {
