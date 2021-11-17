@@ -19,7 +19,7 @@ whenDomReady().then(async () => {
     const types = {
         Foobar: {
             servicePrettyName: 'Foobar Analytics Ltd.',
-            titleText: 'Bitte stimmen sie der Nutzung des Service Foobar zu!',
+            titleText: 'We need your consent to use the service Foobar',
             modalOpenerButton: true,
             skipCheckbox: true,
             // defaultLoadAll: false,
@@ -29,9 +29,10 @@ whenDomReady().then(async () => {
     const settings = new ConsentSettings(
         {
             description:
-                'Um diesen Inhalt anzuzeigen, müssen Sie ihn durch Klick auf den Button aktivieren. Dadurch werden Informationen an den Diensteanbieter %servicePrettyName% übermittelt und dort gespeichert. Mehr Informationen finden in der <a href="%privacyPolicyUrl%%privacyPolicySection%">Datenschutzerklärung</a>.',
+                'In oder to view this content, you will need to activate it by clicking the button below. This may cause data to be transmitted to the service provider %servicePrettyName%. You can find more information in our <a href="%privacyPolicyUrl%%privacyPolicySection%">privacy policy declaration</a>.',
             privacyPolicyUrl: '/privacy',
-            titleText: 'Wir brauchen ihre Zustimmung!',
+            titleText: 'We need your consent!',
+            modalOpenerButton: true,
         },
         types
     );
