@@ -135,13 +135,17 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
      * @inheritDoc
      */
     onConsent(serviceId, callback) {
-        if (!this.getConsentStatusForService(serviceId)) {
-            this.eventProxy.on(serviceId, () => {
-                callback(true);
-            });
-        } else {
-            callback(true);
-        }
+        this.getConsentStatusForService(serviceId).then(
+            (currentlyHasConsent) => {
+                if (!currentlyHasConsent) {
+                    this.eventProxy.on(serviceId, () => {
+                        callback(true);
+                    });
+                } else {
+                    callback(true);
+                }
+            }
+        );
     }
 
     /**
