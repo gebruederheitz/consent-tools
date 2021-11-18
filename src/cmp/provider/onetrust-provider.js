@@ -34,9 +34,9 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
         this.options = _merge(DEFAULT_OPTIONS, userOptions);
         this.eventProxy = EventEmitter();
         this.optanon = null;
+        this.mutationObserver = null;
+        this.currentGroupId = null;
         this.showSettingsMenu = this.showSettingsMenu.bind(this);
-
-        this._listen();
 
         return this.init();
     }
@@ -51,7 +51,7 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
         let cmpServiceProvider = this;
 
         if (!this.isPresent()) {
-            this.debug.log('UC not present – building proxy');
+            this.debug.log('OT not present – building proxy');
 
             const oneTrustHasLoaded = new Promise((res) => {
                 const callback = (optanon) => {
@@ -76,6 +76,8 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
                 });
             }
         }
+
+        this._listen();
 
         return cmpServiceProvider;
     }
@@ -116,7 +118,6 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
     async getConsentStatusForService(serviceId) {
         const { id, groupId } =
             this._getGroupAndVendorIdFromServiceId(serviceId);
-        console.log({ serviceId, id, groupId });
 
         return window.OptanonActiveGroups.split(',')
             .filter((e) => !!e)
@@ -134,15 +135,18 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
      * @inheritDoc
      */
     onConsent(serviceId, callback) {
-        this.eventProxy.on(serviceId, callback);
-        /* @TODO: Check whether the service already has consent */
+        if (!this.getConsentStatusForService(serviceId)) {
+            this.eventProxy.on(serviceId, callback);
+        } else {
+            callback();
+        }
     }
 
     /**
      * @inheritDoc
      */
     showSettingsMenu() {
-        window.OneTrust.ToggleInfoDisplay();
+        this.optanon.ToggleInfoDisplay();
     }
 
     /**
@@ -150,13 +154,12 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
      */
     showSettingsMenuAtService(serviceId) {
         const { groupId } = this._getGroupAndVendorIdFromServiceId(serviceId);
-        document
-            .querySelectorAll('.ot-link-btn.category-host-list-handler')
-            .forEach((itemHost) => {
-                if (itemHost.dataset.parentId === groupId) {
-                    itemHost.click();
-                }
-            });
+        const banner = document.querySelector('#onetrust-consent-sdk');
+
+        this.currentGroupId = groupId;
+        const mo = this._getMutationObserver();
+        mo.observe(banner, { attributes: true, childList: true });
+
         this.showSettingsMenu();
     }
 
@@ -192,6 +195,26 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
         timer();
     }
 
+    _getMutationObserver() {
+        if (!this.mutationObserver) {
+            this.mutationObserver = new MutationObserver(() => {
+                document
+                    .querySelectorAll('.ot-link-btn.category-host-list-handler')
+                    .forEach((groupDetailsButton) => {
+                        if (
+                            groupDetailsButton.dataset.parentId ===
+                            this.currentGroupId
+                        ) {
+                            groupDetailsButton.click();
+                        }
+                    });
+                this.mutationObserver.disconnect();
+            });
+        }
+
+        return this.mutationObserver;
+    }
+
     /**
      * For a group ID, this will return an array of serviceIds that belong to
      * that group; for a vendor ID it will return the name of said vendor as
@@ -202,8 +225,7 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
      * @private
      */
     _getServiceIdsFromGroupOrVendorId(groupOrVendorId) {
-        const dd = window.OneTrust.GetDomainData();
-        console.log(JSON.stringify(dd));
+        const dd = this.optanon.GetDomainData();
         const serviceIdGetter = this._getServiceIdFromVendorIdGetter(dd);
 
         const vendor = serviceIdGetter(groupOrVendorId);
@@ -214,16 +236,10 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
         const group = dd.Groups.find(
             (e) => e.CustomGroupId === groupOrVendorId
         );
-        console.log(JSON.stringify(group));
-        console.log('test', {
-            group,
-            dd,
-            groupOrVendorId,
-            ids: group.GeneralVendorIds,
-        });
+
         return (
-            group.GeneralVendorIds &&
-            group.GeneralVendorIds.map(serviceIdGetter)
+            group.GeneralVendorsIds &&
+            group.GeneralVendorsIds.map(serviceIdGetter)
         );
     }
 
@@ -248,7 +264,7 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
      * @private
      */
     _getGroupAndVendorIdFromServiceId(serviceId) {
-        const dd = window.OneTrust.GetDomainData();
+        const dd = this.optanon.GetDomainData();
         const serviceDefinition = dd.GeneralVendors.find(
             (e) => e.Name === serviceId
         );
@@ -256,8 +272,11 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
             (serviceDefinition && serviceDefinition.VendorCustomId) || '';
 
         const group =
-            dd.groups &&
-            dd.groups.find((g) => g.GeneralVendorIds.indexOf(id) > -1);
+            dd.Groups &&
+            dd.Groups.find(
+                (g) =>
+                    g.GeneralVendorsIds && g.GeneralVendorsIds.indexOf(id) > -1
+            );
         return { groupId: (group && group.OptanonGroupId) || '', id };
     }
 
@@ -270,14 +289,16 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
      * @private
      */
     _listen() {
-        window.OneTrust?.OnConsentChanged(({ detail }) => {
+        this.optanon.OnConsentChanged(({ detail }) => {
+            this.debug.log(detail);
             detail.forEach((groupOrVendorId) => {
+                this.debug.log(groupOrVendorId);
                 const serviceIds =
                     this._getServiceIdsFromGroupOrVendorId(groupOrVendorId);
                 serviceIds &&
                     serviceIds.forEach((serviceId) => {
-                        console.log('consent for', serviceId);
-                        this.eventProxy.emit(serviceId);
+                        this.debug.log('consent for', serviceId);
+                        this.eventProxy.emit(serviceId, true);
                     });
             });
         });
