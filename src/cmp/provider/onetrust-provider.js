@@ -136,9 +136,11 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
      */
     onConsent(serviceId, callback) {
         if (!this.getConsentStatusForService(serviceId)) {
-            this.eventProxy.on(serviceId, callback);
+            this.eventProxy.on(serviceId, () => {
+                callback(true);
+            });
         } else {
-            callback();
+            callback(true);
         }
     }
 
