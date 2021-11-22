@@ -164,7 +164,11 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
 
         this.currentGroupId = groupId;
         const mo = this._getMutationObserver();
-        mo.observe(banner, { attributes: true, childList: true });
+        mo.observe(banner, {
+            attributes: true,
+            childList: true,
+            subtree: true,
+        });
 
         this.showSettingsMenu();
     }
