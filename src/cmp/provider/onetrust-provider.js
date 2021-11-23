@@ -55,6 +55,7 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
 
             const oneTrustHasLoaded = new Promise((res) => {
                 const callback = (optanon) => {
+                    this.debug.log('OT loaded', { optanon });
                     this.optanon = optanon;
                     res();
                 };
@@ -74,10 +75,11 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
                 cmpServiceProvider = new this.options.fallbackServiceProvider({
                     isFallbackProvider: true,
                 });
+            } else {
+                this.debug.log('Found OneTrust – attaching event listeners.');
+                this._listen();
             }
         }
-
-        this._listen();
 
         return cmpServiceProvider;
     }
