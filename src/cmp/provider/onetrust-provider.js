@@ -121,9 +121,9 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
         const { id, groupId } =
             this._getGroupAndVendorIdFromServiceId(serviceId);
 
-        return window.OptanonActiveGroups.split(',')
-            .filter((e) => !!e)
-            .some((allowed) => allowed === id || allowed === groupId);
+        const status = this._isGroupActive(groupId) || this._isVendorActive(id);
+        this.debug.log('Consent status for ' + serviceId, status);
+        return status;
     }
 
     /**
@@ -249,10 +249,11 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
             (e) => e.CustomGroupId === groupOrVendorId
         );
 
-        return (
-            group.GeneralVendorsIds &&
-            group.GeneralVendorsIds.map(serviceIdGetter)
-        );
+        if (group && group.GeneralVendorsIds) {
+            return group.GeneralVendorsIds.map(serviceIdGetter);
+        } else {
+            return [];
+        }
     }
 
     /**
@@ -290,6 +291,25 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
                     g.GeneralVendorsIds && g.GeneralVendorsIds.indexOf(id) > -1
             );
         return { groupId: (group && group.OptanonGroupId) || '', id };
+    }
+
+    _isGroupActive(groupId) {
+        const groupMarkedActiveInGlobalObject =
+            window.OptanonActiveGroups.split(',')
+                .filter((e) => !!e)
+                .some((allowed) => allowed === groupId);
+
+        if (groupMarkedActiveInGlobalObject) return true;
+
+        const groups = this.optanon.GetDomainData().Groups;
+        const group = groups.find((g) => g.OptanonGroupId === groupId);
+        return group && group.Status === 'active';
+    }
+
+    _isVendorActive(vendorId) {
+        return window.OptanonActiveGroups.split(',')
+            .filter((e) => !!e)
+            .some((allowed) => allowed === vendorId);
     }
 
     /**
