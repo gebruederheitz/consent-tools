@@ -1,3 +1,5 @@
+.PHONY: test
+
 dev:
 	npm i && npm run watch
 
