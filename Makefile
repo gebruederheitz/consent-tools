@@ -6,3 +6,6 @@ build:
 
 test:
 	npm i && npm run lint
+
+release:
+	npm i && npm run release
