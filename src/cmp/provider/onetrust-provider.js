@@ -121,7 +121,7 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
         const { id, groupId } =
             this._getGroupAndVendorIdFromServiceId(serviceId);
 
-        const status = this._isGroupActive(groupId) || this._isVendorActive(id);
+        const status = this._isGroupOrVendorActive(groupId, id);
         this.debug.log('Consent status for ' + serviceId, status);
         return status;
     }
@@ -293,23 +293,25 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
         return { groupId: (group && group.OptanonGroupId) || '', id };
     }
 
-    _isGroupActive(groupId) {
-        const groupMarkedActiveInGlobalObject =
-            window.OptanonActiveGroups.split(',')
-                .filter((e) => !!e)
-                .some((allowed) => allowed === groupId);
-
-        if (groupMarkedActiveInGlobalObject) return true;
-
-        const groups = this.optanon.GetDomainData().Groups;
-        const group = groups.find((g) => g.OptanonGroupId === groupId);
-        return group && group.Status === 'active';
-    }
-
-    _isVendorActive(vendorId) {
-        return window.OptanonActiveGroups.split(',')
+    /**
+     * Checks whether any of the Group- or Vendor-IDs passed is contained in
+     * the global OptanonActiveGroups string.
+     *
+     * @param {string} groupOrVendorIds  An arbitrary number of groupIds and/or
+     *                                   vendor IDs.
+     * @return {boolean}  Returns true if any of the given IDs is found in
+     *                    OneTrust's OptanonActiveGroups
+     * @private
+     */
+    _isGroupOrVendorActive(...groupOrVendorIds) {
+        return window.OptanonActiveGroups?.split(',')
+            .map((e) => e.trim())
             .filter((e) => !!e)
-            .some((allowed) => allowed === vendorId);
+            .some((allowed) =>
+                groupOrVendorIds.some(
+                    (groupOrVendorId) => groupOrVendorId === allowed
+                )
+            );
     }
 
     /**
