@@ -572,7 +572,6 @@ cs = new ConsentSettings({ debug: true });
 new EmbedFactory(consentManager, cs);
 ```
 
-
 ### Styling
 
 
@@ -598,3 +597,16 @@ UMD formats.
  - [x] Pass CMP service to ConsentManager at init
  - [ ] Fix debug configuration (use ConsentSettings consistently)
  - [ ] Add i10n/i18n
+
+
+## Migrating
+
+### 2.x to 3.x
+
+You will only have to change anything if you have implemented a custom
+`CmpServiceProvider` or have used the `onConsent()` method of a provider
+directly (i.e. not through the `wtihConsent*()` methods of `ConsentManager`).
+
+To clarify the intentions, that method has been renamed to `onConsentUpdate()`,
+as it should trigger on any consent change and call the callback with a boolean
+indicating the new status.
