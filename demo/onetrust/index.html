@@ -20,9 +20,9 @@
                         {CustomGroupId: 'C0002', GeneralVendorIds: ['V2', 'V3']},
                     ],
                     GeneralVendors: [
-                        {VendorCustomId: 'V1'},
-                        {VendorCustomId: 'V2'},
-                        {VendorCustomId: 'V3'},
+                        {VendorCustomId: 'V1', Name: 'Foobar'},
+                        {VendorCustomId: 'V2', Name: 'otherservice'},
+                        {VendorCustomId: 'V3', Name: 'test'},
                     ],
                 }),
                 OnConsentChanged: ((callback) => {
@@ -32,6 +32,7 @@
             window.Optanon = ot;
             window.OneTrust = ot;
             window.OnetrustActiveGroups = ',C0002,V2,V3,'
+            window.OptanonActiveGroups = ',C0002,V2,V3,'
         }, 1000);
 
         window.triggerOtChange = function () {
@@ -104,7 +105,7 @@
 
     <!-- Inline script with consent management -->
     <script type="text/plain" data-ghct-type="Foobar">
-        window.alert('Foobar!');
+        //window.alert('Foobar!');
     </script>
 
     <!-- Remote script -->

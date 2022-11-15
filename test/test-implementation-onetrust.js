@@ -23,8 +23,7 @@ whenDomReady().then(async () => {
             titleText: 'We need your consent to use the service Foobar',
             modalOpenerButton: true,
             skipCheckbox: true,
-            cmpServiceId: 'V1',
-            // defaultLoadAll: false,
+            // cmpServiceId: 'V1',
         },
         test: {
             servicePrettyName: 'Test Service Tracking',
@@ -54,11 +53,11 @@ whenDomReady().then(async () => {
 
     new EmbedFactory(consentManager, settings);
 
-    function onConsentForService() {
-        console.log('User has given their consent for this service!');
-    }
-
-    consentManager.withConsent('Foobar', onConsentForService).then();
+    consentManager
+        .withConsentOrDenial('Foobar', (consent) => {
+            console.log('[DEMO] consent for foobar?', consent);
+        })
+        .then();
     consentManager
         .withConsent('test', () => {
             console.log('Test Service accepted!');
