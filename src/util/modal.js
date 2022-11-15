@@ -46,10 +46,7 @@ export class Modal {
     }
 
     _clearContent() {
-        this.container.children.length &&
-            this.container.children.forEach((child) => {
-                this.container.removeChild(child);
-            });
+        this.container.innerHTML = '';
     }
 
     _listen() {
