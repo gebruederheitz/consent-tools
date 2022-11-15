@@ -51,7 +51,7 @@ export class AbstractCmpServiceProvider extends Debuggable {
      * @abstract
      * @inheritDoc
      */
-    onConsent(serviceId, callback) {}
+    async onConsentUpdate(serviceId, callback) {}
 
     /**
      * @abstract

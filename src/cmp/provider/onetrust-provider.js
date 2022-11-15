@@ -1,5 +1,6 @@
 import EventEmitter from 'mitt';
 import _merge from 'lodash-es/merge';
+import _difference from 'lodash-es/difference';
 
 import { GenericEventProvider } from './generic-event-provider.js';
 import { AbstractCmpServiceProvider } from '../abstract-provider.js';
@@ -29,13 +30,14 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
      * @return {Promise<CmpServiceProviderInterface>}
      */
     constructor(userOptions = {}) {
-        super();
+        super('OneTrustProvider');
 
         this.options = _merge(DEFAULT_OPTIONS, userOptions);
         this.eventProxy = EventEmitter();
         this.optanon = null;
         this.mutationObserver = null;
         this.currentGroupId = null;
+        this.vendorsAndGroups = [];
         this.showSettingsMenu = this.showSettingsMenu.bind(this);
 
         return this.init();
@@ -77,6 +79,7 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
                 });
             } else {
                 this.debug.log('Found OneTrust – attaching event listeners.');
+                this._parseVendorsAndGroups();
                 this._listen();
             }
         }
@@ -136,18 +139,10 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
     /**
      * @inheritDoc
      */
-    onConsent(serviceId, callback) {
-        this.getConsentStatusForService(serviceId).then(
-            (currentlyHasConsent) => {
-                if (!currentlyHasConsent) {
-                    this.eventProxy.on(serviceId, () => {
-                        callback(true);
-                    });
-                } else {
-                    callback(true);
-                }
-            }
-        );
+    async onConsentUpdate(serviceId, callback) {
+        this.eventProxy.on(serviceId, (status) => {
+            callback(status);
+        });
     }
 
     /**
@@ -317,7 +312,7 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
     /**
      * Attach an event listener to forward consent change events through
      * this.eventProxy. The emitted events will have the serviceId as their
-     * name.
+     * name and a boolean indicating consent status as their first argument..
      *
      * @emits ConsentChange<serviceId>
      * @private
@@ -325,16 +320,47 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
     _listen() {
         this.optanon.OnConsentChanged(({ detail }) => {
             this.debug.log(detail);
-            detail.forEach((groupOrVendorId) => {
-                this.debug.log(groupOrVendorId);
-                const serviceIds =
-                    this._getServiceIdsFromGroupOrVendorId(groupOrVendorId);
-                serviceIds &&
-                    serviceIds.forEach((serviceId) => {
-                        this.debug.log('consent for', serviceId);
-                        this.eventProxy.emit(serviceId, true);
-                    });
+            const vendorsAndGroupsWithConsent = [...detail];
+
+            detail.forEach((consentedGroupOrVendorId) => {
+                this.debug.log(consentedGroupOrVendorId);
+                const consentedServiceIds =
+                    this._getServiceIdsFromGroupOrVendorId(
+                        consentedGroupOrVendorId
+                    );
+
+                if (consentedServiceIds) {
+                    vendorsAndGroupsWithConsent.push(...consentedServiceIds);
+                }
             });
+
+            const noConsentIds = _difference(
+                this.vendorsAndGroups,
+                vendorsAndGroupsWithConsent
+            );
+
+            vendorsAndGroupsWithConsent
+                .filter((e) => e?.length)
+                .forEach((serviceId) => {
+                    this.debug.log('consent given for', serviceId);
+                    this.eventProxy.emit(serviceId, true);
+                });
+
+            noConsentIds
+                .filter((e) => e?.length)
+                .forEach((serviceId) => {
+                    this.debug.log('consent withheld for', serviceId);
+                    this.eventProxy.emit(serviceId, false);
+                });
         });
+    }
+
+    _parseVendorsAndGroups() {
+        const dd = this.optanon.GetDomainData();
+
+        const groups = dd.Groups.map((g) => g.CustomGroupId);
+        const vendors = dd.GeneralVendors.map((v) => v.VendorCustomId);
+
+        this.vendorsAndGroups = [...groups, ...vendors];
     }
 }

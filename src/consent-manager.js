@@ -117,7 +117,10 @@ export class ConsentManager extends Debuggable {
             );
 
             const cmpServiceId = this.settings.getCmpServiceId(serviceId);
-            this.cmpService.onConsent(cmpServiceId, onConsentUpdate);
+            await this.cmpService.onConsentUpdate(
+                cmpServiceId,
+                onConsentUpdate
+            );
         }
     }
 
@@ -144,9 +147,9 @@ export class ConsentManager extends Debuggable {
 
         callback(hasConsent, ...args);
 
-        const onUpdate = this._getOnUpdate(serviceId, callback);
+        const onUpdate = this._getOnUpdate(serviceId, callback, ...args);
         const cmpServiceId = this.settings.getCmpServiceId(serviceId);
-        this.cmpService.onConsent(cmpServiceId, onUpdate);
+        await this.cmpService.onConsentUpdate(cmpServiceId, onUpdate);
     }
 
     /**

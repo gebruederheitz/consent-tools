@@ -123,7 +123,7 @@ export class UsercentricsProvider extends AbstractCmpServiceProvider {
         }
     }
 
-    async onConsent(serviceId, callback) {
+    async onConsentUpdate(serviceId, callback) {
         const gtm = await this.gtm;
 
         const onGenericConsentEvent = (event) => {
