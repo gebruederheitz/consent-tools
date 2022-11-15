@@ -82,8 +82,12 @@ export class WrappedGtm extends Debuggable {
         this.eventProxy.on('push', callback);
     }
 
-    subscribe(eventName, callback, options) {
-        this.eventProxy.on(eventName, callback, options);
+    subscribe(eventName, callback) {
+        this.eventProxy.on(eventName, callback);
+    }
+
+    unsubscribe(eventName, callback) {
+        this.eventProxy.off(eventName, callback);
     }
 
     wrapDataLayer() {
