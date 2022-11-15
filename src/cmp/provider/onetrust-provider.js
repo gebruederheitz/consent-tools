@@ -39,6 +39,8 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
         this.currentGroupId = null;
         this.vendorsAndGroups = [];
         this.showSettingsMenu = this.showSettingsMenu.bind(this);
+        this._getServiceIdsFromGroupOrVendorId =
+            this._getServiceIdsFromGroupOrVendorId.bind(this);
 
         return this.init();
     }
@@ -245,7 +247,9 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
         );
 
         if (group && group.GeneralVendorsIds) {
-            return group.GeneralVendorsIds.map(serviceIdGetter);
+            return group.GeneralVendorsIds.map(serviceIdGetter)
+                .map((v) => v?.Name)
+                .filter((e) => e?.length);
         } else {
             return [];
         }
@@ -276,8 +280,16 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
         const serviceDefinition = dd.GeneralVendors.find(
             (e) => e.Name === serviceId
         );
-        const id =
-            (serviceDefinition && serviceDefinition.VendorCustomId) || '';
+        let id = (serviceDefinition && serviceDefinition.VendorCustomId) || '';
+
+        if (
+            !id &&
+            dd.GeneralVendors.findIndex((e) => e.VendorCustomId === serviceId) >
+                -1
+        ) {
+            // fall back to using OT's vendor custom ID, which is a valid identifier
+            id = serviceId;
+        }
 
         const group =
             dd.Groups &&
@@ -299,7 +311,9 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
      * @private
      */
     _isGroupOrVendorActive(...groupOrVendorIds) {
-        return window.OptanonActiveGroups?.split(',')
+        const allowed = window.OptanonActiveGroups || '';
+        return allowed
+            .split(',')
             .map((e) => e.trim())
             .filter((e) => !!e)
             .some((allowed) =>
@@ -313,6 +327,8 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
      * Attach an event listener to forward consent change events through
      * this.eventProxy. The emitted events will have the serviceId as their
      * name and a boolean indicating consent status as their first argument..
+     *
+     * Events will be triggered for all group IDs, vendor IDs and service IDs.
      *
      * @emits ConsentChange<serviceId>
      * @private
@@ -330,7 +346,7 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
                     );
 
                 if (consentedServiceIds) {
-                    vendorsAndGroupsWithConsent.push(...consentedServiceIds);
+                    vendorsAndGroupsWithConsent.unshift(...consentedServiceIds);
                 }
             });
 
@@ -346,7 +362,11 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
                     this.eventProxy.emit(serviceId, true);
                 });
 
-            noConsentIds
+            const mappedNoConsentIds = noConsentIds
+                .map(this._getServiceIdsFromGroupOrVendorId)
+                .flat();
+
+            [...mappedNoConsentIds, ...noConsentIds]
                 .filter((e) => e?.length)
                 .forEach((serviceId) => {
                     this.debug.log('consent withheld for', serviceId);
