@@ -1,12 +1,15 @@
 export { EmbedFactory } from './embed/factory.js';
 export { LightboxEmbed } from './embed/lightbox-embed.js';
 export { IframeEmbed } from './embed/iframe-embed.js';
+export { ScriptEmbed } from './embed/script-embed.js';
+export { InlineScriptEmbed } from './embed/inline-script-embed.js';
 
 export { ConsentManager } from './consent-manager';
 export { ElementsConsentManager } from './elements-consent-manager';
 export { ModalConsentManager } from './modal-consent-manager.js';
 
 export { UsercentricsProvider } from './cmp/provider/usercentrics-provider.js';
+export { OneTrustProvider } from './cmp/provider/onetrust-provider.js';
 export { GenericLocalStorageProvider } from './cmp/provider/generic-localstorage-provider.js';
 export { GenericEventProvider } from './cmp/provider/generic-event-provider.js';
 export { AbstractCmpServiceProvider } from './cmp/abstract-provider.js';
@@ -20,7 +23,4 @@ function toggleDebugOutput(toggle = true) {
     Debuggable.prototype.globalJsDebug = toggle;
 }
 
-export {
-    Debuggable,
-    toggleDebugOutput,
-};
+export { Debuggable, toggleDebugOutput };

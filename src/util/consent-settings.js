@@ -9,7 +9,7 @@ export class ConsentSettings {
     debug = false;
 
     /**
-     * @type {string};
+     * @type {string}
      */
     attributesPrefix = 'ghct';
 
@@ -17,6 +17,11 @@ export class ConsentSettings {
      * @type {LightboxFactory|function|null}
      */
     lightboxFactory = null;
+
+    /**
+     * @type {boolean}
+     */
+    autoloadOnButtonClick = true;
 
     /**
      * @type {{[{string}]: boolean}}
@@ -76,6 +81,14 @@ export class ConsentSettings {
     };
 
     /**
+     * The text content of the additional modal opener button.
+     * @type {{[{string}]: string}}
+     */
+    modalOpenerButtonText = {
+        default: 'Mehr Informationen',
+    };
+
+    /**
      * @type {{[{string}]: string}}
      */
     privacyPolicySection = {
@@ -112,6 +125,13 @@ export class ConsentSettings {
      */
     buttonText = {
         default: 'Inhalt laden',
+    };
+
+    /**
+     * @type {{[{string}]: string|null}}
+     */
+    cmpServiceId = {
+        default: null,
     };
 
     /**
@@ -178,6 +198,17 @@ export class ConsentSettings {
     }
 
     /**
+     * If a custom provider service ID is configured it will return that,
+     * returns the serviceId that was passed otherwise.
+     *
+     * @param {string} serviceId
+     * @return {string}
+     */
+    getCmpServiceId(serviceId) {
+        return this._get('cmpServiceId', serviceId, serviceId);
+    }
+
+    /**
      * @param serviceId
      * @return {string}
      */
@@ -185,15 +216,25 @@ export class ConsentSettings {
         const template = this._get('description', serviceId);
         const servicePrettyName = this.getPrettyName(serviceId);
 
-        return this._parsePlaceholdersIntoTemplateString(
+        let withServicePrettyName = this._parsePlaceholdersIntoTemplateString(
             template,
             '%servicePrettyName%',
             servicePrettyName
+        );
+
+        return this._parsePlaceholdersIntoTemplateString(
+            withServicePrettyName,
+            '%privacyPolicyUrl%',
+            this.getPrivacyPolicyUrlWithSection(serviceId)
         );
     }
 
     getLightboxFactory() {
         return this.lightboxFactory;
+    }
+
+    getModalOpenerButtonText(serviceId) {
+        return this._get('modalOpenerButtonText', serviceId);
     }
 
     getPrettyName(serviceId = 'default') {
@@ -252,6 +293,13 @@ export class ConsentSettings {
     }
 
     /**
+     * @return {boolean}
+     */
+    isAutoloadOnButtonClick() {
+        return this.autoloadOnButtonClick;
+    }
+
+    /**
      * @param serviceId
      * @return {boolean}
      */
@@ -290,18 +338,23 @@ export class ConsentSettings {
         return this._get('skipCheckbox', serviceId);
     }
 
-    _getCleanOptions(userOptions = {}) {
+    _getCleanOptions(userOptions = {}, omitDefaults = true) {
         let cleanOptions = _pickBy(userOptions, (value, key) =>
             // eslint-disable-next-line no-prototype-builtins
             this.hasOwnProperty(key)
         );
 
-        return _omit(cleanOptions, [
-            'lightboxFactory',
-            'debug',
-            'privacyPolicyUrl',
-            'attributesPrefix',
-        ]);
+        if (omitDefaults) {
+            cleanOptions = _omit(cleanOptions, [
+                'lightboxFactory',
+                'debug',
+                'privacyPolicyUrl',
+                'attributesPrefix',
+                'autoloadOnButtonClick',
+            ]);
+        }
+
+        return cleanOptions;
     }
 
     /**
@@ -310,10 +363,14 @@ export class ConsentSettings {
      * @return {*}
      * @private
      */
-    _get(property, key) {
+    _get(property, key, defaultVal) {
         let value = this[property][key];
         if (typeof value === 'undefined') {
-            value = this[property].default;
+            if (typeof defaultVal !== 'undefined') {
+                value = defaultVal;
+            } else {
+                value = this[property].default;
+            }
         }
 
         return value;
@@ -326,7 +383,7 @@ export class ConsentSettings {
      * @private
      */
     _parseDefaultOptions(options) {
-        const cleanDefaults = this._getCleanOptions(options);
+        const cleanDefaults = this._getCleanOptions(options, false);
         _toPairs(cleanDefaults).forEach(([property, value]) => {
             switch (property) {
                 case 'debug':
@@ -340,6 +397,9 @@ export class ConsentSettings {
                     return;
                 case 'attributesPrefix':
                     this.attributesPrefix = value;
+                    return;
+                case 'autoloadOnButtonClick':
+                    this.autoloadOnButtonClick = value;
                     return;
                 default:
                     this[property].default = value;

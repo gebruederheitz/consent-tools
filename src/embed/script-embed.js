@@ -1,36 +1,38 @@
-import { createDomElement, $, $$ } from '@gebruederheitz/wp-frontend-utils';
+import { createDomElement, $ } from '@gebruederheitz/wp-frontend-utils';
 
 import { AbstractEmbed } from './abstract-embed.js';
 
-// 1s should be enough to allow the race result base script to init
-const POST_LOAD_TIMEOUT = 2000;
-
-/**
- * @deprecated: This was written specifically for one single service and requires
- * a major overhaul to be of any use whatsoever.
- */
 export class ScriptEmbed extends AbstractEmbed {
-    /**
-     * @deprecated: might change without warning. do not use.
-     * @param args
-     */
     constructor(...args) {
         super('ScriptEmbed', ...args);
 
         this.script = this.container;
 
-        /* @TODO: use global prefix */
-        const containerSelect = this.script.dataset.ghwpPlaceholder;
-        this.container = $()(containerSelect);
+        const containerSelect = this.script.dataset.ghctPlaceholder;
 
-        if (!this.container) {
-            this.container = createDomElement({
-                classNames: ['ghct-placeholder-container'],
-            });
-            this.script.parentElement.insertBefore(this.container, this.script);
+        if (containerSelect) {
+            this.container = $()(containerSelect);
+
+            if (!this.container) {
+                this.container = createDomElement({
+                    classNames: ['ghct-placeholder-container'],
+                });
+                this.script.parentElement.insertBefore(
+                    this.container,
+                    this.script
+                );
+            }
         }
 
         this.onScriptLoaded = this.onScriptLoaded.bind(this);
+    }
+
+    createPlaceholder() {
+        if (this.container) {
+            return super.createPlaceholder();
+        } else {
+            return null;
+        }
     }
 
     loadEmbed() {
@@ -44,31 +46,10 @@ export class ScriptEmbed extends AbstractEmbed {
         this.script.src = this.url;
     }
 
-    loadRaceResult() {
-        this.debug.log('Loading inline scripts...');
-
-        const inlineScripts = $$()('[data-ghwp-type="raceresult"]:not([src])');
-        inlineScripts.forEach((scriptElement) => {
-            createDomElement({
-                type: 'SCRIPT',
-                attributes: {
-                    type: 'text/javascript',
-                },
-                innerText: scriptElement.innerText,
-                parent: document.head,
-            });
-            scriptElement.remove();
-            // document.head.appendChild(scriptElement);
-        });
-    }
-
     onScriptLoaded() {
         this.debug.log('Script has finished loading');
         this.script.removeEventListener('load', this.onScriptLoaded);
         this.hideAndRemovePlaceholder();
-        if (this.type === 'raceresult') {
-            setTimeout(this.loadRaceResult.bind(this), POST_LOAD_TIMEOUT);
-        }
     }
 
     unloadEmbed() {

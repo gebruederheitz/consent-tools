@@ -43,6 +43,10 @@ export class GdprConsentPlaceholder extends Debuggable {
         this.button.addEventListener('click', callback);
     }
 
+    onPlaceholderClick(callback) {
+        this.placeholder.addEventListener('click', callback);
+    }
+
     hideAndRemove() {
         this.placeholder.addEventListener(
             'transitionend',
@@ -119,8 +123,7 @@ export class GdprConsentPlaceholder extends Debuggable {
                 attributes: {
                     type: 'button',
                 },
-                /* @TODO customization / i18n */
-                innerText: 'Mehr Informationen',
+                innerText: this.settings.getModalOpenerButtonText(this.type),
                 parent: buttonContainer,
             });
 

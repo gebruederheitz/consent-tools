@@ -46,10 +46,16 @@ export class CmpServiceProvider {
     showSettingsMenuAtService(serviceId) {}
 
     /**
+     * Attach a continuous listener to any consent updates for the service
+     * identified by serviceId. The callback will receive a boolean first
+     * argument indicating the updated consent status, as well as your custom
+     * args provided on registration.
+     *
      * @public
      * @abstract
      * @param {string} serviceId
-     * @param {function} callback
+     * @param {(status: boolean) => any} callback
+     * @return Promise<void>
      */
-    onConsent(serviceId, callback) {}
+    async onConsentUpdate(serviceId, callback) {}
 }

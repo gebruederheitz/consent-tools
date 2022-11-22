@@ -4,16 +4,12 @@ import { $$, Debuggable } from '@gebruederheitz/wp-frontend-utils';
 import { IframeEmbed } from './iframe-embed.js';
 import { LightboxEmbed } from './lightbox-embed.js';
 import { ScriptEmbed } from './script-embed.js';
+import { InlineScriptEmbed } from './inline-script-embed.js';
 
 const DEFAULT_OPTIONS = {
-    selector: '[data-ghct-src]',
+    selector: '[data-ghct-src], [data-ghct-type]',
 };
 
-/**
- * @TODO: document intention and usage:
- *        parse embed blocks like lightboxes or iframes with selector X etc.
- *        * document the flag/function `window.ghwpEmbedsAllowed` (discuss its usefulness first – shouldn't the providers do that?)
- */
 export class EmbedFactory extends Debuggable {
     /**
      * @param {ConsentManager}  consentManager         An instance of ConsentManager with a CmpServiceProvider attached
@@ -71,24 +67,29 @@ export class EmbedFactory extends Debuggable {
         let EmbedClass = null;
 
         const isLightboxTrigger = container.matches('a');
-        const isScript = container.matches('script');
+        const isInlineScript = container.matches(
+            'script[type="text/plain"]:not([src]):not([data-ghct-src])'
+        );
+        const isScript = container.matches('script[data-ghct-src]');
 
         if (isLightboxTrigger) EmbedClass = LightboxEmbed;
+        else if (isInlineScript) EmbedClass = InlineScriptEmbed;
         else if (isScript) EmbedClass = ScriptEmbed;
         else EmbedClass = IframeEmbed;
 
+        /** @type AbstractEmbed */
         const gdprEmbed = new EmbedClass(container, consentManager, settings);
 
         return gdprEmbed.init();
     }
 
     listen() {
-        if (window.ghwpEmbedsAllowed && window.ghwpEmbedsAllowed === true) {
+        if (window.ghctEmbedsAllowed && window.ghctEmbedsAllowed === true) {
             /* GTM & Co were faster than us, so we should load right away */
             this.loadAllEmbeds();
         } else {
             /* Listen for GTM / Cookie banner via callback */
-            window.ghwpEmbedsAllowed = this.loadAllEmbeds.bind(this);
+            window.ghctEmbedsAllowed = this.loadAllEmbeds.bind(this);
         }
     }
 

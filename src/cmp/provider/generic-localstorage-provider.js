@@ -54,7 +54,7 @@ export class GenericLocalStorageProvider extends AbstractCmpServiceProvider {
         this.modal.show();
     }
 
-    onConsent(serviceId, callback) {
+    async onConsentUpdate(serviceId, callback) {
         this.eventProxy.on(serviceId, callback);
     }
 

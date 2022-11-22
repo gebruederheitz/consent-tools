@@ -6,7 +6,8 @@ import {
     // LightboxEmbed,
     // IframeEmbed,
     // ModalConsentManager,
-    UsercentricsProvider,
+    // UsercentricsProvider,
+    OneTrustProvider,
     // GenericEventProvider,
     GenericLocalStorageProvider,
     toggleDebugOutput,
@@ -22,19 +23,11 @@ whenDomReady().then(async () => {
             titleText: 'We need your consent to use the service Foobar',
             modalOpenerButton: true,
             skipCheckbox: true,
-            // defaultLoadAll: false,
-            description:
-                'Actually dolore small batch trust fund next level, hot chicken mustache single-origin coffee. Qui pop-up disrupt hammock intelligentsia master cleanse. Portland artisan kickstarter neutra, everyday carry consectetur est activated charcoal air plant lorem cupidatat scenester. Lorem subway tile exercitation pinterest veniam poke.',
-            isEssential: true,
-        },
-        Econda: {
-            servicePrettyName: 'Econda',
-            description:
-                'Knausgaard actually live-edge, air plant vexillologist aliqua scenester letterpress master cleanse stumptown sustainable. Mollit wayfarers sartorial aute nisi af art party humblebrag lyft dolore enamel pin activated charcoal ut. +1 occaecat lyft try-hard tacos vegan in palo santo hexagon fixie cray. Ugh chambray trust fund normcore crucifix franzen. Paleo sunt tumblr, lo-fi iPhone portland truffaut ethical slow-carb distillery try-hard. Crucifix migas commodo, mollit forage sartorial glossier distillery. Celiac kickstarter meh lomo magna qui locavore post-ironic austin typewriter narwhal in.',
+            // cmpServiceId: 'V1',
         },
         test: {
             servicePrettyName: 'Test Service Tracking',
-            cmpServiceId: 'Test Service',
+            cmpServiceId: 'V3',
         },
     };
 
@@ -49,10 +42,9 @@ whenDomReady().then(async () => {
         types
     );
 
-    // const cmpService = await new UsercentricsProvider({
-    //     fallbackServiceProvider: GenericLocalStorageProvider,
-    // });
-    const cmpService = new GenericLocalStorageProvider({ types });
+    const cmpService = await new OneTrustProvider({
+        fallbackServiceProvider: GenericLocalStorageProvider,
+    });
     cmpService.attachSettingsOpener('[href="#modal-opener"]');
 
     const consentManager = new ConsentManager(cmpService, settings);
@@ -61,11 +53,11 @@ whenDomReady().then(async () => {
 
     new EmbedFactory(consentManager, settings);
 
-    function onConsentForService() {
-        console.log('User has given their consent for this service!');
-    }
-
-    consentManager.withConsent('Foobar', onConsentForService).then();
+    consentManager
+        .withConsentOrDenial('Foobar', (consent) => {
+            console.log('[DEMO] consent for foobar?', consent);
+        })
+        .then();
     consentManager
         .withConsent('test', () => {
             console.log('Test Service accepted!');

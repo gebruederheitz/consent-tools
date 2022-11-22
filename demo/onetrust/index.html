@@ -10,8 +10,38 @@
     <link rel="stylesheet" href="/build/css/index.css" />
 
     <script>
+        let callbacks = [];
         // switch to skip the consent manager
-        // window.ghctEmbedsAllowed = true;
+        setTimeout(() => {
+            const ot = {
+                GetDomainData: () => ({
+                    Groups: [
+                        {CustomGroupId: 'C0001', GeneralVendorIds: ['V1']},
+                        {CustomGroupId: 'C0002', GeneralVendorIds: ['V2', 'V3']},
+                    ],
+                    GeneralVendors: [
+                        {VendorCustomId: 'V1', Name: 'Foobar'},
+                        {VendorCustomId: 'V2', Name: 'otherservice'},
+                        {VendorCustomId: 'V3', Name: 'test'},
+                    ],
+                }),
+                OnConsentChanged: ((callback) => {
+                    callbacks.push(callback)
+                }),
+            };
+            window.Optanon = ot;
+            window.OneTrust = ot;
+            window.OnetrustActiveGroups = ',C0002,V2,V3,'
+            window.OptanonActiveGroups = ',C0002,V2,V3,'
+        }, 1000);
+
+        window.triggerOtChange = function () {
+            callbacks.forEach(cb => {
+                cb({
+                    detail: ['C0001', 'C0002', 'V1', 'V3'],
+                });
+            })
+        }
     </script>
 
     <style>
@@ -75,7 +105,7 @@
 
     <!-- Inline script with consent management -->
     <script type="text/plain" data-ghct-type="Foobar">
-        window.alert('Foobar!');
+        //window.alert('Foobar!');
     </script>
 
     <!-- Remote script -->
@@ -99,6 +129,6 @@
 
 
     <!-- The actual consent-tools bundle -->
-    <script src="/demo-bundle.js"></script>
+    <script src="/onetrust/demo-bundle.js"></script>
 </body>
 </html>

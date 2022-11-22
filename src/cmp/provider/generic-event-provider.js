@@ -38,7 +38,7 @@ export class GenericEventProvider extends AbstractCmpServiceProvider {
         this.modal.show();
     }
 
-    onConsent(serviceId, callback) {
+    async onConsentUpdate(serviceId, callback) {
         this.debug.log('Registering callback for service', serviceId);
         this.eventProxy.on(serviceId, callback);
     }

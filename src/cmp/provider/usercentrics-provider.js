@@ -123,7 +123,7 @@ export class UsercentricsProvider extends AbstractCmpServiceProvider {
         }
     }
 
-    async onConsent(serviceId, callback) {
+    async onConsentUpdate(serviceId, callback) {
         const gtm = await this.gtm;
 
         const onGenericConsentEvent = (event) => {
@@ -139,8 +139,8 @@ export class UsercentricsProvider extends AbstractCmpServiceProvider {
     _dirtyObserveUcUiObject(onChanged) {
         let t = 0;
         let done = false;
-        const maxTries = 10;
         const timeout = 200;
+        const maxTries = this.options.loadDelayLimit / timeout;
 
         const timer = () => {
             setTimeout(() => {

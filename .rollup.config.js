@@ -108,6 +108,40 @@ const builds = [
 
 if (!production) {
     builds.push({
+        input: 'test/test-implementation-with-lightbox.js',
+        output: {
+            file: 'demo/lightbox/demo-bundle.js',
+            format: 'iife',
+            inlineDynamicImports: true,
+            name: 'ghconsentdemo',
+            sourcemap: true,
+        },
+        plugins: [
+            resolve({
+                browser: true,
+            }),
+            babel(babelConfig(true)),
+            commonjs(),
+        ],
+    });
+    builds.push({
+        input: 'test/test-implementation-onetrust.js',
+        output: {
+            file: 'demo/onetrust/demo-bundle.js',
+            format: 'iife',
+            inlineDynamicImports: true,
+            name: 'ghconsentdemo',
+            sourcemap: true,
+        },
+        plugins: [
+            resolve({
+                browser: true,
+            }),
+            babel(babelConfig(true)),
+            commonjs(),
+        ],
+    });
+    builds.push({
         input: 'test/test-implementation.js',
         output: {
             file: 'demo/demo-bundle.js',

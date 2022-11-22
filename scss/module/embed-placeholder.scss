@@ -102,3 +102,10 @@ $font-size: defaults.$font-size !default;
         flex: 0 1 auto;
     }
 }
+
+.ghct-placeholder-container {
+    .ghct-embed-placeholder {
+        position: static;
+    }
+}
+
