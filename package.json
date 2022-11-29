@@ -1,6 +1,6 @@
 {
     "name": "@gebruederheitz/consent-tools",
-    "version": "3.0.1",
+    "version": "3.1.0",
     "description": "Extended pluggable tooling for consent management services.",
     "main": "dist/index.mjs",
     "module": "dist/index.mjs",
