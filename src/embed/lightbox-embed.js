@@ -31,7 +31,12 @@ export class LightboxEmbed extends AbstractEmbed {
 
     async listen() {
         await super.listen();
-        this.placeholder?.onPlaceholderClick(this.onPlaceholderClick);
+    }
+
+    listenToPlaceholderButton() {
+        /* Listen for the integrated button in the placeholder */
+        this.placeholder &&
+            this.placeholder.onButtonClick(this.onPlaceholderClick);
     }
 
     loadEmbed(direct = false) {

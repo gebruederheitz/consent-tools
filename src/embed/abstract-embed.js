@@ -33,6 +33,7 @@ export class AbstractEmbed extends Debuggable {
             debug: settings.isDebug(),
         };
         this.hasLoaded = false;
+        this.isInitialized = false;
 
         this.onEmbedPlaceholderButtonClicked =
             this.onEmbedPlaceholderButtonClicked.bind(this);
@@ -59,7 +60,18 @@ export class AbstractEmbed extends Debuggable {
     /**
      * @protected
      */
-    onInit() {}
+    onInit() {
+        this.debug.log('Hide loader', this.container);
+        let el;
+        if (this.container.classList.contains('ghct-loader')) {
+            el = this.container;
+        } else if (
+            this.container.parentElement.classList.contains('ghct-loader')
+        ) {
+            el = this.container.parentElement;
+        }
+        el?.classList.add('loaded');
+    }
 
     /**
      * @protected
@@ -82,7 +94,6 @@ export class AbstractEmbed extends Debuggable {
         this.onBeforeInit();
         if (!this.container || !this.url) return null;
         this.placeholder = this.createPlaceholder();
-        this.attachPlaceholder();
         this.listen().then();
         this.onInit();
 
@@ -90,7 +101,10 @@ export class AbstractEmbed extends Debuggable {
     }
 
     attachPlaceholder() {
-        this.placeholder && this.placeholder.attach(this.container);
+        if (this.placeholder) {
+            this.placeholder.attach(this.container);
+            this.listenToPlaceholderButton();
+        }
     }
 
     createPlaceholder() {
@@ -121,15 +135,18 @@ export class AbstractEmbed extends Debuggable {
     }
 
     async listen() {
+        await this.consentManager.withConsentOrDenial(
+            this.type,
+            this.onConsentChanged
+        );
+    }
+
+    listenToPlaceholderButton() {
         /* Listen for the integrated button in the placeholder */
         this.placeholder &&
             this.placeholder.onButtonClick(
                 this.onEmbedPlaceholderButtonClicked
             );
-        await this.consentManager.withConsentOrDenial(
-            this.type,
-            this.onConsentChanged
-        );
     }
 
     loadAll() {
@@ -147,6 +164,9 @@ export class AbstractEmbed extends Debuggable {
             this.loadEmbed();
         } else if (hasConsent !== true && this.hasLoaded) {
             this.unloadEmbed();
+        } else if (hasConsent !== true && !this.isInitialized) {
+            this.attachPlaceholder();
+            this.isInitialized = true;
         }
     }
 

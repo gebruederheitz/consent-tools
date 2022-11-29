@@ -574,6 +574,28 @@ new EmbedFactory(consentManager, cs);
 
 ### Styling
 
+You can use the bundled CSS files for some default styling at `/dist/css/`.
+Alternatively you can compile your own "theme" using the SCSS modules in `/scss/`,
+overriding the default variables as you see fit.
+
+```scss
+@use '@gebruederheitz/consent-tools/scss' with (
+    $button-color: hotpink,
+    $button-text-color: #b00,
+);
+```
+
+
+#### Loading spinner
+
+An optional feature is the loading spinner provided through the (S)CSS and
+scripts. By adding the class `ghct-loader` to your embed or its container,
+that element will automatically display a simple loading spinner element which
+fades out as soon as the consent status is determined and either the placeholder
+is shown or the embed is loaded. You only need to make certain you're including
+the `/scss/module/loader.scss` on way or another.
+
+
 
 ## Development
 

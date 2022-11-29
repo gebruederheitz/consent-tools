@@ -18,6 +18,7 @@ export class IframeEmbed extends AbstractEmbed {
         });
         if (this.container.matches('iframe')) {
             this.placeholder.attach(this.container.parentNode);
+            this.listenToPlaceholderButton();
         } else {
             super.attachPlaceholder();
         }
