@@ -1,6 +1,15 @@
-node_modules
-.idea
+# Dependencies & dependency managers
+node_modules/
 .npmrc
 yarn-error.log
-demo/**/demo-bundle.js*
+
+# IDE & system
+.idea
+
+# Distribution builds
 dist/
+
+# Demo & documentation builds
+demo/**/demo-bundle.js*
+demo-legacy/**/demo-bundle.js*
+_demo/

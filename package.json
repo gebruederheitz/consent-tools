@@ -36,9 +36,10 @@
         "watch": "npm-run-all --parallel watch:rollup watch:styles",
         "watch:rollup": "rollup -c ./.rollup.config.js --watch",
         "watch:styles": "gulp watch",
-        "start": "sirv demo/ --host",
+        "start": "sirv demo-legacy/ --host",
         "prepublishOnly": "npm run lint && npm run build",
-        "release": "release-it --only-version"
+        "release": "release-it --only-version",
+        "demo": "eleventy --config=.eleventy.js --serve --input=./demo --output=./_demo"
     },
     "dependencies": {
         "@babel/plugin-transform-runtime": "^7.15.0",
@@ -50,6 +51,8 @@
         "store2": "^2.12.0"
     },
     "devDependencies": {
+        "@11ty/eleventy": "^1.0.2",
+        "@11ty/eleventy-plugin-syntaxhighlight": "^4.1.0",
         "@babel/cli": "^7.12.16",
         "@babel/core": "^7.12.16",
         "@babel/eslint-parser": "^7.15.8",

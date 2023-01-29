@@ -1,0 +1,42 @@
+body {
+    --bs-primary-rgb: 0, 123, 118;
+    --bs-primary: rgb(var(--bs-primary-rgb));
+    --bs-link-hover-color: var(--bs-primary);
+    --gh-frame-bg: rgba(var(--bs-primary-rgb), .85);
+
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+    grid-column-gap: 2rem;
+    grid-template-rows: 4rem minmax(100vh, auto);
+}
+
+header {
+    background-color: var(--gh-frame-bg);
+    display: flex;
+    grid-column-start: span 2;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
+
+header h2 {
+    margin: 0;
+}
+
+main h2 {
+    margin-top: 1.5em;
+    margin-bottom: .5em;
+}
+
+main pre[class*="language-"] {
+    margin-bottom: 1em;
+}
+
+main {
+    padding-top: 2rem;
+    padding-bottom: 4rem;
+}
+
+main.container {
+    max-width: 80ch;
+}
