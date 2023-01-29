@@ -97,7 +97,7 @@ $font-size: defaults.$font-size !default;
     }
 
     &--lightbox &__content {
-        background-color: rgba(0, 0, 0, 0.9);
+        background-color: rgba(0 0 0 / 90%);
         color: #eee;
         flex: 0 1 auto;
     }

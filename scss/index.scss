@@ -1,5 +1,5 @@
 // A "default theme" stylesheet with all the modules in default styling.
-@use "lib/variable-defaults" as defaults;
+@use 'lib/variable-defaults' as defaults;
 
 /* -----------------------------------------------------------------------------
 |    Embed Placeholder
@@ -12,14 +12,14 @@ $secondary-button-color: defaults.$secondary-button-color !default;
 $max-width: defaults.$max-width !default;
 $font-size: defaults.$font-size !default;
 
-@use "module/embed-placeholder" with (
+@use 'module/embed-placeholder' with (
     $button-color: $button-color,
     $button-text-color: $button-text-color,
     $button-hover-color: $button-hover-color,
     $button-hover-text-color: $button-hover-text-color,
     $secondary-button-color: $secondary-button-color,
     $max-width: $max-width,
-    $font-size: $font-size,
+    $font-size: $font-size
 );
 
 /* -----------------------------------------------------------------------------
@@ -33,14 +33,28 @@ $modal-small-width: defaults.$modal-small-width !default;
 $modal-height: defaults.$modal-height !default;
 $modal-width: defaults.$modal-width !default;
 
-@use "module/modal" with (
+@use 'module/modal';
+@include modal.styles(
     $modal-bg: $modal-bg,
     $modal-fg: $modal-fg,
     $modal-content-padding: $modal-content-padding,
     $modal-small-height: $modal-small-height,
     $modal-small-width: $modal-small-width,
     $modal-height: $modal-height,
-    $modal-width: $modal-width,
+    $modal-width: $modal-width
 );
 
-@use "module/generic-localstorage-settings";
+:root {
+    --ghct-primary-5: #{defaults.$primary-5};
+    --ghct-primary-10: #{defaults.$primary-10};
+    --ghct-primary-20: #{defaults.$primary-20};
+    --ghct-primary-50: #{defaults.$primary-50};
+    --ghct-secondary-5: #{defaults.$secondary-5};
+    --ghct-secondary-10: #{defaults.$secondary-10};
+    --ghct-secondary-20: #{defaults.$secondary-20};
+    --ghct-secondary-50: #{defaults.$secondary-50};
+    --ghct-tertiary-5: #{defaults.$tertiary-5};
+    --ghct-tertiary-10: #{defaults.$tertiary-10};
+    --ghct-tertiary-20: #{defaults.$tertiary-20};
+    --ghct-tertiary-50: #{defaults.$tertiary-50};
+}
