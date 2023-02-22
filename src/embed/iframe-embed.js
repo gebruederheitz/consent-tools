@@ -61,7 +61,7 @@ export class IframeEmbed extends AbstractEmbed {
         super.unloadEmbed();
         this.debug.log('unload embed');
         this.iframe.src = '';
-        this.createPlaceholder();
+        this.placeholder = this.createPlaceholder();
         this.attachPlaceholder();
     }
 }
