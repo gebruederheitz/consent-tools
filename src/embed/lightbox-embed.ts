@@ -62,9 +62,10 @@ export class LightboxEmbed extends AbstractEmbed {
         this.lightbox = lightboxCreated || null;
     }
 
-    protected override async listen(): Promise<void> {
-        await super.listen();
-        this.placeholder?.onPlaceholderClick(this.onPlaceholderClick);
+    protected override listenToPlaceholderButton(): void {
+        /* Listen for the integrated button in the placeholder */
+        this.placeholder &&
+            this.placeholder.onButtonClick(this.onPlaceholderClick);
     }
 
     protected onPlaceholderClick = (event: Event) => {

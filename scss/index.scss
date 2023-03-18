@@ -23,6 +23,21 @@ $font-size: defaults.$font-size !default;
 );
 
 /* -----------------------------------------------------------------------------
+|    Loader / Spinner
+----------------------------------------------------------------------------- */
+$spinner-color: defaults.$spinner-color !default;
+$spinner-size: defaults.$spinner-size !default;
+$spinner-weight: defaults.$spinner-weight !default;
+$spinner-backdrop: defaults.$spinner-backdrop !default;
+
+@use "module/loader" with (
+    $spinner-color: $spinner-color,
+    $spinner-size: $spinner-size,
+    $spinner-weight: $spinner-weight,
+    $spinner-backdrop: $spinner-backdrop,
+);
+
+/* -----------------------------------------------------------------------------
 |    Modal
 ----------------------------------------------------------------------------- */
 $modal-bg: defaults.$modal-bg !default;

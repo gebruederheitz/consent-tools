@@ -14,6 +14,7 @@ export type AbstractEmbedConstructorArgs = [
 export abstract class AbstractEmbed {
     protected debug: DebugLog;
     protected container: HTMLElement;
+    protected isInitialized = false;
     protected url: string;
     protected type: string;
     protected placeholder: GdprConsentPlaceholder | null = null;
@@ -38,10 +39,6 @@ export abstract class AbstractEmbed {
         this.onEmbedPlaceholderPermanentButtonClicked =
             this.onEmbedPlaceholderPermanentButtonClicked.bind(this);
 
-        // if (this.onModalOpenerClicked) {
-        //     this.onModalOpenerClicked = this.onModalOpenerClicked.bind(this);
-        // }
-
         this.debug.log('Type', this.type);
     }
 
@@ -59,14 +56,27 @@ export abstract class AbstractEmbed {
     public init(): AbstractEmbed | null {
         if (!this.container || !this.url) return null;
         this.placeholder = this.createPlaceholder();
-        this.attachPlaceholder();
         this.listen().then();
+
+        this.debug.log('Hide loader', this.container);
+        let el;
+        if (this.container.classList.contains('ghct-loader')) {
+            el = this.container;
+        } else if (
+            this.container.parentElement?.classList?.contains('ghct-loader')
+        ) {
+            el = this.container.parentElement;
+        }
+        el?.classList.add('loaded');
 
         return this;
     }
 
     protected attachPlaceholder(): void {
-        this.placeholder && this.placeholder.attach(this.container);
+        if (this.placeholder) {
+            this.placeholder.attach(this.container);
+            this.listenToPlaceholderButton();
+        }
     }
 
     protected createPlaceholder(): GdprConsentPlaceholder | null {
@@ -93,6 +103,13 @@ export abstract class AbstractEmbed {
     }
 
     protected async listen(): Promise<void> {
+        await this.consentManager.withConsentOrDenial(
+            this.type,
+            this.onConsentChanged
+        );
+    }
+
+    protected listenToPlaceholderButton(): void {
         /* Listen for the integrated button in the placeholder */
         if (this.placeholder) {
             this.placeholder.onButtonClick(
@@ -105,10 +122,6 @@ export abstract class AbstractEmbed {
                 );
             }
         }
-        await this.consentManager.withConsentOrDenial(
-            this.type,
-            this.onConsentChanged
-        );
     }
 
     protected loadAll(): void {
@@ -121,11 +134,14 @@ export abstract class AbstractEmbed {
     }
 
     protected onConsentChanged(hasConsent: boolean): void {
-        this.debug.log('UC consent changed', { hasConsent });
+        this.debug.log('Consent status changed', { hasConsent });
         if (hasConsent && !this.hasLoaded) {
             this.loadEmbed();
         } else if (!hasConsent && this.hasLoaded) {
             this.unloadEmbed();
+        } else if (!hasConsent && !this.isInitialized) {
+            this.attachPlaceholder();
+            this.isInitialized = true;
         }
     }
 
