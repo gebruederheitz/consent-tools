@@ -18,8 +18,6 @@ export class LightboxEmbed extends AbstractEmbed {
         if (!this.lightboxFactory) {
             throw 'No lightbox factory supplied, can not create GDPR-compliant lightboxes.';
         }
-
-        this.onPlaceholderClick = this.onPlaceholderClick.bind(this);
     }
 
     public override loadEmbed(direct = false): void {
@@ -61,14 +59,4 @@ export class LightboxEmbed extends AbstractEmbed {
         this.debug.log({ lightboxCreated });
         this.lightbox = lightboxCreated || null;
     }
-
-    protected override listenToPlaceholderButton(): void {
-        /* Listen for the integrated button in the placeholder */
-        this.placeholder &&
-            this.placeholder.onButtonClick(this.onPlaceholderClick);
-    }
-
-    protected onPlaceholderClick = (event: Event) => {
-        event.stopImmediatePropagation();
-    };
 }
