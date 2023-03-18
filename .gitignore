@@ -10,6 +10,8 @@ yarn-error.log
 dist/
 
 # Demo & documentation builds
-demo/**/demo-bundle.js*
+demo/**/test-bundle.js*
+demo/assets/*.js
+demo/assets/*.js.map
 demo-legacy/**/demo-bundle.js*
 _demo/

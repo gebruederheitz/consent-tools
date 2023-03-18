@@ -3,6 +3,7 @@ const syntaxHighlight = require('@11ty/eleventy-plugin-syntaxhighlight');
 
 module.exports = function (eleventyConfig) {
     eleventyConfig.addPassthroughCopy('demo/*.css');
+    eleventyConfig.addPassthroughCopy('demo/assets');
     eleventyConfig.addPassthroughCopy('dist');
 
     eleventyConfig.addPlugin(syntaxHighlight);

@@ -14,10 +14,9 @@ import {
 } from '../dist/index.mjs';
 
 import { ConsentToolsProvider } from '../dist/provider/consent-tools.mjs';
+import SvelteModal from '../dist/modal.mjs';
 
 debug.toggle(true);
-
-import '../dist/provider/consent-tools-modal.css';
 
 whenDomReady().then(async () => {
     const types = {
@@ -101,7 +100,9 @@ whenDomReady().then(async () => {
     //     fallbackServiceProvider: GenericLocalStorageProvider,
     // });
     // const cmpService = new GenericLocalStorageProvider({ types, settings });
-    const cmpService = new ConsentToolsProvider(settings, types);
+    const cmpService = new ConsentToolsProvider(settings, types, {
+        modalComponent: SvelteModal,
+    });
     cmpService.attachSettingsOpener('[href="#modal-opener"]');
 
     const consentManager = new ConsentManager(cmpService, settings);

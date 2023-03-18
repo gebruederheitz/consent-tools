@@ -173,14 +173,15 @@ const builds = [
         ...umdBuildCommonOptions,
     },
     // UMD / CommonJS distribution ConsentTools bundle
-    {
-        input: 'src/bundle/provider-consent-tools.ts',
-        output: {
-            file: 'dist/consent-tools.umd.js',
-            ...umdBuildCommonOutputOptions,
-        },
-        ...umdBuildCommonOptions,
-    },
+    // @FIXME: currently attempts to build svelte without being configured for it
+    // {
+    //     input: 'src/bundle/provider-consent-tools.ts',
+    //     output: {
+    //         file: 'dist/consent-tools.umd.js',
+    //         ...umdBuildCommonOutputOptions,
+    //     },
+    //     ...umdBuildCommonOptions,
+    // },
 ];
 
 // Provider ES module builds
@@ -233,23 +234,34 @@ builds.push({
 });
 
 if (!production) {
-    // builds.push({
-    //         input: 'test/test-implementation-with-lightbox.js',
-    //         output: {
-    //             file: 'demo/lightbox/demo-bundle.js',
-    //             format: 'iife',
-    //             inlineDynamicImports: true,
-    //             name: 'ghconsentdemo',
-    //             sourcemap: true,
-    //         },
-    //         plugins: [
-    //             resolve({
-    //                 browser: true,
-    //             }),
-    //             babel(babelConfig(true, false)),
-    //             commonjs(),
-    //         ],
-    //     });
+    builds.push({
+            input: 'test/test-implementation-with-lightbox.js',
+            output: [
+                {
+                    file: 'demo-legacy/lightbox/demo-bundle.js',
+                    format: 'iife',
+                    inlineDynamicImports: true,
+                    name: 'ghconsentdemo',
+                    sourcemap: true,
+                },
+                {
+                    file: 'demo/assets/test-bundle-lightbox.js',
+                    format: 'iife',
+                    inlineDynamicImports: true,
+                    name: 'ghconsentdemo',
+                    sourcemap: true,
+                },
+            ],
+            plugins: [
+                resolve({
+                    browser: true,
+                }),
+                babel(babelConfig(true, false)),
+                commonjs(),
+            ],
+        });
+    // @TODO: provider test implementations
+    //
     //     builds.push({
     //         input: 'test/test-implementation-onetrust.js',
     //         output: {
@@ -269,15 +281,24 @@ if (!production) {
     //     });
     builds.push({
         input: 'test/test-implementation.js',
-        output: {
-            file: 'demo-legacy/demo-bundle.js',
-            format: 'iife',
-            inlineDynamicImports: true,
-            name: 'ghconsentdemo',
-            sourcemap: true,
-        },
+        output: [
+            {
+                file: 'demo-legacy/demo-bundle.js',
+                format: 'iife',
+                inlineDynamicImports: true,
+                name: 'ghconsentdemo',
+                sourcemap: true,
+            },
+            {
+                file: 'demo/assets/test-bundle.js',
+                format: 'iife',
+                inlineDynamicImports: true,
+                name: 'ghconsentdemo',
+                sourcemap: true,
+            },
+        ],
         plugins: [
-            css({ output: 'consent-tools-modal.css' }),
+            // css({ output: 'consent-tools-modal.css' }),
             resolve({
                 browser: true,
             }),
