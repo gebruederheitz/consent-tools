@@ -1,13 +1,13 @@
 {
     "name": "@gebruederheitz/consent-tools",
-    "version": "3.1.0",
+    "version": "3.1.2",
     "description": "Extended pluggable tooling for consent management services.",
     "main": "dist/index.mjs",
     "module": "dist/index.mjs",
     "browser": "dist/bundle.js",
     "svelte": "src/cmp/provider/consent-tools/Modal.svelte",
     "engines": {
-        "node": "^16||^17"
+        "node": "^16||^17||^18"
     },
     "repository": {
         "type": "git",

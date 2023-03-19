@@ -51,7 +51,7 @@ export class ScriptEmbed extends AbstractEmbed {
         if (this.script) {
             this.script.src = '';
         }
-        this.createPlaceholder();
+        this.placeholder = this.createPlaceholder();
         this.attachPlaceholder();
     }
 

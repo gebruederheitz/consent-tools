@@ -46,7 +46,7 @@ export class IframeEmbed extends AbstractEmbed {
         if (this.iframe) {
             this.iframe.src = '';
         }
-        this.createPlaceholder();
+        this.placeholder = this.createPlaceholder();
         this.attachPlaceholder();
     }
 

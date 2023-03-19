@@ -100,6 +100,7 @@ export abstract class AbstractEmbed {
 
     protected hideAndRemovePlaceholder(): void {
         this.placeholder && this.placeholder.hideAndRemove();
+        this.placeholder = null;
     }
 
     protected async listen(): Promise<void> {
