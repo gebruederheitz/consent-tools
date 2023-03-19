@@ -173,15 +173,30 @@ const builds = [
         ...umdBuildCommonOptions,
     },
     // UMD / CommonJS distribution ConsentTools bundle
-    // @FIXME: currently attempts to build svelte without being configured for it
-    // {
-    //     input: 'src/bundle/provider-consent-tools.ts',
-    //     output: {
-    //         file: 'dist/consent-tools.umd.js',
-    //         ...umdBuildCommonOutputOptions,
-    //     },
-    //     ...umdBuildCommonOptions,
-    // },
+    {
+        input: 'src/bundle/provider-consent-tools.ts',
+        output: {
+            file: 'dist/consent-tools.umd.js',
+            ...umdBuildCommonOutputOptions,
+        },
+        plugins: [
+            svelte({
+                preprocess: preprocess({
+                    babel: {
+                        targets: {
+                            esmodules: true,
+                        },
+                        presets: ['@babel/preset-typescript'],
+                        sourceMaps: true,
+                        inputSourceMap: true,
+                    },
+                    scss: scss(),
+                }),
+            }),
+            css({ output: 'consent-tools-modal.css' }),
+            ...umdBuildCommonOptions.plugins,
+        ],
+    },
 ];
 
 // Provider ES module builds

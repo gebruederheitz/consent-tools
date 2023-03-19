@@ -39,7 +39,8 @@
         "start": "sirv demo-legacy/ --host",
         "prepublishOnly": "npm run lint && npm run build",
         "release": "release-it --only-version",
-        "demo": "eleventy --config=.eleventy.js --serve --input=./demo --output=./_demo"
+        "demo:serve": "eleventy --config=.eleventy.js --serve --input=./demo --output=./_demo",
+        "demo:build": "eleventy --config=.eleventy.js --serve --input=./demo --output=./_demo"
     },
     "dependencies": {
         "@babel/plugin-transform-runtime": "^7.15.0",

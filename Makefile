@@ -11,3 +11,9 @@ test:
 
 release:
 	npm i && npm run release
+
+docs:
+	npm i && npm run demo:serve
+
+build-docs:
+	npm i && npm run demo:build
