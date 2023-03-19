@@ -1,0 +1,69 @@
+@use 'sass:color';
+@use '../lib/variable-defaults' as defaults;
+
+$button-color: defaults.$button-color !default;
+$button-text-color: defaults.$button-text-color !default;
+$button-hover-color: defaults.$button-hover-color !default;
+$button-hover-text-color: defaults.$button-hover-text-color !default;
+$secondary-button-color: defaults.$secondary-button-color !default;
+$button-radius: defaults.$button-radius !default;
+
+@mixin button (
+    $color: $button-color,
+    $button-text-color: $button-text-color,
+    $button-hover-color: $button-hover-color,
+    $button-hover-text-color: $button-hover-text-color,
+    $secondary-button-color: $secondary-button-color,
+    $radius: $button-radius,
+) {
+    /* unstyle button */
+    background: transparent;
+    background-clip: padding-box;
+    line-height: normal;
+    //text-align: left;
+    text-decoration: none;
+    text-shadow: none;
+    white-space: nowrap;
+
+    /* actual button styles */
+    background-color: $color;
+    border: 1px solid $color;
+    border-radius: $radius;
+    color: $button-text-color;
+    cursor: pointer;
+    margin-top: 1rem;
+    padding: 1rem 1.6rem;
+    text-align: center;
+    transition: all 200ms ease;
+
+    &:not(:first-child) {
+        margin-left: .5rem;
+    }
+
+    &:not(:last-child) {
+        margin-right: .5rem;
+    }
+
+    &:hover {
+        background-color: $button-hover-color;
+        color: $button-hover-text-color;
+    }
+
+    &--secondary {
+        background-color: $secondary-button-color;
+        border: 1px solid $secondary-button-color;
+        color: #000;
+
+        &:hover {
+            $secondary-hover-color: darken($secondary-button-color, 10%);
+
+            background-color: $secondary-hover-color;
+            border-color: $secondary-hover-color;
+            color: #000;
+        }
+    }
+
+    &--permanent {
+        background-color: color.adjust($color, $saturation: -70%);
+    }
+}

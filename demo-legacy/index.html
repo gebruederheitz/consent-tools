@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <title>Test page</title>
+
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="stylesheet" href="/build/css/index.css" />
+    <link rel="stylesheet" href="/build/consent-tools-modal.css" />
+
+    <script>
+        // switch to skip the consent manager
+        // window.ghctEmbedsAllowed = true;
+    </script>
+
+    <style>
+        body {
+            padding: 5vh 10vw;
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .button-container {
+            display: flex;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        .iframe-container {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .element-consent-container {
+            margin-bottom: 2rem;
+            min-height: 5rem;
+            width: 100%;
+            background-color: hotpink;
+            display: none;
+        }
+
+        .element-consent-container.has-consent {
+            display: block;
+        }
+
+        .ghct-embed-placeholder {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .button {
+            color: #333;
+            padding: .5em 1em;
+            background-color: #2e8;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px 2px rgba(0 0 0 / 5%);
+            margin: .5em;
+            text-decoration: none;
+            transition: background-color 200ms ease;
+        }
+
+        .button:hover {
+            background-color: #3fa;
+        }
+
+        .button:visited, .button:active {
+            text-decoration: none;
+            color: #333;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="ghct-placeholder-container"></div>
+    <h1 class="demo">Consent Tools Test Page</h1>
+
+    <!-- Buttons that will trigger Modals or services, depending on consent status -->
+    <div class="button-container">
+        <button type="button" data-ghct-service="Foobar" data-ghct-modal="true">Trigger Foobar Service</button>
+        <button type="button" data-ghct-service="Test Service" data-ghct-modal="true">Trigger Test Service</button>
+        <a class="button" href="#modal-opener">Modal-Opener</a>
+    </div>
+
+    <!-- An element that's only shown with consent a specific service -->
+    <div class="element-consent-container" data-ghct-service="Foobar"></div>
+
+    <!-- An iframe embedded depending on user consent -->
+    <div class="iframe-container ghct-loader">
+        <iframe data-ghct-src="/iframe" data-ghct-type="Foobar" height="500" frameborder="0"></iframe>
+    </div>
+    <div class="iframe-container">
+        <iframe data-ghct-src="/iframe" data-ghct-type="test" height="500" frameborder="0"></iframe>
+    </div>
+    <div class="iframe-container">
+        <iframe data-ghct-src="/iframe" data-ghct-type="Econda" height="500" frameborder="0"></iframe>
+    </div>
+
+
+    <!-- Inline script with consent management -->
+    <script type="text/plain" data-ghct-type="Foobar">
+        //window.alert('Foobar!');
+    </script>
+
+    <!-- Remote script -->
+    <script
+        data-ghct-src="https://elq-forms.ghdev.de/eloqua-common.js"
+        data-ghct-type="Eloqua"
+    ></script>
+
+    <!-- Remote script with placeholder -->
+    <script
+        data-ghct-src="https://elq-forms.ghdev.de/eloqua-video.js"
+        data-ghct-type="Eloqua"
+        data-ghct-placeholder="true"
+    ></script>
+
+
+    <!-- The settings opener to administer the CMP -->
+    <div class="button-container">
+        <a class="button" href="#modal-opener">Modal-Opener</a>
+    </div>
+
+    <!-- A dummy service in a dummy element – ConsentToolsProvider
+                                             should include that in its list -->
+    <span
+        data-ghct-type="dummy"
+        data-ghct-name="Dummy Service Royale"
+        data-ghct-tier="1"
+        data-ghct-category="functional"
+    ></span>
+
+
+    <!-- The actual consent-tools bundle -->
+    <script src="/demo-bundle.js"></script>
+</body>
+</html>
