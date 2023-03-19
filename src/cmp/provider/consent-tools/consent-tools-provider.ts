@@ -1,5 +1,4 @@
 import type { ConsentSettings } from '../../../util/settings/consent-settings';
-import type { ConsentToolsProviderService } from '../../../util/settings/types';
 import type { CmpServiceProvider } from '../../cmp-service-provider';
 import type { SvelteComponentDev } from 'svelte/types/runtime/internal/dev';
 
@@ -17,11 +16,11 @@ import { ServiceStore } from './store/services';
 import type { ConsentToolsProviderEmitter } from './events';
 
 // @TODO: programmatic access to consent/denial, global and per service
+// @TODO: only show tier 0 unconditionally, maybe change modal display when there's
+//        exclusively tier 0 services present
 
 // @FIXME: when loading for the first time, do not load anything (not even
 //         essentials) until the banner is confirmed
-
-type Services = Record<string, ConsentToolsProviderService>;
 
 interface ModalComponentConstructorArgs {
     target: Element;
@@ -68,14 +67,13 @@ export class ConsentToolsProvider
 
     constructor(
         protected readonly settings: ConsentSettings,
-        types: Services = {},
         options: Partial<ConsentToolsProviderOptions> = {}
     ) {
         super('ConsentToolsProvider CmpService');
         this.options = _merge(DEFAULT_OPTIONS, options);
         this.store = new ServiceStore(
             this.options.useSessionStorage,
-            types,
+            settings.getServices(),
             this.settings,
             this.eventProxy,
         );

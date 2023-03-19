@@ -24,20 +24,9 @@ whenDomReady().then(async () => {
     const types = {
         Foobar: {
             servicePrettyName: {
-                en: 'Foobar Analytics Ltd.',
-            },
-            titleText: {
-                en: 'We need your consent to use the service Foobar',
-            },
-            // defaultLoadAll: false,
-            placeholderBody: {
-                en: 'Actually dolore small batch trust fund next level, hot chicken mustache single-origin coffee. Qui pop-up disrupt hammock intelligentsia master cleanse. Portland artisan kickstarter neutra, everyday carry consectetur est activated charcoal air plant lorem cupidatat scenester. Lorem subway tile exercitation pinterest veniam poke.',
+                en: 'Foobar Video Streaming',
             },
             tier: 1,
-            privacyPolicySection: 'foobar',
-            serviceDescription: {
-                en: 'Used to track anonymous usage data in order to improve our services.',
-            },
             permanentConsentType: 'button',
             defaultLoadAll: false,
         },
@@ -57,7 +46,7 @@ whenDomReady().then(async () => {
         types
     );
 
-    const cmpService = await new ConsentToolsProvider(settings, types, {
+    const cmpService = await new ConsentToolsProvider(settings, {
         modalComponent: SvelteModal,
     });
     cmpService.attachSettingsOpener('[href="#modal-opener"]');

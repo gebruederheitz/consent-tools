@@ -100,7 +100,7 @@ whenDomReady().then(async () => {
     //     fallbackServiceProvider: GenericLocalStorageProvider,
     // });
     // const cmpService = new GenericLocalStorageProvider({ types, settings });
-    const cmpService = new ConsentToolsProvider(settings, types, {
+    const cmpService = new ConsentToolsProvider(settings, {
         modalComponent: SvelteModal,
     });
     cmpService.attachSettingsOpener('[href="#modal-opener"]');

@@ -1,3 +1,5 @@
+import type { ConsentToolsProviderService } from './types';
+
 import _get from 'lodash-es/get';
 import _pick from 'lodash-es/pick';
 import _toPairs from 'lodash-es/toPairs';
@@ -15,6 +17,8 @@ import type { DebugLog } from '../debuggable';
 import { DefaultableMap } from '../defaultable-map';
 import { debug } from '../debuggable';
 
+type Services = Record<string, ConsentToolsProviderService> | Record<string, ConsentToolsSettings>;
+
 const FALLBACK_LOCALE = 'en';
 
 export class ConsentSettings {
@@ -22,7 +26,7 @@ export class ConsentSettings {
     public locale: string;
     protected debug: DebugLog = debug.spawn('ConsentSettings');
     protected defaults: ConsentToolsSettings = DEFAULT_SETTINGS;
-    protected services: Record<string, ConsentToolsSettings> = {};
+    protected services: Services = {};
 
     constructor(
         defaults: ConsentToolsSettings = {},
@@ -162,6 +166,10 @@ export class ConsentSettings {
         setDefault = true
     ): DefaultableMap<string, string> {
         return this.get('privacyPolicySection', setDefault);
+    }
+
+    public getServices(): Record<string, ConsentToolsSettings> {
+        return this.services;
     }
 
     protected getDefaultLocale(): string {
