@@ -37,6 +37,8 @@ script: ct-bundle.js
         </div>
     </main>
 
-    <script src="/dist/{{ script }}"></script>
+    {% if script %}
+        <script src="/dist/{{ script }}"></script>
+    {% endif %}
 </body>
 </html>

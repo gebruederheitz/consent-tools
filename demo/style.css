@@ -40,3 +40,29 @@ main {
 main.container {
     max-width: 80ch;
 }
+
+.example {
+    width: 120%;
+    margin-left: -10%;
+    margin-right: -10%;
+    margin-top: 5rem;
+    padding: 2rem;
+    border: 2px solid #555;
+    border-radius: 5px;
+    position: relative;
+}
+
+.example::before {
+    content: 'Example';
+    background-color: #fff;
+    position: absolute;
+    top: -1.25em;
+    right: 1rem;
+    padding: .5em;
+    font-variant: small-caps;
+    font-size: 2em;
+}
+
+html[lang="de"] .example::before {
+    content: "Beispiel";
+}
