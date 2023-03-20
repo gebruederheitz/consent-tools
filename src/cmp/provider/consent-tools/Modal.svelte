@@ -1,6 +1,5 @@
 <script lang="ts">
     import type { ConsentToolsSettings } from '../../../util/settings/types';
-    import type { Emitter } from 'mitt';
 
     import { setContext } from 'svelte';
 

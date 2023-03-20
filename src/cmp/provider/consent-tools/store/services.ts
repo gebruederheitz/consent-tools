@@ -301,10 +301,9 @@ export class ServiceStore {
 
         _toPairs(services).forEach(([id, config]) => {
             initialState[id] = {
-                // @TODO read and apply locale
                 name:
                     (config.servicePrettyName &&
-                        config.servicePrettyName['en']) ||
+                        config.servicePrettyName[this.settings.locale]) ||
                     id,
                 tier:
                     typeof config.tier !== 'undefined' && config.tier in Tier
@@ -313,7 +312,7 @@ export class ServiceStore {
                 hasConsent: servicesConsented[id] === true,
                 description:
                     (config.serviceDescription &&
-                        config.serviceDescription['en']) ||
+                        config.serviceDescription[this.settings.locale]) ||
                     '',
                 category: config.category || '',
             };
