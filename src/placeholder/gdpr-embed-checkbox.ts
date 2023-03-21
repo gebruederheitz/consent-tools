@@ -1,5 +1,6 @@
 import type { ConsentSettings } from '../util/settings/consent-settings';
 import { createDomElement } from '@gebruederheitz/wp-frontend-utils';
+import { translator, Translatable} from '../util/i18n';
 
 export class GdprEmbedCheckbox {
     protected checkboxElement: HTMLInputElement | null = null;
@@ -38,7 +39,7 @@ export class GdprEmbedCheckbox {
 
         createDomElement({
             type: 'LABEL',
-            innerText: this.settings.checkboxLabel.get(this.type) || '',
+            innerText: translator.get(Translatable.ph_PermanentConsentLabel, this.type),
             parent: checkboxWrapper,
         });
     }

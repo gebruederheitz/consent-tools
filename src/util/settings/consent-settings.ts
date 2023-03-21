@@ -1,29 +1,29 @@
-import type { ConsentToolsProviderService } from './types';
+import type {
+    ConsentToolsAppSettings,
+    ConsentToolsProviderService,
+    ConsentToolsSettings,
+    PermanentConsentType,
+} from './types';
 
 import _get from 'lodash-es/get';
 import _pick from 'lodash-es/pick';
 import _toPairs from 'lodash-es/toPairs';
 import _omit from 'lodash-es/omit';
 import _merge from 'lodash-es/merge';
+import type { DebugLog } from '../debuggable';
+import { debug } from '../debuggable';
+import type { Dictionary, Translator } from '../i18n/translator';
+import { translator } from '../i18n';
 
 import { DEFAULT_APP_SETTINGS, DEFAULT_SETTINGS } from '../defaults';
-import type {
-    ConsentToolsAppSettings,
-    ConsentToolsSettings,
-    PermanentConsentType,
-    TranslatableRecord,
-} from './types';
-import type { DebugLog } from '../debuggable';
 import { DefaultableMap } from '../defaultable-map';
-import { debug } from '../debuggable';
 
-type Services = Record<string, ConsentToolsProviderService> | Record<string, ConsentToolsSettings>;
-
-const FALLBACK_LOCALE = 'en';
+type Services =
+    | Record<string, ConsentToolsProviderService>
+    | Record<string, ConsentToolsSettings>;
 
 export class ConsentSettings {
     public readonly appSettings: ConsentToolsAppSettings = DEFAULT_APP_SETTINGS;
-    public locale: string;
     protected debug: DebugLog = debug.spawn('ConsentSettings');
     protected defaults: ConsentToolsSettings = DEFAULT_SETTINGS;
     protected services: Services = {};
@@ -31,7 +31,8 @@ export class ConsentSettings {
     constructor(
         defaults: ConsentToolsSettings = {},
         services: Record<string, ConsentToolsSettings> = {},
-        locale: string | null = null
+        locale: string | null = ConsentSettings.getDefaultLocale(),
+        dictionary: Dictionary | null = null
     ) {
         const appSettingsKeys = Object.keys(DEFAULT_APP_SETTINGS);
 
@@ -45,25 +46,17 @@ export class ConsentSettings {
             ..._omit(defaults, appSettingsKeys),
         };
         this.services = services;
-        this.locale = locale || this.getDefaultLocale();
+
+        if (dictionary && locale) {
+            translator.load(dictionary, locale);
+        }
+        translator.setLocale(locale);
 
         this.debug.log('defaults & services', this.defaults, this.services);
     }
 
     get additionalServices(): DefaultableMap<string, string[]> {
         return this.get('additionalServices');
-    }
-
-    get buttonText(): DefaultableMap<string, string> {
-        return this.getTranslated('buttonText');
-    }
-
-    get checkboxLabel(): DefaultableMap<string, string> {
-        return this.getTranslated('checkboxLabel');
-    }
-
-    get checkboxProviderName(): DefaultableMap<string, string> {
-        return this.getTranslated('checkboxProviderName');
     }
 
     get clickOnConsent(): DefaultableMap<string, boolean> {
@@ -87,21 +80,8 @@ export class ConsentSettings {
         return this.get('modalOpenerButton');
     }
 
-    get modalOpenerButtonText(): DefaultableMap<string, string> {
-        return this.getTranslated('modalOpenerButtonText');
-    }
-
     get permanentConsentType(): DefaultableMap<string, PermanentConsentType> {
         return this.get('permanentConsentType');
-    }
-
-    get placeholderBody(): DefaultableMap<string, string> {
-        const bodies = this.getTranslated('placeholderBody');
-        return this.parsePlaceholders(bodies, {
-            '%servicePrettyName%': (service: string) =>
-                this.servicePrettyName.get(service) as string,
-            '%privacyPolicyUrl%': () => this.appSettings.privacyPolicyUrl,
-        });
     }
 
     get privacyPolicySection(): DefaultableMap<string, string> {
@@ -129,24 +109,8 @@ export class ConsentSettings {
         return this.get('reloadOnConsent');
     }
 
-    get serviceDescription(): DefaultableMap<string, string> {
-        return this.getTranslated('serviceDescription');
-    }
-
-    get servicePrettyName(): DefaultableMap<string, string> {
-        return this.getTranslated('servicePrettyName');
-    }
-
-    get titleText(): DefaultableMap<string, string> {
-        const titles = this.getTranslated('titleText');
-        return this.parsePlaceholders(titles, {
-            '%servicePrettyName%': (service: string) =>
-                this.servicePrettyName.get(service) as string,
-        });
-    }
-
-    public setLocale(locale: string) {
-        this.locale = locale;
+    public getTranslator(): Translator {
+        return translator;
     }
 
     public hasService(serviceId: string): boolean {
@@ -172,11 +136,9 @@ export class ConsentSettings {
         return this.services;
     }
 
-    protected getDefaultLocale(): string {
+    protected static getDefaultLocale(): string | null {
         return (
-            document.documentElement.lang ||
-            window.navigator.language ||
-            FALLBACK_LOCALE
+            document.documentElement.lang || window.navigator.language || null
         );
     }
 
@@ -203,76 +165,5 @@ export class ConsentSettings {
         );
 
         return result;
-    }
-
-    protected getTranslated(setting: string): DefaultableMap<string, string> {
-        const result: DefaultableMap<string, string> = new DefaultableMap();
-        const settingDefaults = _get(this.defaults, setting);
-
-        let defaultValue;
-        if (settingDefaults[this.locale]) {
-            defaultValue = settingDefaults[this.locale];
-        } else {
-            defaultValue = settingDefaults[FALLBACK_LOCALE];
-        }
-        result.setDefault(defaultValue);
-
-        _toPairs(this.services).forEach(
-            ([serviceId, serviceSettings]: [string, ConsentToolsSettings]) => {
-                const settingValues: TranslatableRecord = _get(
-                    serviceSettings,
-                    setting,
-                    {}
-                );
-                const values = _merge({}, settingDefaults, settingValues);
-                let value;
-                if (values[this.locale]) {
-                    value = values[this.locale];
-                } else {
-                    value = values[FALLBACK_LOCALE];
-                }
-                result.set(serviceId, value);
-            }
-        );
-
-        return result;
-    }
-
-    protected parsePlaceholders(
-        baseStrings: DefaultableMap<string, string>,
-        placeholders: Record<string, (service: string) => string>
-    ): DefaultableMap<string, string> {
-        const parsedStrings: DefaultableMap<string, string> =
-            new DefaultableMap(baseStrings);
-        for (const [service, baseString] of baseStrings.entries()) {
-            let result = baseString;
-            _toPairs(placeholders).forEach(
-                ([placeholder, valueGetter]: [
-                    placeholder: string,
-                    valueGetter: (service: string) => string
-                ]) => {
-                    result = this.parsePlaceholdersIntoTemplateString(
-                        result,
-                        placeholder,
-                        valueGetter(service)
-                    );
-                }
-            );
-            parsedStrings.set(service, result);
-        }
-
-        return parsedStrings;
-    }
-
-    protected parsePlaceholdersIntoTemplateString(
-        template: string,
-        search: string,
-        replacement: string
-    ) {
-        if (typeof replacement === 'undefined' || replacement === null) {
-            replacement = '';
-        }
-
-        return template.replace(search, replacement);
     }
 }

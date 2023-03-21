@@ -1,22 +1,26 @@
 import type { Writable } from 'svelte/store';
-import type { StoreBase } from 'store2';
-import type {
-    ConsentToolsProviderService,
-    TranslatableSetting,
-} from '../../../../util/settings/types';
-import type { DebugLog } from '../../../../util/debuggable';
-import type { ConsentToolsProviderEmitter } from '../events';
-import type { CategoryRecord } from '../../../../util/settings/types';
-import type { ConsentSettings } from '../../../../util/settings/consent-settings';
-
 import { writable } from 'svelte/store';
+import type { StoreBase } from 'store2';
 import storage from 'store2';
 import _groupBy from 'lodash-es/groupBy';
 import _toPairs from 'lodash-es/toPairs';
 import _sortBy from 'lodash-es/sortBy';
 
-import { Tier, DefaultTierLabels } from '../../../../util/settings/types';
+import type {
+    CategoryRecord,
+    ConsentToolsProviderService,
+} from '../../../../util/settings/types';
+import type { DebugLog } from '../../../../util/debuggable';
+import type { ConsentToolsProviderEmitter } from '../events';
+import type { ConsentSettings } from '../../../../util/settings/consent-settings';
+
+import {
+    Category,
+    DefaultTierLabels,
+    Tier,
+} from '../../../../util/settings/types';
 import { debug } from '../../../../util/debuggable';
+import { translator, Translatable } from '../../../../util/i18n';
 
 export enum SortMode {
     ALPHA,
@@ -29,7 +33,7 @@ export interface ServiceRecord {
     tier: Tier;
     hasConsent: boolean;
     description: string;
-    category: string;
+    category: Category;
 }
 
 export interface DisplayedService extends ServiceRecord {
@@ -42,6 +46,24 @@ export type SortedServiceGroup = {
     services: DisplayedService[];
     tier?: Tier;
 };
+
+/**
+ * @TODO:
+ *     Currently upon tier selection we mark all existing services within that
+ *     tier as having consent. This is as problematic as its counterpart:
+ *        If a new service is added by the website owner, this service will not
+ *        have consent by existing users, even those that have clicked "do
+ *        whatever you want".
+ *     One alternative is to mark the entire _tier_ as having consent, and
+ *     applying that consent to any new services within that tier. This is why
+ *     most existing CM solutions deal in categories.
+ *     -
+ *     Re-opening the "cookie banner" every time the service configuration
+ *     changes feels like harassment, so it's especially out for RED tier
+ *     users, while GREEN tier users probably don't care either way.
+ *
+ *  @TODO: Add a button "Use these settings" to the services layer for initial run
+ */
 
 export type ServicesState = {
     filter: [SortMode, string | Tier] | null;
@@ -62,7 +84,7 @@ export class ServiceStore {
     protected localStorage: StoreBase;
     protected store: Writable<ServicesState>;
     protected state: ServicesState = DEFAULT_STATE;
-    protected tiers: Record<Tier, TranslatableSetting>;
+    protected tiers: Record<Tier, Translatable>;
 
     protected readonly categories: CategoryRecord;
 
@@ -109,7 +131,7 @@ export class ServiceStore {
                     name: serviceId,
                     tier: Tier.FULL,
                     hasConsent: false,
-                    category: '',
+                    category: Category.UNKNOWN,
                     description: '',
                     ...settings,
                 },
@@ -133,7 +155,7 @@ export class ServiceStore {
                     tier: Tier.FULL,
                     hasConsent: hasConsent,
                     description: '',
-                    category: '',
+                    category: Category.UNKNOWN,
                 };
             }
 
@@ -171,13 +193,12 @@ export class ServiceStore {
         });
     }
 
-    protected mapCategory(cat: string): {
+    protected mapCategory(cat: Category): {
         categoryLabel: string | null;
         categoryColor: string | null;
     } {
         return {
-            categoryLabel:
-                this.categories[cat]?.label[this.settings.locale] || null,
+            categoryLabel: translator.get(this.categories[cat].label),
             categoryColor: this.categories[cat]?.color || null,
         };
     }
@@ -276,7 +297,7 @@ export class ServiceStore {
             ([stringTier, services]: [string, DisplayedService[]]) => {
                 const tier = parseInt(stringTier, 10) as Tier;
                 return {
-                    caption: this.tiers[tier][this.settings.locale] || '',
+                    caption: translator.get(this.tiers[tier]),
                     services,
                     tier: tier,
                 };
@@ -301,20 +322,19 @@ export class ServiceStore {
 
         _toPairs(services).forEach(([id, config]) => {
             initialState[id] = {
-                name:
-                    (config.servicePrettyName &&
-                        config.servicePrettyName[this.settings.locale]) ||
-                    id,
+                name: translator
+                    .fallback(id)
+                    .get(Translatable.servicePrettyName, id),
                 tier:
                     typeof config.tier !== 'undefined' && config.tier in Tier
                         ? config.tier
                         : Tier.FULL,
                 hasConsent: servicesConsented[id] === true,
-                description:
-                    (config.serviceDescription &&
-                        config.serviceDescription[this.settings.locale]) ||
-                    '',
-                category: config.category || '',
+                description: translator.get(
+                    Translatable.serviceDescription,
+                    id
+                ),
+                category: config.category || Category.UNKNOWN,
             };
         });
 

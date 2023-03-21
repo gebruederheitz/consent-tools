@@ -1,5 +1,6 @@
 import type { LightboxFactoryInterface } from '../lightbox-factory-interface';
 import type { Value } from 'classnames';
+import { Translatable } from '../i18n';
 
 export enum PermanentConsentType {
     CHECKBOX = 'checkbox',
@@ -13,49 +14,39 @@ export enum Tier {
     FULL,
 }
 
-export const DefaultTierLabels: Record<Tier, TranslatableSetting> = {
-    [Tier.ESSENTIAL]: {
-        en: 'Essentials (Red)',
-    },
-    [Tier.MODERATE]: {
-        en: 'Moderate (Amber)',
-    },
-    [Tier.FULL]: {
-        en: 'Full (Green)',
-    },
+export const DefaultTierLabels: Record<Tier, Translatable> = {
+    [Tier.ESSENTIAL]: Translatable.tier_Red_PrettyName,
+    [Tier.MODERATE]: Translatable.tier_Amber_PrettyName,
+    [Tier.FULL]: Translatable.tier_Green_PrettyName,
 };
 
-export type TranslatableSetting = {
-    [locale: string]: string;
-};
+export enum Category {
+    UNKNOWN = '',
+    FUNCTIONAL = 'functional',
+    ANALYTICS = 'analytics',
+    MARKETING = 'marketing',
+    ESSENTIAL = 'essential',
+}
 
 export interface ConsentToolsSettings {
     additionalServices?: Array<string>;
-    buttonText?: TranslatableSetting;
-    checkboxLabel?: TranslatableSetting; // @TODO: Change to permanentConsentLabel
-    checkboxProviderName?: TranslatableSetting; // @TODO Change to permanentConsentProviderName
     clickOnConsent?: boolean;
     cmpServiceId?: string | null;
     defaultLoadAll?: boolean;
     modalOpenerButton?: boolean;
-    modalOpenerButtonText?: TranslatableSetting;
     permanentConsentType?: PermanentConsentType;
     privacyPolicySection?: string;
-    placeholderBody?: TranslatableSetting;
     reloadOnConsent?: boolean;
-    serviceDescription?: TranslatableSetting;
-    servicePrettyName?: TranslatableSetting;
-    titleText?: TranslatableSetting;
 }
 
 export interface ConsentToolsProviderService extends ConsentToolsSettings {
     tier?: Tier;
-    category?: string;
+    category?: Category;
 }
 
 export type CategoryRecord = Record<
-    string,
-    { label: TranslatableSetting; color?: string }
+    Category,
+    { label: Translatable; color?: string }
 >;
 
 export type ConsentToolsAppSettings = {
@@ -65,12 +56,10 @@ export type ConsentToolsAppSettings = {
     lightboxFactory: LightboxFactoryInterface | null;
     privacyPolicyUrl: string;
     categories: CategoryRecord;
-    tiers: Record<Tier, TranslatableSetting>;
+    tiers: Record<Tier, Translatable>;
 };
 
 export type Setting = Record<
     string,
-    Value | TranslatableSetting | PermanentConsentType
+    Value | PermanentConsentType
 >;
-
-export type TranslatableRecord = Record<string, TranslatableSetting>;

@@ -5,6 +5,7 @@ import { GdprEmbedCheckbox } from './gdpr-embed-checkbox';
 import { PermanentConsentType } from '../util/settings/types';
 import type { ConsentManager } from '../consent-manager/consent-manager';
 import type { ConsentSettings } from '../util/settings/consent-settings';
+import { translator, Translatable } from '../util/i18n';
 
 interface PlaceholderElements {
     button: Element;
@@ -100,7 +101,18 @@ export class GdprConsentPlaceholder {
         this._addTitle(placeholderContent);
 
         createDomElement({
-            innerHtml: this.settings.placeholderBody.get(this.type) || '',
+            innerHtml: translator.withPlaceholders(
+                Translatable.ph_Body,
+                this.type,
+                (placeholder) => {
+                    if (placeholder === Translatable.servicePrettyName) {
+                        return translator
+                            .fallback(this.type)
+                            .get(Translatable.servicePrettyName, this.type);
+                    }
+                    return undefined;
+                }
+            ),
             parent: placeholderContent,
         });
 
@@ -132,7 +144,7 @@ export class GdprConsentPlaceholder {
                 'button',
                 'is-style-primary',
             ],
-            innerText: this.settings.buttonText.get(this.type) || '',
+            innerText: translator.get(Translatable.ph_ButtonText, this.type),
             parent: buttonContainer,
             attributes: {
                 type: 'button',
@@ -150,8 +162,20 @@ export class GdprConsentPlaceholder {
     }
 
     private _addTitle(placeholderContent: Element): void {
-        const titleText = this.settings.titleText.get(this.type);
-        this.debug.log('TITLE TEXT', this.type, titleText, this.settings.titleText.get(''), this.settings.titleText);
+        const titleText = translator.withPlaceholders(
+            Translatable.ph_TitleText,
+            this.type,
+            (placeholder) => {
+                if (placeholder === Translatable.servicePrettyName) {
+                    // set a fallback for serviceprettyname
+                    return translator
+                        .fallback(this.type)
+                        .get(Translatable.servicePrettyName, this.type);
+                }
+
+                return undefined;
+            }
+        );
         if (titleText) {
             createDomElement({
                 type: 'H2',
@@ -176,9 +200,10 @@ export class GdprConsentPlaceholder {
                 attributes: {
                     type: 'button',
                 },
-                innerText: this.settings.modalOpenerButtonText.get(
+                innerText: translator.get(
+                    Translatable.ph_ModalOpenerButtonText,
                     this.type
-                ) as string,
+                ),
                 parent: buttonContainer,
             });
 
@@ -203,8 +228,10 @@ export class GdprConsentPlaceholder {
                     'is-style-tertiary',
                     'ghct-embed-placeholder__button--permanent',
                 ],
-                // @FIXME: we need a setting for the button text
-                innerText: this.settings.checkboxLabel.get(this.type) || '',
+                innerText: translator.get(
+                    Translatable.ph_PermanentConsentLabel,
+                    this.type
+                ),
                 parent: buttonContainer,
                 attributes: {
                     type: 'button',

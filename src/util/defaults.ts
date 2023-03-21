@@ -1,10 +1,14 @@
 import type {
+    CategoryRecord,
     ConsentToolsAppSettings,
     ConsentToolsSettings,
 } from './settings/types';
-import type  { CategoryRecord } from './settings/types';
-
-import { DefaultTierLabels, PermanentConsentType } from './settings/types';
+import {
+    Category,
+    DefaultTierLabels,
+    PermanentConsentType,
+} from './settings/types';
+import { Translatable } from './i18n';
 
 export const DEFAULT_SETTINGS: ConsentToolsSettings = {
     permanentConsentType: PermanentConsentType.CHECKBOX,
@@ -15,43 +19,29 @@ export const DEFAULT_SETTINGS: ConsentToolsSettings = {
     cmpServiceId: null,
     modalOpenerButton: true,
     privacyPolicySection: '',
-    buttonText: {
-        en: 'Load this content once',
-        de: 'Inhalt einmal laden',
-    },
-    checkboxLabel: {
-        en: 'Apply to all content of this type',
-        de: 'Für alle Inhalte dieser Art übernehmen',
-    },
-    checkboxProviderName: {
-        en: 'by this provider',
-        de: 'dieses Anbieters',
-    },
-    modalOpenerButtonText: {
-        en: 'More information',
-        de: 'Mehr Informationen',
-    },
-    placeholderBody: {
-        en: 'In order to view this content from a third-party provider, you will need to activate it by clicking the button below. Some personal information may be transferred and saved there as a result.',
-        de: 'Um diesen Inhalt anzuzeigen, müssen Sie ihn durch Klick auf den Button aktivieren. Dadurch werden Informationen an den Diensteanbieter übermittelt und dort gespeichert.',
-    },
-    serviceDescription: { en: '', de: '' },
-    servicePrettyName: { en: '', de: '' },
-    titleText: { en: '', de: '' },
 };
 
 const DefaultCategoryLabels: CategoryRecord = {
-    functional: {
-        label: {
-            en: 'Functional',
-        },
+    [Category.UNKNOWN]: {
+        label: Translatable.category_Unknown_Label,
+        color: '#ccc',
+    },
+    [Category.FUNCTIONAL]: {
+        label: Translatable.category_Functional_Label,
         color: '#0b0',
     },
-    marketing: {
-        label: {
-            en: 'Marketing',
-        },
+    [Category.MARKETING]: {
+        label: Translatable.category_Marketing_Label,
+        color: '#d80',
     },
+    [Category.ANALYTICS]: {
+        label: Translatable.category_Analytics_Label,
+        color: '#d59',
+    },
+    [Category.ESSENTIAL]: {
+        label: Translatable.category_Essential_Label,
+        color: '#0be',
+    }
 };
 
 export const DEFAULT_APP_SETTINGS: ConsentToolsAppSettings = {
