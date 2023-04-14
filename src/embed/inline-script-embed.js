@@ -14,10 +14,10 @@ export class InlineScriptEmbed extends AbstractEmbed {
         return null;
     }
 
-    loadEmbed() {
+    loadEmbed(direct = false) {
         this.debug.log('Loading inline script...');
 
-        super.loadEmbed();
+        super.loadEmbed(direct);
 
         const dummyScript = this.script;
         const newScript = createDomElement({

@@ -35,8 +35,8 @@ export class ScriptEmbed extends AbstractEmbed {
         }
     }
 
-    loadEmbed() {
-        super.loadEmbed();
+    loadEmbed(direct = false) {
+        super.loadEmbed(direct);
         this.debug.log('load script', {
             container: this.container,
             script: this.script,

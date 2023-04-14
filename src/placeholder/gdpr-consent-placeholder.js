@@ -50,6 +50,7 @@ export class GdprConsentPlaceholder extends Debuggable {
     }
 
     hideAndRemove() {
+        this.debug.log('Adding hidden class');
         this.placeholder?.addEventListener(
             'transitionend',
             this._onPlaceholderHidden
@@ -151,11 +152,13 @@ export class GdprConsentPlaceholder extends Debuggable {
     }
 
     _onPlaceholderHidden() {
+        this.debug.log('Hiding transition ended', this.placeholder);
         this.placeholder?.removeEventListener(
             'transitionend',
             this._onPlaceholderHidden
         );
         this.placeholder?.remove();
+        this.placeholder = null;
     }
 
     _showModalForService(e) {

@@ -39,7 +39,7 @@ export class LightboxEmbed extends AbstractEmbed {
     }
 
     loadEmbed(direct = false) {
-        super.loadEmbed();
+        super.loadEmbed(direct);
 
         this.container.href = this.url;
         this.initLightbox();

@@ -50,9 +50,11 @@ export class IframeEmbed extends AbstractEmbed {
 
         this.iframe.addEventListener('load', this.onIframeLoaded);
         this.iframe.src = this.url;
+        this.debug.log('iframe setting complete', this.iframe, this.iframe.src);
     }
 
     onIframeLoaded() {
+        this.debug.log('iframe loaded, removing placeholder');
         this.iframe.removeEventListener('load', this.onIframeLoaded);
         this.hideAndRemovePlaceholder();
     }

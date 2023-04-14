@@ -131,6 +131,7 @@ export class AbstractEmbed extends Debuggable {
     }
 
     hideAndRemovePlaceholder() {
+        this.debug.log('Hiding and removing placeholder', this.placeholder);
         this.placeholder?.hideAndRemove();
         this.placeholder = null;
     }
