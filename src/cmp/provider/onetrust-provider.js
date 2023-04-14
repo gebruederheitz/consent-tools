@@ -362,9 +362,17 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
                     this.eventProxy.emit(serviceId, true);
                 });
 
-            const mappedNoConsentIds = noConsentIds
+            let mappedNoConsentIds = noConsentIds
                 .map(this._getServiceIdsFromGroupOrVendorId)
                 .flat();
+
+            // remove any services that might have been explicitly allowed, but
+            // ended up in mappedNoConsentIds due to their group not having
+            // consent
+            mappedNoConsentIds = _difference(
+                mappedNoConsentIds,
+                vendorsAndGroupsWithConsent
+            );
 
             [...mappedNoConsentIds, ...noConsentIds]
                 .filter((e) => e?.length)
