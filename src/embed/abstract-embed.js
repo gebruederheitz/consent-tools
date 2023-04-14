@@ -131,7 +131,7 @@ export class AbstractEmbed extends Debuggable {
     }
 
     hideAndRemovePlaceholder() {
-        this.placeholder && this.placeholder.hideAndRemove();
+        this.placeholder?.hideAndRemove();
         this.placeholder = null;
     }
 
@@ -144,10 +144,7 @@ export class AbstractEmbed extends Debuggable {
 
     listenToPlaceholderButton() {
         /* Listen for the integrated button in the placeholder */
-        this.placeholder &&
-            this.placeholder.onButtonClick(
-                this.onEmbedPlaceholderButtonClicked
-            );
+        this.placeholder?.onButtonClick(this.onEmbedPlaceholderButtonClicked);
     }
 
     loadAll() {
@@ -174,7 +171,7 @@ export class AbstractEmbed extends Debuggable {
     onEmbedPlaceholderButtonClicked(e) {
         e.preventDefault();
         e.stopImmediatePropagation();
-        this.placeholder.setBusy();
+        this.placeholder?.setBusy();
 
         if (this._shouldLoadAll()) {
             this.loadAll();
@@ -194,6 +191,6 @@ export class AbstractEmbed extends Debuggable {
             this.settings.isSkipCheckbox(this.type) &&
             this.settings.isDefaultLoadAll(this.type);
 
-        return skipWithLoadAll || this.placeholder.isCheckboxChecked();
+        return skipWithLoadAll || this.placeholder?.isCheckboxChecked();
     }
 }

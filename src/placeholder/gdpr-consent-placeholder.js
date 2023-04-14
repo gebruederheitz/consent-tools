@@ -36,7 +36,9 @@ export class GdprConsentPlaceholder extends Debuggable {
 
     attach(container) {
         this.debug.log('Attach placeholder', container, this.placeholder);
-        container.appendChild(this.placeholder);
+        if (this.placeholder) {
+            container.appendChild(this.placeholder);
+        }
     }
 
     onButtonClick(callback) {
@@ -44,15 +46,15 @@ export class GdprConsentPlaceholder extends Debuggable {
     }
 
     onPlaceholderClick(callback) {
-        this.placeholder.addEventListener('click', callback);
+        this.placeholder?.addEventListener('click', callback);
     }
 
     hideAndRemove() {
-        this.placeholder.addEventListener(
+        this.placeholder?.addEventListener(
             'transitionend',
             this._onPlaceholderHidden
         );
-        this.placeholder.classList.add('hidden');
+        this.placeholder?.classList.add('hidden');
     }
 
     isCheckboxChecked() {
@@ -149,11 +151,11 @@ export class GdprConsentPlaceholder extends Debuggable {
     }
 
     _onPlaceholderHidden() {
-        this.placeholder.removeEventListener(
+        this.placeholder?.removeEventListener(
             'transitionend',
             this._onPlaceholderHidden
         );
-        this.placeholder.remove();
+        this.placeholder?.remove();
     }
 
     _showModalForService(e) {

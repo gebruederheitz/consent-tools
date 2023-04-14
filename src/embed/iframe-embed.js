@@ -16,7 +16,7 @@ export class IframeEmbed extends AbstractEmbed {
             container: this.container,
             iframe: this.iframe,
         });
-        if (this.container.matches('iframe')) {
+        if (this.placeholder && this.container.matches('iframe')) {
             this.placeholder.attach(this.container.parentNode);
             this.listenToPlaceholderButton();
         } else {
