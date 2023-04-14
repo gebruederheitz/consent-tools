@@ -1,6 +1,7 @@
 import EventEmitter from 'mitt';
 import _merge from 'lodash-es/merge';
 import _difference from 'lodash-es/difference';
+import _uniq from 'lodash-es/uniq';
 
 import { GenericEventProvider } from './generic-event-provider.js';
 import { AbstractCmpServiceProvider } from '../abstract-provider.js';
@@ -374,7 +375,12 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
                 vendorsAndGroupsWithConsent
             );
 
-            [...mappedNoConsentIds, ...noConsentIds]
+            const deniedServicesVendorsAndGroups = _uniq([
+                ...mappedNoConsentIds,
+                ...noConsentIds,
+            ]);
+
+            deniedServicesVendorsAndGroups
                 .filter((e) => e?.length)
                 .forEach((serviceId) => {
                     this.debug.log('consent withheld for', serviceId);
