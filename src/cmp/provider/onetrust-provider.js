@@ -12,6 +12,11 @@ const DEFAULT_OPTIONS = {
     loadDelayLimit: 2000,
 };
 
+const UPDATE_CONSENT_TYPE = {
+    GeneralVendor: 'General Vendor',
+    Group: 'Category',
+};
+
 /**
  * @implements CmpServiceProvider
  */
@@ -99,7 +104,26 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
      * @param {string} serviceId
      */
     acceptService(serviceId) {
-        this.showSettingsMenuAtService(serviceId);
+        const { id: vendorId, groupId } =
+            this._getGroupAndVendorIdFromServiceId(serviceId);
+
+        if (!vendorId) {
+            if (groupId) {
+                this.optanon.UpdateConsent(
+                    UPDATE_CONSENT_TYPE.Group,
+                    `${groupId}:1`
+                );
+            } else {
+                this.showSettingsMenuAtService(serviceId);
+            }
+
+            return;
+        }
+
+        this.optanon.UpdateConsent(
+            UPDATE_CONSENT_TYPE.GeneralVendor,
+            `${vendorId}:1`
+        );
     }
 
     /**
