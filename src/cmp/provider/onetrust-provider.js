@@ -44,6 +44,8 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
         this.mutationObserver = null;
         this.currentGroupId = null;
         this.vendorsAndGroups = [];
+        this.vendorAndGroupToServiceIdsCache = new Map();
+        this.serviceIdToVendorIdAndGroupIdCache = new Map();
         this.showSettingsMenu = this.showSettingsMenu.bind(this);
         this._getServiceIdsFromGroupOrVendorId =
             this._getServiceIdsFromGroupOrVendorId.bind(this);
@@ -96,11 +98,6 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
     }
 
     /**
-     * OneTrust does not allow us to handle consent to individual services /
-     * vendors / groups programmatically via their API, so all we can do is show
-     * the user the OT settings menu / modal with the relevant service / vendor
-     * selected for the user to confirm (again).
-     *
      * @param {string} serviceId
      */
     acceptService(serviceId) {
@@ -259,35 +256,46 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
      * @private
      */
     _getServiceIdsFromGroupOrVendorId(groupOrVendorId) {
+        if (this.vendorAndGroupToServiceIdsCache.has(groupOrVendorId)) {
+            return this.vendorAndGroupToServiceIdsCache.get(groupOrVendorId);
+        }
+
         const dd = this.optanon.GetDomainData();
-        const serviceIdGetter = this._getServiceIdFromVendorIdGetter(dd);
+        const serviceIdGetter = this._getVendorFromVendorIdGetter(dd);
 
         const vendor = serviceIdGetter(groupOrVendorId);
         if (vendor) {
-            return [vendor.Name];
+            const result = [vendor.Name];
+            this.vendorAndGroupToServiceIdsCache.set(groupOrVendorId, result);
+
+            return result;
         }
 
         const group = dd.Groups.find(
             (e) => e.CustomGroupId === groupOrVendorId
         );
 
+        let result = [];
+
         if (group && group.GeneralVendorsIds) {
-            return group.GeneralVendorsIds.map(serviceIdGetter)
+            result = group.GeneralVendorsIds.map(serviceIdGetter)
                 .map((v) => v?.Name)
                 .filter((e) => e?.length);
-        } else {
-            return [];
         }
+
+        this.vendorAndGroupToServiceIdsCache.set(groupOrVendorId, result);
+
+        return result;
     }
 
     /**
-     * Returns a function that will return the serviceId for any given vendor ID.
+     * Returns a function that will return the vendor object for any given vendor ID.
      *
      * @param {object} dd  The OT domain data object to work on.
      * @return {function(string): string}
      * @private
      */
-    _getServiceIdFromVendorIdGetter(dd) {
+    _getVendorFromVendorIdGetter(dd) {
         return (vendorId) =>
             dd.GeneralVendors.find((e) => e.VendorCustomId === vendorId);
     }
@@ -301,6 +309,10 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
      * @private
      */
     _getGroupAndVendorIdFromServiceId(serviceId) {
+        if (this.serviceIdToVendorIdAndGroupIdCache.has(serviceId)) {
+            return this.serviceIdToVendorIdAndGroupIdCache.get(serviceId);
+        }
+
         const dd = this.optanon.GetDomainData();
         const serviceDefinition = dd.GeneralVendors.find(
             (e) => e.Name === serviceId
@@ -316,13 +328,32 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
             id = serviceId;
         }
 
-        const group =
+        let group =
             dd.Groups &&
             dd.Groups.find(
                 (g) =>
                     g.GeneralVendorsIds && g.GeneralVendorsIds.indexOf(id) > -1
             );
-        return { groupId: (group && group.OptanonGroupId) || '', id };
+
+        if (!group) {
+            const customIdIndex = dd.Groups.findIndex(
+                (e) => e.CustomGroupId === serviceId
+            );
+            const otIdIndex = dd.Groups.findIndex(
+                (e) => e.OptanonGroupId === serviceId
+            );
+            if (customIdIndex > -1) {
+                // this serviceId references a group via its CustomGroupId
+                group = dd.Groups[customIdIndex];
+            } else if (otIdIndex > -1) {
+                group = dd.Groups[otIdIndex];
+            }
+        }
+
+        const result = { groupId: (group && group.OptanonGroupId) || '', id };
+        this.serviceIdToVendorIdAndGroupIdCache.set(serviceId, result);
+
+        return result;
     }
 
     /**
