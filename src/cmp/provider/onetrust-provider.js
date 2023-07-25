@@ -229,16 +229,14 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
     _getMutationObserver() {
         if (!this.mutationObserver) {
             this.mutationObserver = new MutationObserver(() => {
-                document
-                    .querySelectorAll('.ot-link-btn.category-host-list-handler')
-                    .forEach((groupDetailsButton) => {
-                        if (
-                            groupDetailsButton.dataset.parentId ===
-                            this.currentGroupId
-                        ) {
-                            groupDetailsButton.click();
-                        }
-                    });
+                const className = '.ot-link-btn.category-host-list-handler';
+                const selector = `${className}[data-parent-id="${this.currentGroupId}"]`;
+                const groupOpener = document.querySelector(selector);
+
+                if (groupOpener) {
+                    groupOpener.click();
+                }
+
                 this.mutationObserver.disconnect();
             });
         }
