@@ -12,8 +12,6 @@ export class LightboxEmbed extends AbstractEmbed {
         }
 
         this.lightbox = null;
-
-        // this.onPlaceholderClick = this.onPlaceholderClick.bind(this);
     }
 
     getPlaceholderClassNames() {
@@ -33,11 +31,6 @@ export class LightboxEmbed extends AbstractEmbed {
         await super.listen();
     }
 
-    // listenToPlaceholderButton() {
-    //     /* Listen for the integrated button in the placeholder */
-    //     this.placeholder?.onButtonClick(this.onPlaceholderClick);
-    // }
-
     loadEmbed(direct = false) {
         super.loadEmbed(direct);
 
@@ -49,10 +42,6 @@ export class LightboxEmbed extends AbstractEmbed {
             this.lightbox.open();
         }
     }
-    //
-    // onPlaceholderClick(event) {
-    //     event.stopImmediatePropagation();
-    // }
 
     unloadEmbed() {
         super.unloadEmbed();
