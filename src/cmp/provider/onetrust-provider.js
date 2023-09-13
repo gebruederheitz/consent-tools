@@ -104,6 +104,12 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
         const { id: vendorId, groupId } =
             this._getGroupAndVendorIdFromServiceId(serviceId);
 
+        this.debug.log('accepting service', {
+            serviceId,
+            vendorId,
+            groupId,
+        });
+
         if (!vendorId) {
             if (groupId) {
                 this.optanon.UpdateConsent(
@@ -116,6 +122,8 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
 
             return;
         }
+
+        this.debug.log('Have vendor ID, updating consent');
 
         this.optanon.UpdateConsent(
             UPDATE_CONSENT_TYPE.GeneralVendor,
