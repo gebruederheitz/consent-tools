@@ -2,6 +2,9 @@ demo/
 .github/
 test/
 
+_demo/
+src/
+
 .babelrc
 .editorconfig
 .eslintignore
