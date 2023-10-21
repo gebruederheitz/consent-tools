@@ -98,7 +98,7 @@ export class GdprConsentPlaceholder {
             ],
             parent: placeholder,
         });
-        this._addTitle(placeholderContent);
+        this._addTitle(placeholderContent, this.type);
 
         createDomElement({
             innerHtml: translator.withPlaceholders(
@@ -161,10 +161,10 @@ export class GdprConsentPlaceholder {
         };
     }
 
-    private _addTitle(placeholderContent: Element): void {
+    private _addTitle(placeholderContent: Element, type: string | null): void {
         const titleText = translator.withPlaceholders(
             Translatable.ph_TitleText,
-            this.type,
+            type,
             (placeholder) => {
                 if (placeholder === Translatable.servicePrettyName) {
                     // set a fallback for serviceprettyname
