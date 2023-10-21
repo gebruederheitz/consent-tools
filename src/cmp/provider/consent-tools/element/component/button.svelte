@@ -3,6 +3,7 @@
     export let tertiary: boolean = false;
     export let active: boolean = false;
     export let radio: boolean = false;
+    export let text: boolean = false;
 </script>
 
 <button
@@ -12,6 +13,7 @@
     class:button--secondary={secondary}
     class:button--tertiary={tertiary}
     class:button--active={active}
+    class:button--text-link={text}
     on:click
 >
     <slot />
