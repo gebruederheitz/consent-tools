@@ -219,7 +219,7 @@ Object.keys(providers).forEach((name) => {
 
 // Default modal ES module build
 builds.push({
-    input: './src/cmp/provider/consent-tools/Modal.svelte',
+    input: './src/cmp/provider/consent-tools/element/Modal.svelte',
     output: {
         file: './dist/modal.mjs',
         ...esBuildCommonOutputOptions,
