@@ -599,6 +599,10 @@ the `/scss/module/loader.scss` on way or another.
 
 ## Development
 
+Use the [Taskfile](./Taskfile.yaml) for orientation and basic tasks. The [Makefile](./Makefile)
+is used by the CI, which introduces a separation of concerns (CI doesn't need
+NVM and has some established task names) and eases CI setup.
+
 Run `make`, `make dev` or `npm run watch` to start a development watch server
 using `./test/test-implementation` (bundled to `./demo/demo-bundle.js`) and the
 files in `./demo` for an example implementation.
@@ -607,6 +611,23 @@ files in `./demo` for an example implementation.
 
 `make build` or `npm run build` will create production builds in ES module and
 UMD formats.
+
+
+### Dependencies
+
+ - The asdf tool version manager: https://asdf-vm.com/guide/getting-started.html
+  It performs the same task as for instance NVM, but does it for multiple
+  languages and does not require a virtualenv, making it more suitable for use
+  with `go-task` and Taskfiles. Take at look at the (experimental) task
+  `util:install-asdf`.
+ - [`go-task`](https://taskfile.dev/installation/)
+ - NodeJS and NPM (via asdf)
+
+### Recommendations
+
+ - Integrations for your IDE:
+    - Prettier
+    - TypeScript
 
 
 ### To do

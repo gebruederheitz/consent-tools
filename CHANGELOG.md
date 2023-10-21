@@ -11,12 +11,11 @@
  - emit events as planned
  - finish rewriting "permanent consent" option
  - DOCUMENTATION DOCUMENTATION
-   - remove / transfer / improve the legacy demo
-   - include an actual demo consent banner on the demo/docs page
    - finish GitHub-Pages setup for 11ty
  - Clean up tooling config: remove unused rules for JS/MJS files, revise TS
    bundler configuration
  - Replace factories with static factory methods on embed classes?
+ - Banner Mode
 
 
 # v3.x

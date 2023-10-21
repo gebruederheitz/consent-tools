@@ -253,13 +253,6 @@ if (!production) {
             input: 'test/test-implementation-with-lightbox.js',
             output: [
                 {
-                    file: 'demo-legacy/lightbox/demo-bundle.js',
-                    format: 'iife',
-                    inlineDynamicImports: true,
-                    name: 'ghconsentdemo',
-                    sourcemap: true,
-                },
-                {
                     file: 'demo/assets/test-bundle-lightbox.js',
                     format: 'iife',
                     inlineDynamicImports: true,
@@ -297,13 +290,13 @@ if (!production) {
     builds.push({
         input: 'test/test-implementation.js',
         output: [
-            {
-                file: 'demo-legacy/demo-bundle.js',
-                format: 'iife',
-                inlineDynamicImports: true,
-                name: 'ghconsentdemo',
-                sourcemap: true,
-            },
+            // {
+            //     file: 'demo-legacy/demo-bundle.js',
+            //     format: 'iife',
+            //     inlineDynamicImports: true,
+            //     name: 'ghconsentdemo',
+            //     sourcemap: true,
+            // },
             {
                 file: 'demo/assets/test-bundle.js',
                 format: 'iife',

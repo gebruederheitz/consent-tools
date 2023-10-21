@@ -15,3 +15,6 @@ demo/assets/*.js
 demo/assets/*.js.map
 demo-legacy/**/demo-bundle.js*
 _demo/
+
+
+.task/

@@ -1,0 +1,95 @@
+version: 3
+output: prefixed
+includes:
+  demo:
+    dir: ./demo
+    taskfile: ./demo/Taskfile.yaml
+
+tasks:
+
+  dev:
+    desc: 'Dev Mode: Watch sources and host the demo'
+    deps:
+      - task: dev-ct
+      - task: demo:dev
+
+  build:
+    desc: 'Build all sources as if for production: Timer, Toggle'
+    deps:
+      - task: build-ct
+    cmds:
+      - task: demo:build
+#      - task: copy-builds
+
+  test:
+    desc: 'Run basic tests & linting for the entire project'
+    deps:
+      - install-dependencies
+    cmds:
+      - asdf exec npm run lint
+
+  release:
+    desc: 'Release a new version & trigger the CI to publish it'
+    silent: true
+    deps:
+      - task:
+          install-languages
+    cmds:
+      - asdf exec npm run release
+
+  update:
+    desc: 'Update the dependencies for all modules'
+    deps:
+      - task: update-dependencies
+      - task: demo:update-dependencies
+
+#-- INTERNAL TASKS -------------------------------------------------------------
+
+  dev-ct:
+    internal: true
+    deps:
+      - task: install-dependencies
+    cmds:
+      - asdf exec npm run watch
+
+  build-ct:
+    internal: true
+    deps:
+      - task: install-dependencies
+    cmds:
+      - asdf exec npm run build
+
+  install-languages:
+    run: once
+    status:
+      - asdf current nodejs
+    cmds:
+      - asdf install
+
+  install-dependencies:
+    internal: true
+    sources:
+      - package-lock.json
+    generates:
+      - node_modules/**/*
+    deps:
+      - task: install-languages
+    cmds:
+      - asdf exec npm i
+
+  update-dependencies:
+    desc: Update all dependencies for main library
+    deps:
+      - task: install-languages
+    cmds:
+      - asdf exec npm update
+
+#  copy-builds:
+#    internal: true
+#    silent: true
+#    cmds:
+#      - rm -rf ./dist/
+#      - mkdir -p dist/timer
+#      - mkdir -p dist/toggles
+#      - cp -r modules/dist/* dist/timer/
+#      - cp -r toggle-component/dist/toggles.js dist/toggles/

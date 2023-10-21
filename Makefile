@@ -1,19 +1,16 @@
 .PHONY: test
-
-dev:
-	npm i && npm run watch
-
-build:
-	npm i && npm run build
+# USED FOR CONTINUOUS INTEGRATION & DEPLOYMENT
+# DEVELOPER SCRIPTS ARE FOUND IN Taskfile.yaml
 
 test:
-	npm i && npm run lint
+	npm i
+	npm run lint
 
-release:
-	npm i && npm run release
+build:
+	rm -rf ./dist/ || echo "Nothing to delete"
+	npm i
+	npm run build
 
-docs:
-	npm i && npm run demo:serve
 
-build-docs:
-	npm i && npm run demo:build
+build-docs: build
+	cd demo && npm ci --foreground-scripts && npm run build
