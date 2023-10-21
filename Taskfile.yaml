@@ -31,6 +31,7 @@ tasks:
   release:
     desc: 'Release a new version & trigger the CI to publish it'
     silent: true
+    interactive: true
     deps:
       - task:
           install-languages
