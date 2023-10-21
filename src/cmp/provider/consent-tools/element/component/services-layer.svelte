@@ -1,11 +1,11 @@
 <script lang="ts">
-    import type { SortedServiceGroup } from '../store/services';
+    import type { SortedServiceGroup } from '../../store/services';
 
     import { getContext } from 'svelte';
 
-    import { ServiceStore, SortMode, SortModes } from '../store/services';
-    import { ContextKey } from '../context/contexts';
-    import { debug as d } from '../../../../util/debuggable';
+    import { ServiceStore, SortMode, SortModes } from '../../store/services';
+    import { ContextKey } from '../../context/contexts';
+    import { debug as d } from '../../../../../util/debuggable';
 
     import Button from './button.svelte';
     import Layer from './layer.svelte';

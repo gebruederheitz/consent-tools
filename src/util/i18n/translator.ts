@@ -22,6 +22,7 @@ const DICTIONARIES: Record<Locale, Dictionary> = {
 export type DictionaryEntry = string | Record<string, string>;
 export type Dictionary = Record<Translatable, DictionaryEntry>;
 export interface Translator {
+    locale: string;
     load(dictionary: Dictionary, locale: string | Locale): Translator;
     setLocale(locale: string | Locale | null): Translator;
     get(key: Translatable, service?: string | null): string;
@@ -35,6 +36,10 @@ class SimpleTranslator implements Translator {
     protected currentLocale: Locale = DEFAULT_LOCALE;
     protected fallbackString = '';
     protected dicts: Record<string, Dictionary> = DICTIONARIES;
+
+    get locale(): string {
+        return this.currentLocale;
+    }
 
     public load(dictionary: Dictionary, locale: string = DEFAULT_LOCALE): this {
         this.dicts[locale] = _mergeWith(

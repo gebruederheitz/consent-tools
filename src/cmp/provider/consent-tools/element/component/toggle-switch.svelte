@@ -10,6 +10,7 @@
     export let formControl = false;
     export let controlled = true;
     export let label = '';
+    export let labeled = false;
 
     function onKeypress(e: KeyboardEvent): void {
         if (e.key === ' ' || e.key === 'Enter') {
@@ -36,12 +37,12 @@
         role="switch"
         aria-checked={checked}
         class="switch-input"
-        class:checked
         {disabled}
+        class:labeled
         on:click={onChange}
         {style}
     >
-        <span class="axis" />
+        <span class="axis" class:checked />
     </button>
 {:else}
     <label
@@ -49,12 +50,12 @@
         for={name}
         on:click={onChange}
         on:keydown={onKeypress}
-        class:checked
+        class:labeled
         class:disabled
         tabindex="0"
     >
         <input type="checkbox" {disabled} {name} bind:checked role="switch" />
-        <span class="axis" aria-hidden="true" />
+        <span class="axis" class:checked aria-hidden="true" />
         {#if label}
             <span class="sr-only">
                 {label}
@@ -64,7 +65,7 @@
 {/if}
 
 <style lang="scss">
-    @use 'scss/lib/util';
+    @use '../../../../../../scss/lib/util';
 
     .switch-input {
         align-items: center;
@@ -72,64 +73,77 @@
         border: 0;
         cursor: pointer;
         display: flex;
-        flex: 0 0 auto;
         font-size: var(--ghct-switch-scale, 1.25rem);
         justify-content: center;
         min-height: 1em;
         padding: 0.25em 0;
         width: 2.25em;
 
-        --ghct-switch-active-color: var(--ghct-success-20, rgba(0 187 0 / 80%));
-        --ghct-switch-active-left: calc(100% - 1.5em - 5px);
-        --ghct-switch-inactive-color: var(--ghct-danger-20, rgba(240 120 100 / 80%));
-
         input[type='checkbox'] {
             @include util.visually-hidden;
         }
 
         .axis {
-            background-color: var(--ghct-switch-background, var(--ghct-switch-inactive-color));
-            border: 1px solid var(--ghct-switch-border-color, #aaa);
-            border-radius: 1.5em;
-            font-size: .7em;
-            height: calc(1.5em + 10px);
+            background-color: lightgrey;
+            border-radius: 0.125em;
+            height: 0.3em;
             position: relative;
-            transition: background-color 200ms ease;
-            width: 100%;
+            width: 80%;
+
+            --active-color: var(--ghct-primary-20);
+            --active-highlight: var(--ghct-primary-5);
+            --active-left: calc(100% - 1.5em);
+            --inactive-color: rgba(140 140 150 / 1);
+            --inactive-highlight: rgba(170 170 182 / 1);
+            --inactive-left: 0;
+            --base: var(--inactive-color);
+            --highlight: var(--inactive-highlight);
+            --left: var(--inactive-left);
+            --content: '';
 
             &::before {
                 align-items: center;
-                background: var(--ghct-switch-handle-color, #eee);
+                background: radial-gradient(
+                    circle at 35% 45%,
+                    var(--highlight) 0%,
+                    var(--base) 100%
+                );
                 border-radius: 50%;
-                box-shadow: var(--ghct-switch-handle-shadow, 1px) 2px 5px 1px var(--ghct-switch-handle-shadow-color, rgba(0 0 0 / 40%));
-                content: var(--ghct-switch-content, '×');
-                color: #333;;
+                box-shadow: 1px 2px 5px 1px rgba(0 0 0 / 15%);
+                content: var(--content);
+                color: #fff;
                 display: flex;
-                font-family: sans-serif;
+                font-size: 0.7em;
+                font-family: serif;
                 justify-content: center;
                 position: absolute;
                 height: 1.5em;
-                left: var(--ghct-switch-left, 5px);
+                left: var(--left);
                 top: calc(50% - 0.75em);
-                text-shadow: 0 0 2px var(--ghct-switch-background, var(--ghct-switch-inactive-color));
-                transition: left 200ms ease, background 200ms ease, content 200ms ease;
+                transition: left 200ms ease, background 200ms ease;
                 width: 1.5em;
+            }
+
+            &.checked {
+                --base: var(--active-color);
+                --highlight: var(--active-highlight);
+                --left: var(--active-left);
             }
         }
 
-        &.checked {
-            --ghct-switch-background: var(--ghct-switch-active-color);
-            --ghct-switch-left: var(--ghct-switch-active-left);
-            --ghct-switch-handle-shadow: -1px;
-            --ghct-switch-content: '✔';
+        &.labeled .axis {
+            --active-content: var(--ghct-toggle-active-content, 'I');
+            --inactive-content: var(--ghct-toggle-inactive-content, '0');
+            --content: var(--inactive-content);
+            &.checked {
+                --content: var(--active-content);
+            }
         }
 
-        &.disabled,
-        &:disabled {
-            --ghct-switch-handle-color: #aaa;
-            --ghct-switch-handle-shadow-color: transparent;
-            --ghct-switch-active-color: var(--ghct-success-5, rgba(0 187 0 / 5%));
-            --ghct-switch-inactive-color: var(--ghct-danger-5, rgba(240 120 100 / 5%));
+        &.disabled .axis,
+        &:disabled .axis {
+            --active-color: var(--ghct-secondary-50);
+            --active-highlight: var(--ghct-secondary-20);
         }
     }
 </style>

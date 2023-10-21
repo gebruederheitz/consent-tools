@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Tier } from '../../../../util/settings/types';
+    import { Tier } from '../../../../../util/settings/types';
 
     import TierC from './tier.svelte';
     import Layer from './layer.svelte';

@@ -1,6 +1,7 @@
 import type { ConsentSettings } from '../../../util/settings/consent-settings';
 import type { CmpServiceProvider } from '../../cmp-service-provider';
 import type { SvelteComponentDev } from 'svelte/types/runtime/internal/dev';
+import type { ConsentToolsEvents } from './events';
 
 import 'svelte';
 import EventEmitter from 'mitt';
@@ -10,7 +11,7 @@ import _uniqBy from 'lodash-es/uniqBy';
 import { $$, createDomElement } from '@gebruederheitz/wp-frontend-utils';
 
 import { Event } from './events';
-import { Tier } from '../../../util/settings/types';
+import { Category, CategoryFrom, Tier } from '../../../util/settings/types';
 import { AbstractCmpServiceProvider } from '../../abstract-provider';
 import { ServiceStore } from './store/services';
 import type { ConsentToolsProviderEmitter } from './events';
@@ -60,7 +61,8 @@ export class ConsentToolsProvider
     extends AbstractCmpServiceProvider
     implements CmpServiceProvider
 {
-    protected readonly eventProxy: ConsentToolsProviderEmitter = EventEmitter();
+    protected readonly eventProxy: ConsentToolsProviderEmitter =
+        EventEmitter<ConsentToolsEvents>();
     protected modal: ModalComponentInstance | null = null;
     protected options: ConsentToolsProviderOptions;
     protected store: ServiceStore;
@@ -75,15 +77,27 @@ export class ConsentToolsProvider
             this.options.useSessionStorage,
             settings.getServices(),
             this.settings,
-            this.eventProxy,
+            this.eventProxy
         );
+
+        this.store.addService('consent-tools', {
+            hasConsent: true,
+            name: 'Consent Tools',
+            tier: Tier.ESSENTIAL,
+            category: Category.ESSENTIAL,
+            description:
+                // eslint-disable-next-line quotes
+                "Consent Tools stores your consent preferences in your browser's local storage – so we don't have to show you this banner every time.",
+        });
 
         if (this.options.useServiceDiscovery) {
             this.discoverServices();
         }
 
         if (!this.options.modalComponent) {
-            console.warn('ConsentToolsProvider needs a modal component to function properly, please make sure to provide one in the constructor!');
+            console.warn(
+                'ConsentToolsProvider needs a modal component to function properly, please make sure to provide one in the constructor!'
+            );
             return;
         }
 
@@ -160,10 +174,11 @@ export class ConsentToolsProvider
             const serviceId = service.type;
             if (!this.settings.hasService(serviceId)) {
                 const settings = {
-                    category: service.category,
+                    category: CategoryFrom(service.category),
                     name: service.prettyName,
                     serviceDescription: {
-                        [this.settings.locale]: service.description,
+                        [this.settings.getTranslator().locale]:
+                            service.description,
                     },
                 };
 

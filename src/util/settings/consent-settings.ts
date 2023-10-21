@@ -4,6 +4,7 @@ import type {
     ConsentToolsSettings,
     PermanentConsentType,
 } from './types';
+import type { ServiceRecord } from '../../cmp/provider/consent-tools/store/services';
 
 import _get from 'lodash-es/get';
 import _pick from 'lodash-es/pick';
@@ -119,7 +120,7 @@ export class ConsentSettings {
 
     public addService(
         serviceId: string,
-        settings: Partial<ConsentToolsSettings>
+        settings: Partial<ServiceRecord>
     ): void {
         if (!this.services[serviceId]) {
             this.services[serviceId] = settings;

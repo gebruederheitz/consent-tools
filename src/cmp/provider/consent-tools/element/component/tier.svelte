@@ -1,14 +1,14 @@
 <script lang="ts">
     import { getContext } from 'svelte';
 
-    import { Tier } from '../../../../util/settings/types';
-    import { ModalLayer, modalStore } from '../store/modal';
-    import { ContextKey } from '../context/contexts';
-    import { ServiceStore, SortMode } from '../store/services';
+    import { Tier } from '../../../../../util/settings/types';
+    import { ModalLayer, modalStore } from '../../store/modal';
+    import { ContextKey } from '../../context/contexts';
+    import { ServiceStore, SortMode } from '../../store/services';
 
     import Button from './button.svelte';
     import WithTierColor from './with-tier-color.svelte';
-    import type { ConsentToolsProviderEmitter } from '../events';
+    import type { ConsentToolsProviderEmitter } from '../../events';
 
     const servicesStore: ServiceStore = getContext(ContextKey.SERVICES);
     const events: ConsentToolsProviderEmitter = getContext(ContextKey.EVENTS);
@@ -41,7 +41,7 @@
 </WithTierColor>
 
 <style lang="scss">
-    @use 'scss/lib/button-var' as button;
+    @use '../../../../../../scss/lib/button-var' as button;
 
     .ghct-tier {
         border: 3px solid var(--tier-color);
@@ -61,7 +61,7 @@
         .tier-button {
             background-color: var(--tier-color);
             border: 0;
-            bottom: 2em;
+            bottom: 0;
             color: #fff;
             cursor: pointer;
             font-size: 1.125em;
@@ -69,8 +69,7 @@
             margin: 0;
             padding: 1em 2em;
             position: absolute;
-            right: 2em;
-            top: 2em;
+            right: 0;
             transition: opacity 200ms ease, transform 300ms ease-in-out;
             width: 25%;
         }

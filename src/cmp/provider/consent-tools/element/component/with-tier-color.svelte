@@ -1,9 +1,10 @@
 <script lang="ts">
-    import { debug as d } from '../../../../util/debuggable';
-    import { Tier } from '../../../../util/settings/types';
+    import { debug as d } from '../../../../../util/debuggable';
+    import { Tier } from '../../../../../util/settings/types';
 
     const debug = d.spawn('WithTierColorComponent').disable();
     export let tier: Tier;
+    export let className;
     let color: string | null;
 
     $: {
@@ -28,6 +29,6 @@
     }
 </script>
 
-<div style="--tier-color: {color};">
+<div class={className} style="--tier-color: {color};">
     <slot />
 </div>

@@ -14,6 +14,20 @@ export enum Tier {
     FULL,
 }
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
+export namespace Tier {
+    export function toString(tier: Tier) {
+        switch (tier) {
+            case Tier.ESSENTIAL:
+                return 'Essentials';
+            case Tier.FULL:
+                return 'Everything';
+            case Tier.MODERATE:
+                return 'Moderate';
+        }
+    }
+}
+
 export const DefaultTierLabels: Record<Tier, Translatable> = {
     [Tier.ESSENTIAL]: Translatable.tier_Red_PrettyName,
     [Tier.MODERATE]: Translatable.tier_Amber_PrettyName,
@@ -27,6 +41,18 @@ export enum Category {
     MARKETING = 'marketing',
     ESSENTIAL = 'essential',
 }
+
+export const CategoryFrom = (c: Category | string): Category  => {
+    if (!(c in Category)) {
+        const entries = Object.entries(Category);
+        const entry = entries.find(([v]) => {
+            return v === c;
+        });
+        return (entry ? entry[0] : Category.UNKNOWN) as Category;
+    } else {
+        return c as Category;
+    }
+};
 
 export interface ConsentToolsSettings {
     additionalServices?: Array<string>;

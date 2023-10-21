@@ -1,18 +1,18 @@
 <script lang="ts">
-    import type { ConsentToolsSettings } from '../../../util/settings/types';
+    import type { ConsentToolsSettings } from '../../../../util/settings/types';
+    import type { ConsentToolsProviderEmitter } from '../events';
 
     import { setContext } from 'svelte';
 
-    import { ServiceStore } from './store/services';
-    import { ModalLayer, modalStore } from './store/modal';
-    import { ContextKey } from './context/contexts';
-    import { debug as d } from '../../../util/debuggable';
+    import { ServiceStore } from '../store/services';
+    import { ModalLayer, modalStore } from '../store/modal';
+    import { ContextKey } from '../context/contexts';
+    import { debug as d } from '../../../../util/debuggable';
 
     import Button from './component/button.svelte';
     import InitialLayer from './component/initial-layer.svelte';
     import Modal from './component/modal.svelte';
     import ServicesLayer from './component/services-layer.svelte';
-    import type { ConsentToolsProviderEmitter } from './events';
 
     const debug = d.spawn('ModalComponent');
 
@@ -80,6 +80,7 @@
     });
 
     $: setLayerComponent(currentLayerId);
+    $: debug.log(closable)
 </script>
 
 <Modal visible={modalVisible} on:close={onClose} {closable}>
@@ -101,7 +102,7 @@
     <svelte:component this={layerComponent} />
     <svelte:fragment slot="actions">
         {#if closable}
-            <Button on:click={onClose}>Done</Button>
+            <Button on:click={onSave}>Done</Button>
         {/if}
     </svelte:fragment>
 </Modal>

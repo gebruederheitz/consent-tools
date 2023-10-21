@@ -1,18 +1,19 @@
 <script lang="ts">
-    import type { DisplayedService } from '../store/services';
+    import type { DisplayedService } from '../../store/services';
 
     import { getContext } from 'svelte';
 
-    import { Tier } from '../../../../util/settings/types';
+    import { Tier } from '../../../../../util/settings/types';
     import {
         ServiceStore,
         SortMode,
-    } from '../store/services';
-    import { ConsentSettings } from '../../../../util/settings/consent-settings';
-    import { ContextKey } from '../context/contexts';
-    import { debug as d } from '../../../../util/debuggable';
+    } from '../../store/services';
+    import { ConsentSettings } from '../../../../../util/settings/consent-settings';
+    import { ContextKey } from '../../context/contexts';
+    import { debug as d } from '../../../../../util/debuggable';
 
     import ToggleSwitch from './toggle-switch-alt.svelte';
+    import WithTierColor from './with-tier-color.svelte';
 
     const serviceStore: ServiceStore = getContext(ContextKey.SERVICES);
     const settings: ConsentSettings = getContext(ContextKey.SETTINGS);
@@ -44,12 +45,23 @@
             {service.name}
         </h4>
         {#if sortMode !== SortMode.CATEGORY && service.categoryLabel}
-            <div
-                class="ghct-service__category"
-                style={`background-color: ${service.categoryColor || ''};`}
-            >
-                {service.categoryLabel}
+            <div class="ghct-pill">
+                <span
+                    class="ghct-service__category"
+                    style={`background-color: ${service.categoryColor || ''};`}
+                >
+                    {service.categoryLabel}
+                </span>
             </div>
+        {/if}
+        {#if sortMode !== SortMode.TIER}
+            <WithTierColor className="ghct-pill" tier={service.tier}>
+                <span
+                    class="ghct-service__tier"
+                >
+                    {Tier.toString(service.tier)}
+                </span>
+            </WithTierColor>
         {/if}
         <div class="ghct-service__description">
             {#if service.description.length}
@@ -75,6 +87,26 @@
 </li>
 
 <style lang="scss">
+    :global .ghct-pill {
+        margin-bottom: 0.5em;
+        font-weight: 700;
+        color: #fff;
+        border-radius: 1em;
+        background-color: #555;
+        align-self: flex-start;
+        font-size: 0.825em;
+        text-transform: uppercase;
+        line-height: 1;
+        display: inline-flex;
+        overflow: hidden;
+        justify-content: stretch;
+        align-items: stretch;
+
+        span {
+            padding: 2px 9px;
+        }
+    }
+
     .ghct-service {
         display: flex;
         flex-flow: row nowrap;
@@ -101,22 +133,28 @@
             margin-top: 0;
         }
 
-        &__category {
-            margin-bottom: 0.5em;
-            font-weight: 700;
-            color: #fff;
-            padding: 2px 9px;
-            border-radius: 1em;
-            background-color: #555;
-            align-self: flex-start;
-            font-size: 0.825em;
-            text-transform: uppercase;
-            line-height: 1;
+        &__category,
+        &__tier {
+            display: block;
+            //margin-bottom: 0.5em;
+            //font-weight: 700;
+            //color: #fff;
+            //padding: 2px 9px;
+            //border-radius: 1em;
+            //background-color: #555;
+            //align-self: flex-start;
+            //font-size: 0.825em;
+            //text-transform: uppercase;
+            //line-height: 1;
+        }
+
+        &__tier {
+            background-color: var(--tier-color);
         }
 
         &__description {
-            word-wrap: anywhere;
-            word-break: break-all;
+            //word-wrap: anywhere;
+            //word-break: break-all;
             max-width: 80ch;
         }
 

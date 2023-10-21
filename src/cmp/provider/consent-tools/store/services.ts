@@ -2,25 +2,25 @@ import type { Writable } from 'svelte/store';
 import { writable } from 'svelte/store';
 import type { StoreBase } from 'store2';
 import storage from 'store2';
-import _groupBy from 'lodash-es/groupBy';
-import _toPairs from 'lodash-es/toPairs';
-import _sortBy from 'lodash-es/sortBy';
-
 import type {
     CategoryRecord,
     ConsentToolsProviderService,
 } from '../../../../util/settings/types';
-import type { DebugLog } from '../../../../util/debuggable';
 import type { ConsentToolsProviderEmitter } from '../events';
 import type { ConsentSettings } from '../../../../util/settings/consent-settings';
 
 import {
-    Category,
+    Category, CategoryFrom,
     DefaultTierLabels,
     Tier,
 } from '../../../../util/settings/types';
+import type { DebugLog } from '../../../../util/debuggable';
 import { debug } from '../../../../util/debuggable';
-import { translator, Translatable } from '../../../../util/i18n';
+
+import _groupBy from 'lodash-es/groupBy';
+import _toPairs from 'lodash-es/toPairs';
+import _sortBy from 'lodash-es/sortBy';
+import { Translatable, translator } from '../../../../util/i18n';
 
 export enum SortMode {
     ALPHA,
@@ -193,13 +193,15 @@ export class ServiceStore {
         });
     }
 
-    protected mapCategory(cat: Category): {
+    protected mapCategory(cat: Category | string): {
         categoryLabel: string | null;
         categoryColor: string | null;
     } {
+        const category = CategoryFrom(cat);
+
         return {
-            categoryLabel: translator.get(this.categories[cat].label),
-            categoryColor: this.categories[cat]?.color || null,
+            categoryLabel: translator.get(this.categories[category].label),
+            categoryColor: this.categories[category]?.color || null,
         };
     }
 
