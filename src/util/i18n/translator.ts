@@ -162,23 +162,32 @@ class SimpleTranslator implements Translator {
     public withPlaceholders(
         key: Translatable,
         service: string | null = null,
-        customReplacer?: (placeholder: string, service: string|null) => string | undefined,
+        customReplacer?: (
+            placeholder: string,
+            service: string | null
+        ) => string | undefined
     ): string {
         let result = this.fallbackString;
 
         const translatedString = this.get(key, service);
-        translatedString.replace(/%([a-zA-Z_]+)%/, (placeholder) => {
-            if (customReplacer) {
-                const customReplacerResult = customReplacer(placeholder, service);
-                if (typeof customReplacerResult !== 'undefined') {
-                    return customReplacerResult;
+        translatedString.replace(
+            /%([a-zA-Z_]+)%/,
+            (_placeholder, placeholderContent) => {
+                if (customReplacer) {
+                    const customReplacerResult = customReplacer(
+                        placeholderContent,
+                        service
+                    );
+                    if (typeof customReplacerResult !== 'undefined') {
+                        return customReplacerResult;
+                    }
                 }
-            }
 
-            return placeholder in Translatable
-                ? this.get(placeholder as Translatable, service)
-                : '';
-        });
+                return placeholderContent in Translatable
+                    ? this.get(placeholderContent as Translatable, service)
+                    : '';
+            }
+        );
         result = translatedString;
 
         return result;
