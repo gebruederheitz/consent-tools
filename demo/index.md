@@ -1,5 +1,5 @@
 ---
-layout: layout-base.njk
+layout: basic
 tags: demo
 title: Home
 heading: Open source consent management without trickery

@@ -1,6 +1,6 @@
 ---
-layout: layout-base.njk
-tags: demo
+layout: basic
+tags: toolkit
 title: Consent-Manager API
 heading: The public-facing API of consent-manager
 navOrder: 50

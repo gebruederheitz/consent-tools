@@ -1,8 +1,8 @@
 ---
-layout: layout-base.njk
+layout: basic
 tags: demo
-title: Toolkit Quickstart
-heading: 'Consent-Tools/Toolkit: Quick start'
+title: Toolkit
+heading: Consent-Tools/Toolkit
 ---
 
 This documentation is still a work in progress.

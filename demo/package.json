@@ -1,0 +1,26 @@
+{
+  "name": "@gebruederheitz/consent-tools-demo",
+  "version": "0.1.0",
+  "description": "Demos & documentation for the @gebruederheitz/consent-tools package",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gebruederheitz/consent-tools.git"
+  },
+  "author": "Andreas Maros <andreas.maros@gebruederheitz.de>",
+  "license": "GPL-3.0-only",
+  "bugs": {
+    "url": "https://github.com/gebruederheitz/consent-tools/issues"
+  },
+  "scripts": {
+    "build": "build-docs",
+    "dev": "serve-docs"
+  },
+  "homepage": "https://github.com/gebruederheitz/consent-tools#readme",
+  "dependencies": {
+    "@gebruederheitz/demo-maker": "^1.0.4"
+  },
+  "config": {
+    "projectName": "Consent Tools"
+  }
+}

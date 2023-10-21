@@ -1,5 +1,5 @@
 ---
-layout: layout-base.njk
+layout: basic
 tags: demo
 title: Consent-Tools CMP
 heading: 'Consent-Tools as a CMP: ConsentToolsProvider'

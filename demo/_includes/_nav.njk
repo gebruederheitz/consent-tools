@@ -1,9 +1,0 @@
-<ul>
-    {%- for demo in collections.demos -%}
-        <li {% if page.url == demo.url %} aria-current="page"{% endif %}>
-            <a href="{{ demo.url }}" {% if page.url == demo.url %} aria-current="page"{% endif %}>
-                {{ demo.data.title }}
-            </a>
-        </li>
-    {%- endfor -%}
-</ul>

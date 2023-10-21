@@ -1,6 +1,6 @@
 ---
-layout: layout-base.njk
-tags: demo
+layout: basic
+tags: provider-tests
 title: Consent-Tools Provider Lightbox Test Page
 navOrder: 1050
 ---

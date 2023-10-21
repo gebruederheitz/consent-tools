@@ -1,0 +1,41 @@
+version: 3
+tasks:
+  install-languages:
+    run: once
+    status:
+      - asdf current nodejs
+    cmds:
+      - asdf install
+
+  install-dependencies:
+    internal: true
+    sources:
+      - package-lock.json
+    generates:
+      - node_modules/**/*
+    deps:
+      - task: install-languages
+    cmds:
+      - asdf exec npm i
+
+  dev:
+    desc: Build the demo / documentation app and watch for changes
+    deps:
+      - task: install-dependencies
+#    interactive: true
+    cmds:
+      - asdf exec npm run dev
+
+  build:
+    desc: Build the demo / documentation app for production
+    deps:
+      - task: install-dependencies
+    cmds:
+      - asdf exec npm run build
+
+  update-dependencies:
+    desc: Update all dependencies for the demo / docs
+    deps:
+      - task: install-languages
+    cmds:
+      - asdf exec npm update
