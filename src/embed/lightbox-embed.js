@@ -24,7 +24,9 @@ export class LightboxEmbed extends AbstractEmbed {
         let lightboxCreated;
 
         if (this.lightboxFactory.createFromElement) {
-            this.lightboxFactory.createFromElement(this.container);
+            lightboxCreated = this.lightboxFactory.createFromElement(
+                this.container
+            );
         } else {
             const selector = `a[href="${this.container.href}"]`;
             lightboxCreated = this.lightboxFactory.create(selector);
