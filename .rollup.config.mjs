@@ -1,7 +1,7 @@
 import babel from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
-import { terser } from 'rollup-plugin-terser';
+import terser from '@rollup/plugin-terser';
 import livereload from 'rollup-plugin-livereload';
 
 const production = !process.env.ROLLUP_WATCH;
@@ -12,16 +12,13 @@ function serve() {
         if (server) server.kill(0);
     }
     return {
-        writeBundle() {
+        async writeBundle() {
             if (server) return;
-            server = require('child_process').spawn(
-                'npm',
-                ['run', `start`, '--', '--dev'],
-                {
-                    stdio: ['ignore', 'inherit', 'inherit'],
-                    shell: true,
-                }
-            );
+            const cp = await import('child_process');
+            server = cp.spawn('npm', ['run', `start`, '--', '--dev'], {
+                stdio: ['ignore', 'inherit', 'inherit'],
+                shell: true,
+            });
 
             process.on('SIGTERM', toExit);
             process.on('exit', toExit);
@@ -41,32 +38,22 @@ const babelConfig = (bundledHelpers = false) => ({
             {
                 useBuiltIns: 'usage',
                 corejs: 3,
-            }
+            },
         ],
     ],
-    plugins: bundledHelpers ? [] : [
-        '@babel/plugin-transform-runtime',
-    ],
+    plugins: bundledHelpers ? [] : ['@babel/plugin-transform-runtime'],
 });
-
 
 const builds = [
     {
-        external: [
-            /@babel\/runtime/,
-        ],
+        external: [/@babel\/runtime/],
         input: './src/index.mjs',
         output: {
             file: './dist/index.mjs',
             format: 'esm',
             sourcemap: true,
-            inlineDynamicImports: true,
         },
-        plugins: [
-            resolve(),
-            babel(babelConfig()),
-            commonjs(),
-        ],
+        plugins: [resolve(), babel(babelConfig()), commonjs()],
     },
     {
         input: 'src/index.mjs',
@@ -85,23 +72,24 @@ const builds = [
             commonjs(),
 
             // Minify production builds
-            production && terser({
-                mangle: true,
-                compress: true,
-                output: {
-                    comments: function (node, comment) {
-                        var text = comment.value;
-                        var type = comment.type;
-                        if (type == 'comment2') {
-                            // multiline comment
-                            return (
-                                /@preserve|@license|@cc_on/i.test(text) ||
-                                /^!/.test(text)
-                            );
-                        }
+            production &&
+                terser({
+                    mangle: true,
+                    compress: true,
+                    output: {
+                        comments: function (node, comment) {
+                            var text = comment.value;
+                            var type = comment.type;
+                            if (type == 'comment2') {
+                                // multiline comment
+                                return (
+                                    /@preserve|@license|@cc_on/i.test(text) ||
+                                    /^!/.test(text)
+                                );
+                            }
+                        },
                     },
-                },
-            }),
+                }),
         ],
     },
 ];
@@ -166,7 +154,7 @@ if (!production) {
             // !production && livereload(['./demo/', './dist/']),
             livereload({
                 watch: './demo/',
-                exclusions: ['build/']
+                exclusions: ['build/'],
             }),
         ],
         context: 'window',

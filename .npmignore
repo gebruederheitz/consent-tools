@@ -11,7 +11,9 @@ test/
 .prettierrc
 .rollup.config.js
 .stylelintrc
+.tool-versions
 .yarnrc.yml
 Gulpfile*
 yarn-error.log
 Makefile
+Taskfile.yaml

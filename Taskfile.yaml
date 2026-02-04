@@ -1,0 +1,56 @@
+version: 3
+tasks:
+    default: task -l
+
+    dev:
+        desc: Start development server & watch sources
+        deps: [install]
+        cmds:
+            - task: _dev
+
+    _dev:
+        internal: true
+        deps:
+            - _watch:styles
+            - _watch:scripts
+
+    _watch:styles:
+        internal: true
+        cmd: npm run watch:styles
+
+    _watch:scripts:
+        internal: true
+        cmd: npm run watch:rollup
+
+    build:
+        desc: Build the entire library
+        deps: [install]
+        cmds:
+            - npm run build:rollup
+            - npm run build:styles
+
+    test:
+        desc: Run basic linting
+        deps: [install]
+        aliases: [lint]
+        cmds:
+            - npm run lint:scripts
+            - npm run lint:styles
+            - npm run lint:prettier
+
+    release:
+        desc: Publish a new release
+        deps: [install]
+        cmd: npm run release
+
+    install-dependencies:
+        aliases: [install]
+        run: when_changed
+        sources:
+            - package.json
+            - package-lock.json
+            - .tool-versions
+        generates:
+            - node_modules/**/*
+            - package-lock.json
+        cmd: npm i
