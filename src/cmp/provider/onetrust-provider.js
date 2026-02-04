@@ -116,6 +116,9 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
                     UPDATE_CONSENT_TYPE.Group,
                     `${groupId}:1`
                 );
+                requestAnimationFrame(() => {
+                    this.optanon.Close();
+                });
             } else {
                 this.showSettingsMenuAtService(serviceId);
             }
