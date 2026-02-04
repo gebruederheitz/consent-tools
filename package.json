@@ -27,7 +27,7 @@
     "scripts": {
         "lint:scripts": "eslint src/ test/",
         "lint:styles": "stylelint scss/",
-        "lint:prettier": "prettier scss/",
+        "lint:prettier": "prettier -c scss/",
         "build:rollup": "rollup -c .rollup.config.mjs",
         "build:styles": "gulp",
         "watch:rollup": "rollup -c .rollup.config.mjs --watch",

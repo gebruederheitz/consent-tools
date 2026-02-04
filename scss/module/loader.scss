@@ -15,10 +15,7 @@ $transition-duration: 800ms;
         &::before {
             content: '';
             position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
+            inset: 0;
             z-index: 1;
             background-color: #ddd;
             max-height: 100vh;
@@ -41,7 +38,7 @@ $transition-duration: 800ms;
         border: $spinner-weight dotted currentColor;
         border-bottom-style: none;
         border-radius: 50%;
-        animation: ghct-spin 1.8s cubic-bezier(.75, .4, .4, .2) infinite;
+        animation: ghct-spin 1.8s cubic-bezier(0.75, 0.4, 0.4, 0.2) infinite;
         max-height: 100vh;
         max-width: 100vw;
         transition:
@@ -53,7 +50,8 @@ $transition-duration: 800ms;
     }
 
     &.loaded {
-        &::after, &::before {
+        &::after,
+        &::before {
             animation: none;
             max-height: 0;
             max-width: 0;

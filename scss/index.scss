@@ -1,5 +1,5 @@
 // A "default theme" stylesheet with all the modules in default styling.
-@use "lib/variable-defaults" as defaults;
+@use 'lib/variable-defaults' as defaults;
 
 /* -----------------------------------------------------------------------------
 |    Embed Placeholder
@@ -12,14 +12,14 @@ $secondary-button-color: defaults.$secondary-button-color !default;
 $max-width: defaults.$max-width !default;
 $font-size: defaults.$font-size !default;
 
-@use "module/embed-placeholder" with (
+@use 'module/embed-placeholder' with (
     $button-color: $button-color,
     $button-text-color: $button-text-color,
     $button-hover-color: $button-hover-color,
     $button-hover-text-color: $button-hover-text-color,
     $secondary-button-color: $secondary-button-color,
     $max-width: $max-width,
-    $font-size: $font-size,
+    $font-size: $font-size
 );
 
 /* -----------------------------------------------------------------------------
@@ -33,14 +33,14 @@ $modal-small-width: defaults.$modal-small-width !default;
 $modal-height: defaults.$modal-height !default;
 $modal-width: defaults.$modal-width !default;
 
-@use "module/modal" with (
+@use 'module/modal' with (
     $modal-bg: $modal-bg,
     $modal-fg: $modal-fg,
     $modal-content-padding: $modal-content-padding,
     $modal-small-height: $modal-small-height,
     $modal-small-width: $modal-small-width,
     $modal-height: $modal-height,
-    $modal-width: $modal-width,
+    $modal-width: $modal-width
 );
 
 /* -----------------------------------------------------------------------------
@@ -51,9 +51,9 @@ $spinner-size: defaults.$spinner-size !default;
 $spinner-weight: defaults.$spinner-weight !default;
 $spinner-backdrop: defaults.$spinner-backdrop !default;
 
-@use "module/loader" with (
+@use 'module/loader' with (
     $spinner-color: $spinner-color,
     $spinner-size: $spinner-size,
     $spinner-weight: $spinner-weight,
-    $spinner-backdrop: $spinner-backdrop,
+    $spinner-backdrop: $spinner-backdrop
 );

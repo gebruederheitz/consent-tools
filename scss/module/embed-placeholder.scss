@@ -1,5 +1,5 @@
 @use 'sass:color';
-@use "../lib/variable-defaults" as defaults;
+@use '../lib/variable-defaults' as defaults;
 
 $button-color: defaults.$button-color !default;
 $button-text-color: defaults.$button-text-color !default;
@@ -11,10 +11,7 @@ $font-size: defaults.$font-size !default;
 
 .ghct-embed-placeholder {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    top: 0;
+    inset: 0;
     align-items: center;
     display: flex;
     flex-flow: column nowrap;
@@ -100,11 +97,11 @@ $font-size: defaults.$font-size !default;
         transition: all 200ms ease;
 
         &:not(:first-child) {
-            margin-left: .5rem;
+            margin-left: 0.5rem;
         }
 
         &:not(:last-child) {
-            margin-right: .5rem;
+            margin-right: 0.5rem;
         }
 
         &:hover {
@@ -118,7 +115,10 @@ $font-size: defaults.$font-size !default;
             color: #000;
 
             &:hover {
-                $secondary-hover-color: darken($secondary-button-color, 10%);
+                $secondary-hover-color: color.adjust(
+                    $secondary-button-color,
+                    $lightness: -10%
+                );
 
                 background-color: $secondary-hover-color;
                 border-color: $secondary-hover-color;
@@ -128,7 +128,6 @@ $font-size: defaults.$font-size !default;
     }
 
     &--lightbox {
-
         @media screen and (min-width: 768px) {
             top: 200%;
 
@@ -140,7 +139,7 @@ $font-size: defaults.$font-size !default;
     }
 
     &--lightbox &__content {
-        background-color: rgba(0, 0, 0, 0.9);
+        background-color: rgb(0 0 0 / 90%);
         color: #eee;
         flex: 0 1 auto;
     }
@@ -151,4 +150,3 @@ $font-size: defaults.$font-size !default;
         position: static;
     }
 }
-
