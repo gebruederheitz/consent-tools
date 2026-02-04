@@ -24,7 +24,13 @@ tasks:
 
     build:
         desc: Build the entire library
+        run: when_changed
         deps: [install]
+        sources:
+            - node_modules/**/*
+            - src/**/*
+        generates:
+            - dist/**/*
         cmds:
             - npm run build:rollup
             - npm run build:styles
@@ -33,6 +39,9 @@ tasks:
         desc: Run basic linting
         deps: [install]
         aliases: [lint]
+        sources:
+            - node_modules/**/*
+            - src/**/*
         cmds:
             - npm run lint:scripts
             - npm run lint:styles

@@ -33,7 +33,7 @@
         "watch:rollup": "rollup -c .rollup.config.mjs --watch",
         "watch:styles": "gulp watch",
         "start": "sirv demo/ --host",
-        "prepublishOnly": "npm run lint && npm run build",
+        "prepublishOnly": "task lint build",
         "release": "release-it --only-version"
     },
     "dependencies": {
