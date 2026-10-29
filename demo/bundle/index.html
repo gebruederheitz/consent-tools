@@ -73,7 +73,8 @@
     const { ConsentManager, GenericLocalStorageProvider, ConsentSettings, EmbedFactory } = window.ghconsent;
     const settings = new ConsentSettings();
     const cm = new ConsentManager(
-        new GenericLocalStorageProvider()
+        new GenericLocalStorageProvider(),
+        settings
     );
     new EmbedFactory(cm, settings);
 </script>
