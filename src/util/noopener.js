@@ -7,7 +7,7 @@ export function addNoopener(link) {
     // Not relList: the build has no browser target yet (#37), and an old
     // browser without it would throw and break the placeholder.
     const rel = (link.getAttribute('rel') || '').split(/\s+/).filter(Boolean);
-    if (rel.indexOf('noopener') === -1) {
+    if (!rel.includes('noopener')) {
         link.setAttribute('rel', [...rel, 'noopener'].join(' '));
     }
 }
