@@ -40,8 +40,17 @@ Work on a dedicated branch (`chore/dependency-run-YYYY-MM`).
    packages. Run the audit command (`npm audit`) for awareness.
    npm lists packages whose install scripts it didn't run
    (`npm warn install-scripts`, review with `npm install-scripts ls`).
-   core-js's postinstall is only a funding banner and can stay unapproved; a
-   new entry needs a look before `npm install-scripts approve <pkg>`.
+   Known entries can stay unapproved: core-js (funding banner), the three
+   `@fortawesome/*` packages (attribution banner; they come in through
+   `@gebruederheitz/wp-block-video-overlay`) and `@parcel/watcher` (through
+   `sass`; it loads its prebuilt `@parcel/watcher-<platform>` package and only
+   needs `node-gyp rebuild` without one). A new entry needs a look before
+   `npm install-scripts approve <pkg>`.
+   Known audit findings: release-it's transitive `undici` and the
+   `proxy-agent` → `basic-ftp` chain are only fixed by a release-it major
+   (release tooling, nothing reaches `dist/`); the suggested fix for
+   `deepmerge`, `@rollup/plugin-node-resolve@7.1.3`, is a downgrade from the
+   current major. Neither is a reason to change anything in this pass.
 3. Run the checks per surface (§4) in dependency order (libraries before
    apps), so a regression is attributable. This is a single package with no
    dependents to rebuild. The demo pages load `dist/` and the dev bundles, so
@@ -71,8 +80,9 @@ Work on a dedicated branch (`chore/dependency-run-YYYY-MM`).
    - semver distance (patch/minor/major)
    - security fix (Dependabot body says so)?
    - breaking changes from changelog/release notes
-   - CI status (`gh pr checks`; no CI exists until #20, so "none" is the
-     norm and the local checks in §4 stand in for it)
+   - CI status (`gh pr checks`; only SonarCloud Code Analysis runs on PRs,
+     which builds and tests nothing, so until #20 the local checks in §4
+     stand in for CI)
    - verdict `safe` / `risky` with reasons and a concrete test plan
 5. Classification:
    - **safe**: patch/minor of dev dependencies, lockfile-only transitive
