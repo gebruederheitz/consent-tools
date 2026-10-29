@@ -28,6 +28,8 @@
         "lint:scripts": "eslint src/ test/",
         "lint:styles": "stylelint scss/",
         "lint:prettier": "prettier -c scss/",
+        "test:unit": "vitest run",
+        "watch:test": "vitest",
         "build:rollup": "rollup -c .rollup.config.mjs",
         "build:styles": "gulp",
         "watch:rollup": "rollup -c .rollup.config.mjs --watch",
@@ -67,6 +69,7 @@
         "gulp": "^5.0.1",
         "gulp-dart-sass": "^1.1.0",
         "gulp-postcss": "^10.0.0",
+        "jsdom": "^30.1.3",
         "prettier": "^3.8.1",
         "release-it": "^19.2.4",
         "rollup": "^4.57.1",
@@ -75,6 +78,7 @@
         "stylelint": "^17.1.1",
         "stylelint-config-recommended-scss": "^17.0.0",
         "stylelint-config-standard": "^40.0.0",
+        "vitest": "^5.0.5",
         "when-dom-ready": "^1.2.12"
     }
 }

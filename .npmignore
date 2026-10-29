@@ -17,3 +17,4 @@ Gulpfile*
 yarn-error.log
 Makefile
 Taskfile.yaml
+vitest.config.mjs
