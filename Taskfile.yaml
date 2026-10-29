@@ -36,9 +36,15 @@ tasks:
             - npm run build:styles
 
     test:
-        desc: Run basic linting
+        desc: Run linters and unit tests
         deps: [install]
-        aliases: [lint]
+        cmds:
+            - task: lint
+            - npm run test:unit
+
+    lint:
+        desc: Run linters
+        deps: [install]
         sources:
             - node_modules/**/*
             - src/**/*

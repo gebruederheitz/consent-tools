@@ -24,8 +24,9 @@ Tasks run through [Task](https://taskfile.dev) (`Taskfile.yaml`). Node is pinned
 
 - `task dev`: watch-builds the library and the demo bundles with Rollup, watches SCSS with Gulp, and serves `demo/` with sirv plus livereload.
 - `task build`: production build to `dist/` (`dist/index.mjs` ESM, `dist/bundle.js` UMD global `ghconsent`, `dist/css/`).
-- `task test` (alias `task lint`): ESLint on `src/` and `test/`, Stylelint and Prettier on `scss/`. **There are no automated tests yet** and no CI; "test" means lint only. Both are wanted (#22, #20).
-- `task build` and `task test` declare `sources` (`node_modules/**`, `src/**`) and are skipped when those are unchanged, even if `scss/` or `test/` changed. Run the npm scripts directly, or `task --force build`, after style-only changes.
+- `task test`: runs `task lint`, then the unit tests (`npm run test:unit`, Vitest with jsdom, `vitest.config.mjs`). `task lint`: ESLint on `src/` and `test/`, Stylelint and Prettier on `scss/`. There is no CI yet (#20).
+- Unit tests live in `test/unit/**/*.test.js` and import from `src/`. Single file: `npx vitest run test/unit/consent-settings.test.js`; by name: `npx vitest run -t 'checkbox label'`; watch mode: `npm run watch:test`. Coverage is still thin (#22).
+- `task build` and `task lint` declare `sources` (`node_modules/**`, `src/**`) and are skipped when those are unchanged, even if `scss/` or `test/` changed. Run the npm scripts directly, or `task --force build`, after style-only changes.
 - Single linters: `npm run lint:scripts`, `npm run lint:styles`, `npm run lint:prettier`. The repo has no fix scripts; `npx eslint --fix src/ test/` and `npx prettier -w scss/` work when run directly.
 - `task release`: release-it on `main` only. It prompts for the version (`--only-version`); prereleases use a prerelease tag such as `3.4.2-beta.1`. It runs `task test` and `task build`, bumps the version, commits `[chore] Release v<version>`, tags, creates a GitHub release and publishes to npm (`.release-it.yaml`).
 
@@ -33,7 +34,7 @@ Style is 4-space indent, single quotes, semicolons, enforced by Prettier through
 
 ## Demo / manual testing
 
-`test/test-implementation*.js` are not tests. They are demo entry points that Rollup bundles (dev builds only) into `demo/demo-bundle.js`, `demo/lightbox/demo-bundle.js` and `demo/onetrust/demo-bundle.js`. They import from `../dist/index.mjs`, not from `src/`, so the library must be built (and `task dev` does this). `demo/build` is a symlink to `dist/`, used by the `demo/*/index.html` pages. Verifying a change means running `task dev` and checking the relevant demo page in a browser.
+`test/test-implementation*.js` are not tests. They are demo entry points that Rollup bundles (dev builds only) into `demo/demo-bundle.js`, `demo/lightbox/demo-bundle.js` and `demo/onetrust/demo-bundle.js`. They import from `../dist/index.mjs`, not from `src/`, so the library must be built (and `task dev` does this). `demo/build` is a symlink to `dist/`, used by the `demo/*/index.html` pages. For behaviour the unit tests don't cover (CMP integration, styling), run `task dev` and check the relevant demo page in a browser.
 
 ## Architecture
 

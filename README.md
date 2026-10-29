@@ -607,8 +607,9 @@ the styles and serves `./demo` with live reload. The demo pages are built from
 `./test/test-implementation*.js` (bundled to `./demo/**/demo-bundle.js`), which
 import the library from `./dist`.
 
-`task test` (or `task lint`) lints all scripts and stylesheets. There are no
-automated tests yet ([#22](https://github.com/gebruederheitz/consent-tools/issues/22)).
+`task test` lints all scripts and stylesheets and runs the unit tests in
+`./test/unit` with [Vitest](https://vitest.dev) (in jsdom); `task lint` only
+lints. `npm run watch:test` runs the unit tests in watch mode.
 
 `task build` creates production builds in ES module and UMD formats, plus the
 default stylesheets in `./dist/css`.
