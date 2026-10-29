@@ -339,9 +339,7 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
 
         let group =
             dd.Groups &&
-            dd.Groups.find(
-                (g) => g.GeneralVendorsIds && g.GeneralVendorsIds.includes(id)
-            );
+            dd.Groups.find((g) => g.GeneralVendorsIds?.includes(id));
 
         if (!group) {
             const customIdIndex = dd.Groups.findIndex(
