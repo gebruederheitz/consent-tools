@@ -18,3 +18,5 @@ yarn-error.log
 Makefile
 Taskfile.yaml
 vitest.config.mjs
+.claude/
+CLAUDE.md

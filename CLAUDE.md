@@ -28,6 +28,7 @@ Tasks run through [Task](https://taskfile.dev) (`Taskfile.yaml`). Node is pinned
 - Unit tests live in `test/unit/**/*.test.js` and import from `src/`. Single file: `npx vitest run test/unit/consent-settings.test.js`; by name: `npx vitest run -t 'checkbox label'`; watch mode: `npm run watch:test`. Coverage is still thin (#22).
 - `task build` and `task lint` declare `sources` (`node_modules/**`, `src/**`) and are skipped when those are unchanged, even if `scss/` or `test/` changed. Run the npm scripts directly, or `task --force build`, after style-only changes.
 - Single linters: `npm run lint:scripts`, `npm run lint:styles`, `npm run lint:prettier`. The repo has no fix scripts; `npx eslint --fix src/ test/` and `npx prettier -w scss/` work when run directly.
+- Dependency maintenance: `/dependency-run` (in-range update, Dependabot triage, chunked merges) and `/dependency-deep-dive` (tests the PRs labelled `needs confirmation`), in `.claude/skills/`.
 - `task release`: release-it on `main` only. It prompts for the version (`--only-version`); prereleases use a prerelease tag such as `3.4.2-beta.1`. It runs `task test` and `task build`, bumps the version, commits `[chore] Release v<version>`, tags, creates a GitHub release and publishes to npm (`.release-it.yaml`).
 
 Style is 4-space indent, single quotes, semicolons, enforced by Prettier through ESLint.
