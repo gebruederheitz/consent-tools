@@ -122,7 +122,7 @@ new ConsentSettings(defaults, services);
 | --- | ---  | ---     | ---     | ---         |
 | **Globals**
 | debug                 | boolean                   | false                          | *             | Enable debug output to the console. |
-| attributesPrefix      | string                    | 'ghct'                         | *             | DOM-Attributes are read with this prefix (e.g. `data-ghct-src`). |
+| attributesPrefix      | string                    | 'ghct'                         | *             | DOM-Attributes are read with this prefix (e.g. `data-ghct-src`). `EmbedFactory` doesn't apply it to its default selector yet ([#35](https://github.com/gebruederheitz/consent-tools/issues/35)); pass a `selector` explicitly when you change the prefix. |
 | lightboxFactory       | LightboxFactory function  | null                           | LightboxEmbed | A function that will create (video) lightboxes when the relevant service has consent. Recommendation: [wp-block-video-overlay](https://www.npmjs.com/package/@gebruederheitz/wp-block-video-overlay). |
 | autoloadOnButtonClick | boolean                   | true                           | *Embed        | Whether to start loading an embed element as soon as the button was clicked. Will need to be disabled for certain CMP service providers (like OneTrust) where consent for a single service can not be granted programmatically. |
 | privacyPolicyUrl      | string                    | '/legal/datenschutzerklaerung' | *Embed        | URL to the site's privacy policy page. Can be used in template strings as `%privacyPolicyUrl%`. |
@@ -172,7 +172,7 @@ specific use cases.
 ##### Example
 
 ```js
-const cmpService = new UsercentricsProvider();
+const cmpService = await new UsercentricsProvider();
 const cm = new ConsentManager(cmpService, new ConsentSettings());
 
 function onConsent(serviceId, prettyName) {
@@ -334,7 +334,7 @@ You can customize the look & feel of these placeholders in three ways. You can:
 
 ###### Changing the text content: Template strings & i18n
 
-Functionality to provide native l10n / i18n is on the roadmap, but currently
+Functionality to provide native l10n / i18n is on the roadmap, but not
 implemented yet. In the meantime, you will have to pre-select translations for
 your text fragments before initializing consent-tools and pass the localized
 strings to the ConsentSettings constructor.
@@ -535,7 +535,7 @@ automatically execute the script.
 
 ##### Generic LocalStorage / SessionStorage Provider
 
-##### Generic Event Provder
+##### Generic Event Provider
 
 ##### Implementing your own provider
 
@@ -599,14 +599,23 @@ the `/scss/module/loader.scss` on way or another.
 
 ## Development
 
-Run `make`, `make dev` or `npm run watch` to start a development watch server
-using `./test/test-implementation` (bundled to `./demo/demo-bundle.js`) and the
-files in `./demo` for an example implementation.
+Development tasks run through [Task](https://taskfile.dev) (see
+`Taskfile.yaml`); the Node.js version is pinned in `.tool-versions`.
 
-`make test` or `npm run lint` will lint all the source scripts and stylesheets.
+`task dev` builds the library and the demo bundles in watch mode, compiles
+the styles and serves `./demo` with live reload. The demo pages are built from
+`./test/test-implementation*.js` (bundled to `./demo/**/demo-bundle.js`), which
+import the library from `./dist`.
 
-`make build` or `npm run build` will create production builds in ES module and
-UMD formats.
+`task test` (or `task lint`) lints all scripts and stylesheets. There are no
+automated tests yet ([#22](https://github.com/gebruederheitz/consent-tools/issues/22)).
+
+`task build` creates production builds in ES module and UMD formats, plus the
+default stylesheets in `./dist/css`.
+
+`task release` publishes a new version to npm and GitHub through release-it
+(from `main` only). It prompts for the version; prereleases use a prerelease
+tag such as `3.4.2-beta.1`.
 
 
 ### To do

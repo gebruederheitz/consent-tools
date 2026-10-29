@@ -19,7 +19,7 @@ export class EmbedFactory extends Debuggable {
      * @param {boolean}         useroptions.debug      Toggle debug logging output on or off (default: false).
      * @param {string}          useroptions.selector   This selector will be used to find any elements that should have
      *                                                 one of the embed handlers attached to them (default
-     *                                                 '[data-ghct-src]').
+     *                                                 '[data-ghct-src], [data-ghct-type]').
      */
     constructor(consentManager, settings, useroptions = {}) {
         super('gdprEmbedFactory');
