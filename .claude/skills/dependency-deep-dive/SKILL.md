@@ -48,7 +48,6 @@ clean worktree, so pre-existing failures aren't blamed on a bump.
 
 **Known noise on main** <!-- TODO first run: flaky/networked specs, env vars the runner needs, differences between main checkout and worktrees. -->
 Seen so far:
-- `/bundle/` throws `TypeError: Cannot read properties of undefined (reading 'getCmpServiceId')`: `demo/bundle/index.html` calls `new ConsentManager()` without the settings argument. This is a bug in the demo page, not in the bundle.
 - `npm run build:styles` prints Dart Sass `legacy-js-api` deprecation warnings (from `gulp-dart-sass`).
 - Builds print "Browserslist: browsers data (caniuse-lite) is … old".
 - `npm install` warns that ESLint 9.39 is no longer supported and that `glob@7` is deprecated.
