@@ -340,8 +340,7 @@ export class OneTrustProvider extends AbstractCmpServiceProvider {
         let group =
             dd.Groups &&
             dd.Groups.find(
-                (g) =>
-                    g.GeneralVendorsIds && g.GeneralVendorsIds.indexOf(id) > -1
+                (g) => g.GeneralVendorsIds && g.GeneralVendorsIds.includes(id)
             );
 
         if (!group) {
