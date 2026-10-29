@@ -48,7 +48,6 @@ clean worktree, so pre-existing failures aren't blamed on a bump.
 
 **Known noise on main** <!-- TODO first run: flaky/networked specs, env vars the runner needs, differences between main checkout and worktrees. -->
 Seen so far:
-- `/bundle/` throws `TypeError: Cannot read properties of undefined (reading 'getCmpServiceId')`: `demo/bundle/index.html` calls `new ConsentManager()` without the settings argument. This is a bug in the demo page, not in the bundle.
 - `npm run build:styles` prints Dart Sass `legacy-js-api` deprecation warnings (from `gulp-dart-sass`).
 - Builds print "Browserslist: browsers data (caniuse-lite) is … old".
 - `npm install` warns that ESLint 9.39 is no longer supported and that `glob@7` is deprecated.
@@ -81,6 +80,8 @@ when only files outside `src/` changed (#42). Each worktree needs its own
    minor).
 3. Regenerate the lockfile: `cd <wt> && npm install --package-lock-only`.
 4. **Lockfile quirks after regeneration** <!-- TODO first run: packages that re-resolve on every regeneration and must be pinned back. -->
+   None so far: for #32, `npm install --package-lock-only` reproduced
+   Dependabot's lockfile change exactly.
 5. Review the rest of the lockfile diff: unexpected transitive jumps, new
    packages needing a postinstall build (`npm install-scripts ls`), peer
    warnings.
@@ -113,7 +114,9 @@ external) and `dist/bundle.js`.
     lockfile), then compare `dist/` file sizes, `diff -rq` on `dist/css`, and
     the list of injected polyfills
     (`grep -o "core-js/modules/[a-z0-9._-]*" dist/index.mjs | sort -u`) on
-    both sides.
+    both sides. For a build-only plugin, `cmp` the files (including
+    `dist/bundle.js.map`): the terser plugin major in #32 left them
+    byte-identical.
 - Report peer warnings and whether they affect production or only tests.
 - Native modules: none of the runtime dependencies has any, and the bundles
   run in the consumers' browsers. A new native or Node-only dependency in
@@ -127,9 +130,14 @@ external) and `dist/bundle.js`.
 - Browser smoke of the production build before and after: console errors,
   failed requests, full-page screenshot diff (goal: 0). Run `task dev` on
   main and on the bump in turn and open the demo pages. `/bundle/` and
-  `/iframe/` load the production UMD `dist/bundle.js`; the other pages use
-  the dev bundles built from `test/test-implementation*.js`. Add the §3.1
-  build diff.
+  `/iframe/` load the UMD `dist/bundle.js`; the other pages use the dev
+  bundles built from `test/test-implementation*.js`. Add the §3.1 build
+  diff.
+- `task dev` builds with Rollup in watch mode, which skips terser
+  (`.rollup.config.mjs`: production means "not `ROLLUP_WATCH`"). To smoke the
+  minified `dist/bundle.js`, run `npm run build:rollup`, then
+  `npx sirv demo --port 8081` in the worktree, and on `/bundle/` click
+  "Inhalt laden": the placeholder has to give way to the iframe.
 - A compiler major with failing checks is a migration, not a bump: report
   and leave open.
 - Pass: builds, checks, tests match baseline; no visible difference.
@@ -149,7 +157,9 @@ Don't remove `needs confirmation` unless the PR is merged or closed.
 
 ## 5. Merge or bundle?
 
-- **One or two pass:** merge individually.
+- **One or two pass:** merge individually. A Dependabot branch from before
+  the last lockfile change on main conflicts: comment `@dependabot rebase`
+  and merge once it has rebased.
 - **Three or more pass, or the rebase chain keeps breaking:** bundle (§6).
 - If a PR needed more than the version bump, bundle it or push the fix to the
   Dependabot branch (Dependabot stops managing a branch once someone else
