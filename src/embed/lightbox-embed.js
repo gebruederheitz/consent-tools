@@ -1,4 +1,5 @@
 import { AbstractEmbed } from './abstract-embed.js';
+import { addNoopener } from '../util/noopener.js';
 
 export class LightboxEmbed extends AbstractEmbed {
     constructor(...args) {
@@ -56,6 +57,7 @@ export class LightboxEmbed extends AbstractEmbed {
         super.unloadEmbed();
         this.debug.log('unload embed');
         this.container.target = '_blank';
+        addNoopener(this.container);
         if (this.lightbox) {
             this.lightbox.destroy();
         }

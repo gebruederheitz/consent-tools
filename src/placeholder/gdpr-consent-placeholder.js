@@ -4,6 +4,7 @@ import {
 } from '@gebruederheitz/wp-frontend-utils';
 
 import { GdprEmbedCheckbox } from './gdpr-embed-checkbox';
+import { addNoopenerToBlankTargets } from '../util/noopener.js';
 
 export class GdprConsentPlaceholder extends Debuggable {
     /**
@@ -93,10 +94,11 @@ export class GdprConsentPlaceholder extends Debuggable {
             });
         }
 
-        createDomElement({
+        const description = createDomElement({
             innerHtml: placeHolderContentInnerHtml,
             parent: placeholderContent,
         });
+        addNoopenerToBlankTargets(description);
 
         if (
             this.type !== 'generic' &&

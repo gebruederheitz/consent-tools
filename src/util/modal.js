@@ -1,5 +1,7 @@
 import { createDomElement } from '@gebruederheitz/wp-frontend-utils';
 
+import { addNoopenerToBlankTargets } from './noopener.js';
+
 export class Modal {
     /**
      * @param {Element[]|null} content
@@ -36,6 +38,7 @@ export class Modal {
             parent: this.root,
             innerHtml: typeof content === 'string' ? content : '',
         });
+        addNoopenerToBlankTargets(this.container);
 
         if (content && content.outerHTML) {
             this.container.appendChild(content);
